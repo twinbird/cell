@@ -7,16 +7,16 @@ import (
 )
 
 var (
-	spreadsheet *Spreadsheet
-	program     string
-	topath      string
-	frompath    string
+	spreadsheet    *Spreadsheet
+	program        string
+	optionTopath   string
+	optionFrompath string
 )
 
 func main() {
 	f := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	f.StringVar(&topath, "to", "", "output spreadsheet filepath")
-	f.StringVar(&frompath, "from", "", "input spreadsheet filepath")
+	f.StringVar(&optionTopath, "to", "", "output spreadsheet filepath")
+	f.StringVar(&optionFrompath, "from", "", "input spreadsheet filepath")
 
 	f.Parse(os.Args[2:])
 
@@ -26,7 +26,7 @@ func main() {
 }
 
 func run() {
-	sheet, err := NewSpreadsheet(frompath, topath)
+	sheet, err := NewSpreadsheet(optionFrompath, optionTopath)
 	if err != nil {
 		fatalError(err)
 	}
