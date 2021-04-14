@@ -2,14 +2,12 @@ package main
 
 import (
 	"flag"
-	"log"
+	"fmt"
 	"os"
-
-	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
 
 var (
-	spreadsheet *excelize.File
+	spreadsheet *Spreadsheet
 	program     string
 	topath      string
 	frompath    string
@@ -28,49 +26,23 @@ func main() {
 }
 
 func run() {
-	openSpreadsheet()
-	defer closeSpreadsheet()
+	sheet, err := NewSpreadsheet(frompath, topath)
+	if err != nil {
+		fatalError(err)
+	}
+	spreadsheet = sheet
 
 	execScript()
-}
 
-func openSpreadsheet() {
-	if frompath != "" {
-		err := readSpreadsheet()
-		if err != nil {
-			log.Fatalf("on error spreadsheet reading '%v'", err)
-		}
-	} else {
-		err := createSpreadsheet()
-		if err != nil {
-			log.Fatalf("on error spreadsheet creating '%v'", err)
-		}
-	}
-}
-
-func createSpreadsheet() error {
-	spreadsheet = excelize.NewFile()
-	return nil
-}
-
-func readSpreadsheet() error {
-	f, err := excelize.OpenFile(frompath)
-	if err != nil {
-		return err
-	}
-	spreadsheet = f
-
-	return nil
-}
-
-func closeSpreadsheet() {
-	if topath != "" {
-		err := spreadsheet.SaveAs(topath)
-		if err != nil {
-			log.Fatalf("on error spreadsheet closing. '%v'", err)
-		}
+	if err := spreadsheet.writeSpreadsheet(); err != nil {
+		fatalError(err)
 	}
 }
 
 func execScript() {
+}
+
+func fatalError(err error) {
+	fmt.Fprintf(os.Stderr, "FATAL ERROR: %v\n", err)
+	os.Exit(1)
 }
