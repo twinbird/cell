@@ -4,7 +4,7 @@ cell: *.go y.go
 y.go: parser.y
 	goyacc parser.y
 
-test: *_test.go
+test: cell *_test.go
 	go test
 
 clean:
