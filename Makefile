@@ -6,3 +6,4 @@ test: *.go
 
 clean:
 	rm -f *.xlsx
+	rm -f cell
