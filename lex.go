@@ -1,0 +1,90 @@
+package main
+
+import (
+	"fmt"
+	"os"
+	"strconv"
+)
+
+type Lexer struct {
+	src     []rune
+	current int
+	ast     *Expression
+}
+
+func NewLexer(code string) *Lexer {
+	return &Lexer{
+		src:     []rune(code + "\n"),
+		current: 0,
+	}
+}
+
+func (l *Lexer) Lex(lval *yySymType) int {
+	for !l.isEof() {
+		l.skipSpace()
+
+		if isDigit(l.peek()) {
+			return l.number(lval)
+		}
+
+		if l.peek() == ';' {
+			l.consume()
+			return LF
+		}
+
+		if l.peek() == '\n' {
+			l.consume()
+			return LF
+		}
+
+	}
+	return -1
+}
+
+func (l *Lexer) Error(e string) {
+	fmt.Println("[error] " + e)
+	os.Exit(1)
+}
+
+func (l *Lexer) isEof() bool {
+	return l.current >= len(l.src)
+}
+
+func (l *Lexer) skipSpace() {
+	for l.peek() == ' ' || l.peek() == '\t' {
+		l.consume()
+	}
+}
+
+func (l *Lexer) peek() rune {
+	return l.src[l.current]
+}
+
+func (l *Lexer) consume() rune {
+	c := l.src[l.current]
+	l.current++
+	return c
+}
+
+func isDigit(c rune) bool {
+	return '0' <= c && c <= '9'
+}
+
+func (l *Lexer) number(lval *yySymType) int {
+	s := ""
+	dotAppeared := false
+
+	for !l.isEof() && isDigit(l.peek()) {
+		c := l.consume()
+		s += string(c)
+		if l.peek() == '.' {
+			if dotAppeared == true {
+				panic("invalid number")
+			}
+			s += string(l.consume())
+			dotAppeared = true
+		}
+	}
+	lval.num, _ = strconv.ParseFloat(s, 64)
+	return NUMBER
+}

@@ -25,21 +25,38 @@ func main() {
 	run()
 }
 
-func run() {
+func beforeRun() {
 	sheet, err := NewSpreadsheet(optionFrompath, optionTopath)
 	if err != nil {
 		fatalError(err)
 	}
 	spreadsheet = sheet
+}
 
-	execScript()
-
-	if err := spreadsheet.writeSpreadsheet(); err != nil {
-		fatalError(err)
+func afterRun() {
+	if optionTopath != "" {
+		if err := spreadsheet.writeSpreadsheet(); err != nil {
+			fatalError(err)
+		}
 	}
 }
 
-func execScript() {
+func run() {
+	beforeRun()
+	ret := execScript()
+	afterRun()
+
+	os.Exit(ret)
+}
+
+func execScript() int {
+	yyDebug = 1
+	yyErrorVerbose = true
+
+	lexer := NewLexer(program)
+	yyParse(lexer)
+
+	return int(lexer.ast.eval())
 }
 
 func fatalError(err error) {
