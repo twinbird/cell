@@ -17,7 +17,7 @@ func NewSpreadsheet(frompath string, topath string) (*Spreadsheet, error) {
 	}
 
 	if frompath != "" {
-		err := s.readSpreadsheet()
+		err := s.readSpreadsheet(frompath)
 		if err != nil {
 			return nil, fmt.Errorf("on error spreadsheet reading '%v'", err)
 		}
@@ -36,7 +36,7 @@ func (s *Spreadsheet) createSpreadsheet() error {
 	return nil
 }
 
-func (s *Spreadsheet) readSpreadsheet() error {
+func (s *Spreadsheet) readSpreadsheet(frompath string) error {
 	f, err := excelize.OpenFile(frompath)
 	if err != nil {
 		return err
@@ -47,11 +47,13 @@ func (s *Spreadsheet) readSpreadsheet() error {
 }
 
 func (s *Spreadsheet) writeSpreadsheet() error {
-	if topath != "" {
-		err := s.file.SaveAs(topath)
-		if err != nil {
-			return fmt.Errorf("on error spreadsheet closing. '%v'", err)
-		}
+	if s.topath == "" {
+		return fmt.Errorf("on error spreadsheet writing: no specify write path.")
+	}
+
+	err := s.file.SaveAs(s.topath)
+	if err != nil {
+		return fmt.Errorf("on error spreadsheet writing. '%v'", err)
 	}
 
 	return nil

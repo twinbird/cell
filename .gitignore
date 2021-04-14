@@ -2,3 +2,4 @@ cell
 y.go
 *.output
 *.xlsx
+!test/*.xlsx
