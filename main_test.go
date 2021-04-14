@@ -19,3 +19,13 @@ func TestSimpleStringExpression(t *testing.T) {
 		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 }
+
+func TestSimpleCellReferExpression(t *testing.T) {
+	con := &ExecContext{}
+	con.frompath = "test/values.xlsx"
+	con.code = `["A1"]`
+	run(con)
+	if con.exitCode != 2 {
+		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 2, con.exitCode)
+	}
+}

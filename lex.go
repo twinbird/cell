@@ -37,6 +37,16 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			return LF
 		}
 
+		if l.peek() == '[' {
+			l.consume()
+			return '['
+		}
+
+		if l.peek() == ']' {
+			l.consume()
+			return ']'
+		}
+
 		if l.peek() == '"' || l.peek() == '\'' {
 			return l.str(lval)
 		}

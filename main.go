@@ -34,7 +34,7 @@ func main() {
 func beforeRun() {
 	sheet, err := NewSpreadsheet(execContext.frompath, execContext.topath)
 	if err != nil {
-		fatalError(err)
+		fatalError("on error occured creating new spreadsheet")
 	}
 	execContext.spreadsheet = sheet
 }
@@ -42,7 +42,7 @@ func beforeRun() {
 func afterRun() {
 	if execContext.topath != "" {
 		if err := execContext.spreadsheet.writeSpreadsheet(); err != nil {
-			fatalError(err)
+			fatalError("on error occured writting spreadsheet")
 		}
 	}
 }
@@ -67,7 +67,7 @@ func execScript() int {
 	return int(lexer.ast.eval())
 }
 
-func fatalError(err error) {
-	fmt.Fprintf(os.Stderr, "FATAL ERROR: %v\n", err)
+func fatalError(format string, a ...interface{}) {
+	fmt.Fprintf(os.Stderr, "ERROR: "+format+"\n", a)
 	os.Exit(1)
 }

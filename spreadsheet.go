@@ -58,3 +58,11 @@ func (s *Spreadsheet) writeSpreadsheet() error {
 
 	return nil
 }
+
+func (s *Spreadsheet) getCellValue(axis string) string {
+	v, err := s.file.GetCellValue("Sheet1", axis)
+	if err != nil {
+		fatalError("cell '%s' refer failed", axis)
+	}
+	return v
+}

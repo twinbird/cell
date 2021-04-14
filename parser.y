@@ -5,11 +5,12 @@ package main
   num  float64
   expr *Expression
   str  string
+  axis string
 }
 %type<expr> program expr 
 %token<num> NUMBER 
 %token<str> STRING
-%token<token> LF
+%token<token> LF '[' ']'
 
 %%
 program
@@ -18,5 +19,6 @@ program
 expr
   : NUMBER { $$ = NewNumberExpression($1) }
   | STRING { $$ = NewStringExpression($1) }
+  | '[' expr ']' { $$ = NewCellReferExpression($2) }
 %%
 
