@@ -14,6 +14,8 @@ type ExecContext struct {
 	exitCode    int
 }
 
+var execContext *ExecContext
+
 func main() {
 	con := &ExecContext{}
 
@@ -29,35 +31,37 @@ func main() {
 	os.Exit(con.exitCode)
 }
 
-func beforeRun(con *ExecContext) {
-	sheet, err := NewSpreadsheet(con.frompath, con.topath)
+func beforeRun() {
+	sheet, err := NewSpreadsheet(execContext.frompath, execContext.topath)
 	if err != nil {
 		fatalError(err)
 	}
-	con.spreadsheet = sheet
+	execContext.spreadsheet = sheet
 }
 
-func afterRun(con *ExecContext) {
-	if con.topath != "" {
-		if err := con.spreadsheet.writeSpreadsheet(); err != nil {
+func afterRun() {
+	if execContext.topath != "" {
+		if err := execContext.spreadsheet.writeSpreadsheet(); err != nil {
 			fatalError(err)
 		}
 	}
 }
 
 func run(con *ExecContext) {
-	beforeRun(con)
-	ret := execScript(con)
-	afterRun(con)
+	execContext = con
 
-	con.exitCode = ret
+	beforeRun()
+	ret := execScript()
+	afterRun()
+
+	execContext.exitCode = ret
 }
 
-func execScript(con *ExecContext) int {
+func execScript() int {
 	yyDebug = 1
 	yyErrorVerbose = true
 
-	lexer := NewLexer(con.code)
+	lexer := NewLexer(execContext.code)
 	yyParse(lexer)
 
 	return int(lexer.ast.eval())
