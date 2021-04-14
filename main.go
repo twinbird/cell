@@ -2,13 +2,17 @@ package main
 
 import (
 	"flag"
+	"log"
 	"os"
+
+	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
 
 var (
-	program  string
-	topath   string
-	frompath string
+	spreadsheet *excelize.File
+	program     string
+	topath      string
+	frompath    string
 )
 
 func main() {
@@ -24,4 +28,49 @@ func main() {
 }
 
 func run() {
+	openSpreadsheet()
+	defer closeSpreadsheet()
+
+	execScript()
+}
+
+func openSpreadsheet() {
+	if frompath != "" {
+		err := readSpreadsheet()
+		if err != nil {
+			log.Fatalf("on error spreadsheet reading '%v'", err)
+		}
+	} else {
+		err := createSpreadsheet()
+		if err != nil {
+			log.Fatalf("on error spreadsheet creating '%v'", err)
+		}
+	}
+}
+
+func createSpreadsheet() error {
+	spreadsheet = excelize.NewFile()
+	return nil
+}
+
+func readSpreadsheet() error {
+	f, err := excelize.OpenFile(frompath)
+	if err != nil {
+		return err
+	}
+	spreadsheet = f
+
+	return nil
+}
+
+func closeSpreadsheet() {
+	if topath != "" {
+		err := spreadsheet.SaveAs(topath)
+		if err != nil {
+			log.Fatalf("on error spreadsheet closing. '%v'", err)
+		}
+	}
+}
+
+func execScript() {
 }
