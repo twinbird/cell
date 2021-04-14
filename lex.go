@@ -37,6 +37,9 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			return LF
 		}
 
+		if l.peek() == '"' || l.peek() == '\'' {
+			return l.str(lval)
+		}
 	}
 	return -1
 }
@@ -87,4 +90,19 @@ func (l *Lexer) number(lval *yySymType) int {
 	}
 	lval.num, _ = strconv.ParseFloat(s, 64)
 	return NUMBER
+}
+
+func (l *Lexer) str(lval *yySymType) int {
+	l.consume()
+	s := ""
+
+	for c := l.consume(); c != '"' && c != '\''; c = l.consume() {
+		if c == '\\' {
+			c = l.consume()
+		}
+		s += string(c)
+	}
+	lval.str = s
+
+	return STRING
 }
