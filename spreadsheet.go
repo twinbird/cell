@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"github.com/tealeg/xlsx/v3"
 )
 
 type Spreadsheet struct {
-	file   *excelize.File
+	file   *xlsx.File
 	topath string
 }
 
@@ -32,12 +32,16 @@ func NewSpreadsheet(frompath string, topath string) (*Spreadsheet, error) {
 }
 
 func (s *Spreadsheet) createSpreadsheet() error {
-	s.file = excelize.NewFile()
+	s.file = xlsx.NewFile()
+	_, err := s.file.AddSheet("Sheet1")
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (s *Spreadsheet) readSpreadsheet(frompath string) error {
-	f, err := excelize.OpenFile(frompath)
+	f, err := xlsx.OpenFile(frompath)
 	if err != nil {
 		return err
 	}
@@ -51,7 +55,7 @@ func (s *Spreadsheet) writeSpreadsheet() error {
 		return fmt.Errorf("on error spreadsheet writing: no specify write path.")
 	}
 
-	err := s.file.SaveAs(s.topath)
+	err := s.file.Save(s.topath)
 	if err != nil {
 		return fmt.Errorf("on error spreadsheet writing. '%v'", err)
 	}
