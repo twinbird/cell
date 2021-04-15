@@ -7,6 +7,7 @@ const (
 	NumberExpression = iota
 	StringExpression
 	CellReferExpression
+	CellAssignExpression
 )
 
 type Expression struct {
@@ -14,6 +15,7 @@ type Expression struct {
 	number   float64
 	str      string
 	axis     string
+	right    *Expression
 }
 
 func NewNumberExpression(number float64) *Expression {
@@ -34,6 +36,14 @@ func NewCellReferExpression(axis *Expression) *Expression {
 	return e
 }
 
+func NewCellAssignExpression(axis *Expression, expr *Expression) *Expression {
+	if axis.exprType != StringExpression {
+		fatalError("the axis of the cell reference was specified as a non-string.")
+	}
+	e := &Expression{exprType: CellAssignExpression, axis: axis.str, right: expr}
+	return e
+}
+
 func (e *Expression) eval() float64 {
 	switch e.exprType {
 	case NumberExpression:
@@ -47,6 +57,10 @@ func (e *Expression) eval() float64 {
 			return 0
 		}
 		return f
+	case CellAssignExpression:
+		v := e.right.eval()
+		execContext.spreadsheet.setCellValue(e.axis, v)
+		return v
 	}
 	panic("evaluate unknown type.")
 }

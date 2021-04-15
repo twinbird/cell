@@ -25,5 +25,6 @@ expr
   : NUMBER { $$ = NewNumberExpression($1) }
   | STRING { $$ = NewStringExpression($1) }
   | '[' expr ']' { $$ = NewCellReferExpression($2) }
+  | '[' expr ']' '=' expr { $$ = NewCellAssignExpression($2, $5) }
 %%
 

@@ -66,3 +66,10 @@ func (s *Spreadsheet) getCellValue(axis string) string {
 	}
 	return v
 }
+
+func (s *Spreadsheet) setCellValue(axis string, v interface{}) {
+	err := s.file.SetCellValue("Sheet1", axis, v)
+	if err != nil {
+		fatalError("cell '%s' set value failed", axis)
+	}
+}
