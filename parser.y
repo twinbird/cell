@@ -6,15 +6,20 @@ package main
   expr *Expression
   str  string
   axis string
+  stmt *Statement
 }
-%type<expr> program expr 
+%type<stmt> program stmt
+%type<expr> expr 
 %token<num> NUMBER 
 %token<str> STRING
 %token<token> LF '[' ']'
 
 %%
 program
-  : expr LF { yylex.(*Lexer).ast = $1 }
+  : stmt { yylex.(*Lexer).ast = $1 }
+
+stmt
+  : expr LF { $$ = NewExpressionStatement($1) }
 
 expr
   : NUMBER { $$ = NewNumberExpression($1) }
