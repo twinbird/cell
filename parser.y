@@ -2,13 +2,15 @@
 package main
 %}
 %union {
-  num  float64
-  expr *Expression
-  str  string
-  axis string
-  stmt *Statement
+  num   float64
+  expr  *Expression
+  str   string
+  axis  string
+  stmt  *Statement
+  stmts *Statements
 }
-%type<stmt> program stmt
+%type<stmts> program stmts
+%type<stmt> stmt
 %type<expr> expr 
 %token<num> NUMBER 
 %token<str> STRING
@@ -16,10 +18,15 @@ package main
 
 %%
 program
-  : stmt { yylex.(*Lexer).ast = $1 }
+  : stmts { yylex.(*Lexer).ast = $$ }
+
+stmts
+  : stmt { $$ = NewStatements($1) }
+  | stmts stmt { $$ = $1.appendStatement($2) }
 
 stmt
-  : expr LF { $$ = NewExpressionStatement($1) }
+  : LF { $$ = NewBlankStatement() }
+  | expr LF { $$ = NewExpressionStatement($1) }
 
 expr
   : NUMBER { $$ = NewNumberExpression($1) }
