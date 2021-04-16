@@ -9,7 +9,7 @@ import (
 type Lexer struct {
 	src     []rune
 	current int
-	ast     *Statements
+	ast     Node
 }
 
 func NewLexer(code string) *Lexer {

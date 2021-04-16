@@ -64,7 +64,8 @@ func execScript() int {
 	lexer := NewLexer(execContext.code)
 	yyParse(lexer)
 
-	return int(lexer.ast.eval())
+	n := lexer.ast.eval()
+	return int(n.asNumber())
 }
 
 func fatalError(format string, a ...interface{}) {

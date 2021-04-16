@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 const (
 	BlankStatement = iota
 	ExpressionStatement
@@ -20,12 +22,28 @@ func NewExpressionStatement(expr *Expression) *Statement {
 	return s
 }
 
-func (s *Statement) eval() float64 {
+func (s *Statement) eval() Node {
 	switch s.stmtType {
 	case BlankStatement:
-		return 0
+		return s
 	case ExpressionStatement:
 		return s.expr.eval()
 	}
 	panic("evaluate unknown type.")
+}
+
+func (stmts *Statement) asNumber() float64 {
+	panic("statement can not evaluate as a number")
+}
+
+func (stmts *Statement) asString() string {
+	panic("statement can not evaluate as a string")
+}
+
+func (stmts *Statement) nodeType() int {
+	return NodeTypeStatement
+}
+
+func (stmts *Statement) String() string {
+	return fmt.Sprintf("[Type: Statement]")
 }

@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Statements struct {
 	stmts []*Statement
 }
@@ -16,10 +18,28 @@ func (stmts *Statements) appendStatement(stmt *Statement) *Statements {
 	return stmts
 }
 
-func (stmts *Statements) eval() float64 {
-	ret := 0.0
+func (stmts *Statements) eval() Node {
+	var ret Node
+	ret = nil
+
 	for _, s := range stmts.stmts {
 		ret = s.eval()
 	}
 	return ret
+}
+
+func (stmts *Statements) asNumber() float64 {
+	panic("statements can not evaluate as a number")
+}
+
+func (stmts *Statements) asString() string {
+	panic("statements can not evaluate as a string")
+}
+
+func (stmts *Statements) nodeType() int {
+	return NodeTypeStatements
+}
+
+func (stmts *Statements) String() string {
+	return fmt.Sprintf("[Type: Statements] (has %d statements)", len(stmts.stmts))
 }
