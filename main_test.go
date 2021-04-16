@@ -6,6 +6,17 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
 
+func setCellValue(t *testing.T, filepath string, sheet string, axis string, value interface{}) {
+	f, err := excelize.OpenFile(filepath)
+	if err != nil {
+		t.Fatalf("on error occured open '%s'.", filepath)
+	}
+	err = f.SetCellValue(sheet, axis, value)
+	if err != nil {
+		t.Fatalf("on error occured set cell value '%s'.", axis)
+	}
+}
+
 func getCellValue(t *testing.T, filepath string, sheet string, axis string) string {
 	f, err := excelize.OpenFile(filepath)
 	if err != nil {
@@ -58,5 +69,35 @@ func TestSimpleCellAssignExpression(t *testing.T) {
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
 	if v != "5" {
 		t.Fatalf("want cell value 5, but got %s", v)
+	}
+}
+
+func TestCellAssignToString(t *testing.T) {
+	con := &ExecContext{}
+	con.frompath = "test/values.xlsx"
+	con.topath = "TestCellAssignToString.xlsx"
+	con.code = `["A1"] = "abc"`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "abc" {
+		t.Fatalf("want cell value 'abc', but got %s", v)
+	}
+}
+
+func TestCellReferFromString(t *testing.T) {
+	con := &ExecContext{}
+	con.frompath = "test/values.xlsx"
+	con.topath = "TestCellReferFromString.xlsx"
+	con.code = `["A3"] = ["A2"]`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A3")
+	if v != "test" {
+		t.Fatalf("want cell value 'test', but got %s", v)
 	}
 }

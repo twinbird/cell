@@ -39,17 +39,33 @@ func (e *Expression) eval() Node {
 		return e.left.eval()
 	case CellReferExpression:
 		v := execContext.spreadsheet.getCellValue(e.left.asString())
-		f, err := strconv.ParseFloat(v, 64)
-		if err != nil {
-			return NewNumberValue(0)
+
+		f, ok := maybeNumber(v)
+		if !ok {
+			return NewStringValue(v)
 		}
 		return NewNumberValue(f)
 	case CellAssignExpression:
 		v := e.right.eval()
-		execContext.spreadsheet.setCellValue(e.left.asString(), v.asNumber())
+
+		_, isnum := maybeNumber(v.asString())
+		if isnum {
+			execContext.spreadsheet.setCellValue(e.left.asString(), v.asNumber())
+		} else {
+			execContext.spreadsheet.setCellValue(e.left.asString(), v.asString())
+		}
+
 		return v
 	}
 	panic("evaluate unknown type.")
+}
+
+func maybeNumber(val string) (float64, bool) {
+	f, err := strconv.ParseFloat(val, 64)
+	if err != nil {
+		return 0, false
+	}
+	return f, true
 }
 
 func (e *Expression) asNumber() float64 {
