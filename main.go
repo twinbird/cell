@@ -12,12 +12,20 @@ type ExecContext struct {
 	frompath    string
 	spreadsheet *Spreadsheet
 	exitCode    int
+	scope       *Scope
 }
 
 var execContext *ExecContext
 
-func main() {
+func NewExecContext() *ExecContext {
 	con := &ExecContext{}
+	con.scope = NewScope()
+
+	return con
+}
+
+func main() {
+	con := NewExecContext()
 
 	f := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	f.StringVar(&con.topath, "to", "", "output spreadsheet filepath")

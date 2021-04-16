@@ -30,7 +30,7 @@ func getCellValue(t *testing.T, filepath string, sheet string, axis string) stri
 }
 
 func TestSimpleNumberExpression(t *testing.T) {
-	con := &ExecContext{}
+	con := NewExecContext()
 	con.code = `1`
 	run(con)
 	if con.exitCode != 1 {
@@ -39,7 +39,7 @@ func TestSimpleNumberExpression(t *testing.T) {
 }
 
 func TestSimpleStringExpression(t *testing.T) {
-	con := &ExecContext{}
+	con := NewExecContext()
 	con.code = `"str"`
 	run(con)
 	if con.exitCode != 0 {
@@ -48,7 +48,7 @@ func TestSimpleStringExpression(t *testing.T) {
 }
 
 func TestSimpleCellReferExpression(t *testing.T) {
-	con := &ExecContext{}
+	con := NewExecContext()
 	con.frompath = "test/values.xlsx"
 	con.code = `["A1"]`
 	run(con)
@@ -58,7 +58,7 @@ func TestSimpleCellReferExpression(t *testing.T) {
 }
 
 func TestSimpleCellAssignExpression(t *testing.T) {
-	con := &ExecContext{}
+	con := NewExecContext()
 	con.frompath = "test/values.xlsx"
 	con.topath = "TestSimpleCellAssignExpression.xlsx"
 	con.code = `["A1"] = 5`
@@ -73,7 +73,7 @@ func TestSimpleCellAssignExpression(t *testing.T) {
 }
 
 func TestCellAssignToString(t *testing.T) {
-	con := &ExecContext{}
+	con := NewExecContext()
 	con.frompath = "test/values.xlsx"
 	con.topath = "TestCellAssignToString.xlsx"
 	con.code = `["A1"] = "abc"`
@@ -88,7 +88,7 @@ func TestCellAssignToString(t *testing.T) {
 }
 
 func TestCellReferFromString(t *testing.T) {
-	con := &ExecContext{}
+	con := NewExecContext()
 	con.frompath = "test/values.xlsx"
 	con.topath = "TestCellReferFromString.xlsx"
 	con.code = `["A3"] = ["A2"]`
@@ -99,5 +99,37 @@ func TestCellReferFromString(t *testing.T) {
 	v := getCellValue(t, con.topath, "Sheet1", "A3")
 	if v != "test" {
 		t.Fatalf("want cell value 'test', but got %s", v)
+	}
+}
+
+func TestNumberAssignToVar(t *testing.T) {
+	con := NewExecContext()
+	con.code = `var = 10`
+	run(con)
+	if con.exitCode != 10 {
+		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 10, con.exitCode)
+	}
+}
+
+func TestNumberVarRefer(t *testing.T) {
+	con := NewExecContext()
+	con.code = `var = 10;var`
+	run(con)
+	if con.exitCode != 10 {
+		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 10, con.exitCode)
+	}
+}
+
+func TestStringAssignToVar(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestStringAssignToVar.xlsx"
+	con.code = `var = "test string";["A1"] = var;0`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "test string" {
+		t.Fatalf("want cell value 'test string', but got %s", v)
 	}
 }

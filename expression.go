@@ -10,12 +10,15 @@ const (
 	LiteralExpression = iota
 	CellReferExpression
 	CellAssignExpression
+	VarReferExpression
+	VarAssignExpression
 )
 
 type Expression struct {
 	exprType int
 	left     Node
 	right    Node
+	ident    string
 }
 
 func NewLiteralExpression(prim Primitive) *Expression {
@@ -30,6 +33,16 @@ func NewCellReferExpression(axis *Expression) *Expression {
 
 func NewCellAssignExpression(axis *Expression, expr *Expression) *Expression {
 	e := &Expression{exprType: CellAssignExpression, left: axis, right: expr}
+	return e
+}
+
+func NewVarReferExpression(ident string) *Expression {
+	e := &Expression{exprType: VarReferExpression, ident: ident}
+	return e
+}
+
+func NewVarAssignExpression(ident string, expr *Expression) *Expression {
+	e := &Expression{exprType: VarAssignExpression, ident: ident, right: expr}
 	return e
 }
 
@@ -55,6 +68,12 @@ func (e *Expression) eval() Node {
 			execContext.spreadsheet.setCellValue(e.left.asString(), v.asString())
 		}
 
+		return v
+	case VarReferExpression:
+		return execContext.scope.get(e.ident)
+	case VarAssignExpression:
+		v := e.right.eval()
+		execContext.scope.set(e.ident, v)
 		return v
 	}
 	panic("evaluate unknown type.")

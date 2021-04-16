@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"unicode"
 )
 
 type Lexer struct {
@@ -55,6 +56,10 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		if l.peek() == '"' || l.peek() == '\'' {
 			return l.str(lval)
 		}
+
+		if isIdent(l.peek()) {
+			return l.ident(lval)
+		}
 	}
 	return -1
 }
@@ -86,6 +91,21 @@ func (l *Lexer) consume() rune {
 
 func isDigit(c rune) bool {
 	return '0' <= c && c <= '9'
+}
+
+func isIdent(c rune) bool {
+	return unicode.IsLetter(c) || c == '_' || unicode.IsDigit(c)
+}
+
+func (l *Lexer) ident(lval *yySymType) int {
+	s := string(l.consume())
+
+	for isIdent(l.peek()) {
+		s += string(l.consume())
+	}
+
+	lval.ident = s
+	return IDENT
 }
 
 func (l *Lexer) number(lval *yySymType) int {
