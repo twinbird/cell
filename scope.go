@@ -18,7 +18,7 @@ func (s *Scope) set(name string, value Node) Node {
 func (s *Scope) get(name string) Node {
 	v, ok := s.vars[name]
 	if !ok {
-		return NewLiteralExpression(NewStringValue(""))
+		return NewStringExpression("")
 	}
 	return v
 }

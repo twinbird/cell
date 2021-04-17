@@ -7,7 +7,8 @@ import (
 
 // Expression types
 const (
-	LiteralExpression = iota
+	NumberExpression = iota
+	StringExpression
 	CellReferExpression
 	CellAssignExpression
 	VarReferExpression
@@ -19,11 +20,18 @@ type Expression struct {
 	left     Node
 	right    Node
 	ident    string
+	number   float64
+	str      string
 }
 
-func NewLiteralExpression(prim Primitive) *Expression {
-	e := &Expression{exprType: LiteralExpression, left: prim}
-	return e
+func NewNumberExpression(f float64) *Expression {
+	n := &Expression{exprType: NumberExpression, number: f}
+	return n
+}
+
+func NewStringExpression(str string) *Expression {
+	s := &Expression{exprType: StringExpression, str: str}
+	return s
 }
 
 func NewCellReferExpression(axis *Expression) *Expression {
@@ -48,16 +56,18 @@ func NewVarAssignExpression(ident string, expr *Expression) *Expression {
 
 func (e *Expression) eval() Node {
 	switch e.exprType {
-	case LiteralExpression:
-		return e.left.eval()
+	case NumberExpression:
+		return e
+	case StringExpression:
+		return e
 	case CellReferExpression:
 		v := execContext.spreadsheet.getCellValue(e.left.asString())
 
 		f, ok := maybeNumber(v)
 		if !ok {
-			return NewStringValue(v)
+			return NewStringExpression(v)
 		}
-		return NewNumberValue(f)
+		return NewNumberExpression(f)
 	case CellAssignExpression:
 		v := e.right.eval()
 
@@ -88,11 +98,23 @@ func maybeNumber(val string) (float64, bool) {
 }
 
 func (e *Expression) asNumber() float64 {
-	return e.eval().asNumber()
+	if e.exprType == NumberExpression {
+		return e.number
+	}
+	if e.exprType == StringExpression {
+		return 0
+	}
+	return e.asNumber()
 }
 
 func (e *Expression) asString() string {
-	return e.eval().asString()
+	if e.exprType == StringExpression {
+		return e.str
+	}
+	if e.exprType == NumberExpression {
+		return fmt.Sprintf("%g", e.number)
+	}
+	return e.asString()
 }
 
 func (e *Expression) nodeType() int {
@@ -100,5 +122,20 @@ func (e *Expression) nodeType() int {
 }
 
 func (e *Expression) String() string {
-	return fmt.Sprintf("[Type: Expression]")
+	et := "unknown"
+	switch e.exprType {
+	case NumberExpression:
+		et = "NumberExpression"
+	case StringExpression:
+		et = "StringExpression"
+	case CellReferExpression:
+		et = "CellReferExpression"
+	case CellAssignExpression:
+		et = "CellAssignExpression"
+	case VarReferExpression:
+		et = "VarReferExpression"
+	case VarAssignExpression:
+		et = "VarAssignExpression"
+	}
+	return fmt.Sprintf("[Type: Expression] expr type: %s\n", et)
 }
