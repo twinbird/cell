@@ -1,7 +1,5 @@
 package main
 
-import "os"
-
 type ArgList struct {
 	args []*Expression
 }
@@ -37,7 +35,8 @@ func builtinFunctions() map[string]*Function {
 			// exit(int) void
 			builtin: func(args ...Node) Node {
 				exitCode := args[0]
-				os.Exit(int(exitCode.asNumber()))
+				execContext.exitCode = int(exitCode.asNumber())
+				execContext.doExit = true
 				return nil
 			},
 		},

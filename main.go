@@ -14,6 +14,7 @@ type ExecContext struct {
 	exitCode    int
 	scope       *Scope
 	functions   map[string]*Function
+	doExit      bool
 }
 
 var execContext *ExecContext
@@ -61,10 +62,8 @@ func run(con *ExecContext) {
 	execContext = con
 
 	beforeRun()
-	ret := execScript()
+	execScript()
 	afterRun()
-
-	execContext.exitCode = ret
 }
 
 func execScript() int {
@@ -74,8 +73,8 @@ func execScript() int {
 	lexer := NewLexer(execContext.code)
 	yyParse(lexer)
 
-	n := lexer.ast.eval()
-	return int(n.asNumber())
+	lexer.ast.eval()
+	return 0
 }
 
 func fatalError(format string, a ...interface{}) {

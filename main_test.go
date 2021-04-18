@@ -33,8 +33,8 @@ func TestSimpleNumberExpression(t *testing.T) {
 	con := NewExecContext()
 	con.code = `1`
 	run(con)
-	if con.exitCode != 1 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 1, con.exitCode)
+	if con.exitCode != 0 {
+		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 }
 
@@ -50,7 +50,7 @@ func TestSimpleStringExpression(t *testing.T) {
 func TestSimpleCellReferExpression(t *testing.T) {
 	con := NewExecContext()
 	con.frompath = "test/values.xlsx"
-	con.code = `["A1"]`
+	con.code = `exit(["A1"]);`
 	run(con)
 	if con.exitCode != 2 {
 		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 2, con.exitCode)
@@ -63,7 +63,7 @@ func TestSimpleCellAssignExpression(t *testing.T) {
 	con.topath = "TestSimpleCellAssignExpression.xlsx"
 	con.code = `["A1"] = 5`
 	run(con)
-	if con.exitCode != 5 {
+	if con.exitCode != 0 {
 		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 5, con.exitCode)
 	}
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
@@ -106,14 +106,14 @@ func TestNumberAssignToVar(t *testing.T) {
 	con := NewExecContext()
 	con.code = `var = 10`
 	run(con)
-	if con.exitCode != 10 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 10, con.exitCode)
+	if con.exitCode != 0 {
+		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 }
 
 func TestNumberVarRefer(t *testing.T) {
 	con := NewExecContext()
-	con.code = `var = 10;var`
+	con.code = `var = 10;exit(var)`
 	run(con)
 	if con.exitCode != 10 {
 		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 10, con.exitCode)

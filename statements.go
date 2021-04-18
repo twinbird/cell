@@ -24,6 +24,9 @@ func (stmts *Statements) eval() Node {
 
 	for _, s := range stmts.stmts {
 		ret = s.eval()
+		if execContext.doExit {
+			break
+		}
 	}
 	return ret
 }
