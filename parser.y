@@ -9,13 +9,15 @@ package main
   stmt  *Statement
   stmts *Statements
   ident string
+  args *ArgList
 }
 %type<stmts>  program stmts
 %type<stmt>   stmt
-%type<expr>   expr 
+%type<expr>   expr funcCall 
+%type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']'
+%token<token> LF '[' ']' '(' ')' ','
 %token<ident> IDENT
 
 %%
@@ -37,4 +39,13 @@ expr
   | '[' expr ']' '=' expr { $$ = NewCellAssignExpression($2, $5) }
   | IDENT { $$ = NewVarReferExpression($1) }
   | IDENT '=' expr { $$ = NewVarAssignExpression($1, $3) }
+  | funcCall
+
+funcCall
+  : IDENT '(' ')' { $$ = NewFuncCallExpression($1, nil) }
+  | IDENT '(' argList ')' { $$ = NewFuncCallExpression($1, $3) }
+
+argList
+  : expr { $$ = NewArgList($1) }
+  | expr ',' argList { $$ = $3.appendArg($1) }
 %%

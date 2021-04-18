@@ -13,6 +13,7 @@ const (
 	CellAssignExpression
 	VarReferExpression
 	VarAssignExpression
+	FuncCallExpression
 )
 
 type Expression struct {
@@ -22,6 +23,7 @@ type Expression struct {
 	ident    string
 	number   float64
 	str      string
+	args     *ArgList
 }
 
 func NewNumberExpression(f float64) *Expression {
@@ -51,6 +53,11 @@ func NewVarReferExpression(ident string) *Expression {
 
 func NewVarAssignExpression(ident string, expr *Expression) *Expression {
 	e := &Expression{exprType: VarAssignExpression, ident: ident, right: expr}
+	return e
+}
+
+func NewFuncCallExpression(ident string, args *ArgList) *Expression {
+	e := &Expression{exprType: FuncCallExpression, ident: ident, args: args}
 	return e
 }
 
@@ -85,6 +92,12 @@ func (e *Expression) eval() Node {
 		v := e.right.eval()
 		execContext.scope.set(e.ident, v)
 		return v
+	case FuncCallExpression:
+		f, found := execContext.functions[e.ident]
+		if !found {
+			fatalError("function '%s' is not found.", e.ident)
+		}
+		return f.call(e.args)
 	}
 	panic("evaluate unknown type.")
 }
@@ -136,6 +149,8 @@ func (e *Expression) String() string {
 		et = "VarReferExpression"
 	case VarAssignExpression:
 		et = "VarAssignExpression"
+	case FuncCallExpression:
+		et = "FuncCallExpression"
 	}
 	return fmt.Sprintf("[Type: Expression] expr type: %s\n", et)
 }

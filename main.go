@@ -13,6 +13,7 @@ type ExecContext struct {
 	spreadsheet *Spreadsheet
 	exitCode    int
 	scope       *Scope
+	functions   map[string]*Function
 }
 
 var execContext *ExecContext
@@ -20,6 +21,7 @@ var execContext *ExecContext
 func NewExecContext() *ExecContext {
 	con := &ExecContext{}
 	con.scope = NewScope()
+	con.functions = builtinFunctions()
 
 	return con
 }
