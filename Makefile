@@ -6,6 +6,7 @@ y.go: parser.y
 
 test: cell *_test.go
 	go test
+	./test.sh
 
 clean:
 	rm -f *.xlsx

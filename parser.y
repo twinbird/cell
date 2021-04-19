@@ -42,7 +42,7 @@ expr
   | funcCall
 
 funcCall
-  : IDENT '(' ')' { $$ = NewFuncCallExpression($1, nil) }
+  : IDENT '(' ')' { $$ = NewFuncCallExpression($1, NewEmptyArgList()) }
   | IDENT '(' argList ')' { $$ = NewFuncCallExpression($1, $3) }
 
 argList

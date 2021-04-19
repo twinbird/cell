@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"io"
+	"os"
 	"testing"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
@@ -27,6 +30,25 @@ func getCellValue(t *testing.T, filepath string, sheet string, axis string) stri
 		t.Fatalf("on error occured get cell value '%s'.", axis)
 	}
 	return v
+}
+
+func wrapStdio(t *testing.T, f func()) string {
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	stdout := os.Stdout
+	os.Stdout = w
+
+	f()
+
+	os.Stdout = stdout
+	w.Close()
+
+	var buf bytes.Buffer
+	io.Copy(&buf, r)
+
+	return buf.String()
 }
 
 func TestSimpleNumberExpression(t *testing.T) {
@@ -131,5 +153,19 @@ func TestStringAssignToVar(t *testing.T) {
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
 	if v != "test string" {
 		t.Fatalf("want cell value 'test string', but got %s", v)
+	}
+}
+
+func TestBuiltinPuts(t *testing.T) {
+	con := NewExecContext()
+	con.code = `puts("test string")`
+	out := wrapStdio(t, func() {
+		run(con)
+	})
+	if con.exitCode != 0 {
+		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	if out != "test string\n" {
+		t.Fatalf("want stdout 'test string', but got %s", out)
 	}
 }
