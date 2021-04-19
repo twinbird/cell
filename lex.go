@@ -80,7 +80,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 }
 
 func (l *Lexer) Error(e string) {
-	fmt.Println("[error] " + e)
+	fmt.Fprintf(execContext.errout, "[error] %s\n", e)
 	os.Exit(1)
 }
 

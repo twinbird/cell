@@ -157,15 +157,38 @@ func TestStringAssignToVar(t *testing.T) {
 }
 
 func TestBuiltinPuts(t *testing.T) {
+	out := new(bytes.Buffer)
+
 	con := NewExecContext()
+	con.out = out
+
 	con.code = `puts("test string")`
-	out := wrapStdio(t, func() {
-		run(con)
-	})
+	run(con)
+
 	if con.exitCode != 0 {
 		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
-	if out != "test string\n" {
-		t.Fatalf("want stdout 'test string', but got %s", out)
+	if out.String() != "test string\n" {
+		t.Fatalf("want stdout 'test string\n', but got %s", out)
+	}
+}
+
+func TestBuiltinGets(t *testing.T) {
+	in := bytes.NewBufferString("test string")
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.in = in
+	con.out = out
+
+	con.code = `puts(gets())`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "test string\n" {
+		t.Fatalf("want stdout 'test string\n', but got %s", out)
 	}
 }

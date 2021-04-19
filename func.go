@@ -78,7 +78,7 @@ func builtinAbort(args ...Node) Node {
 // gets(void) string
 // Get character line from stdin.
 func builtinGets(args ...Node) Node {
-	scanner := bufio.NewScanner(os.Stdin)
+	scanner := bufio.NewScanner(execContext.in)
 	scanner.Scan()
 	s := scanner.Text()
 	return NewStringExpression(s)
@@ -88,6 +88,6 @@ func builtinGets(args ...Node) Node {
 // Print string and new line to stdout.
 func builtinPuts(args ...Node) Node {
 	s := args[0].asString()
-	fmt.Println(s)
+	fmt.Fprintf(execContext.out, "%s\n", s)
 	return nil
 }

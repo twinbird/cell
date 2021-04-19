@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -15,6 +16,9 @@ type ExecContext struct {
 	scope       *Scope
 	functions   map[string]*Function
 	doExit      bool
+	in          io.Reader
+	out         io.Writer
+	errout      io.Writer
 }
 
 var execContext *ExecContext
@@ -23,6 +27,8 @@ func NewExecContext() *ExecContext {
 	con := &ExecContext{}
 	con.scope = NewScope()
 	con.functions = builtinFunctions()
+	con.in = os.Stdin
+	con.out = os.Stdout
 
 	return con
 }
