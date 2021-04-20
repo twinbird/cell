@@ -68,11 +68,6 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			return ','
 		}
 
-		if l.peek() == '@' {
-			l.consume()
-			return '@'
-		}
-
 		if l.peek() == '"' || l.peek() == '\'' {
 			return l.str(lval)
 		}
@@ -114,7 +109,7 @@ func isDigit(c rune) bool {
 }
 
 func isIdent(c rune) bool {
-	return unicode.IsLetter(c) || c == '_' || unicode.IsDigit(c)
+	return unicode.IsLetter(c) || c == '_' || unicode.IsDigit(c) || c == '@'
 }
 
 func (l *Lexer) ident(lval *yySymType) int {

@@ -39,8 +39,6 @@ expr
   | '[' expr ']' '=' expr { $$ = NewCellAssignExpression($2, $5) }
   | IDENT { $$ = NewVarReferExpression($1) }
   | IDENT '=' expr { $$ = NewVarAssignExpression($1, $3) }
-  | '@' { $$ = NewActiveSheetNameReferExpression() }
-  | '@' '=' expr { $$ = NewActiveSheetChangeExpression($3) }
   | funcCall
 
 funcCall
