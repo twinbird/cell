@@ -126,3 +126,26 @@ func TestGetSheetList(t *testing.T) {
 		t.Fatalf("test/values.xlsx has sheets want '%v', but got '%v'", expects, names)
 	}
 }
+
+func TestAddSheet(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+	names := sheet.getSheetList()
+
+	if len(names) != 1 {
+		t.Fatalf("sheet counts want %d, but got %d", 1, len(names))
+	}
+
+	sheet.addSheet("foo")
+	n := sheet.getActiveSheetName()
+	if n != "foo" {
+		t.Fatalf("active sheet has not changed even through calling addsheet()")
+	}
+
+	names = sheet.getSheetList()
+	if len(names) != 2 {
+		t.Fatalf("sheet counts want %d, but got %d", 2, len(names))
+	}
+	if names[0] != "Sheet1" || names[1] != "foo" {
+		t.Fatalf("addsheet() called, but no sheet has been added")
+	}
+}

@@ -97,3 +97,8 @@ func (s *Spreadsheet) setActiveSheetByName(name string) error {
 func (s *Spreadsheet) getSheetList() []string {
 	return s.file.GetSheetList()
 }
+
+func (s *Spreadsheet) addSheet(name string) error {
+	s.file.NewSheet(name)
+	return s.setActiveSheetByName(name)
+}
