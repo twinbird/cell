@@ -229,3 +229,20 @@ func TestSpecialVarAtMarkAssign(t *testing.T) {
 		t.Fatalf("want stdout 'sheet2\n', but got '%s'", out)
 	}
 }
+
+func TestSpecialVarAStMarkAssignUndefinedSheet(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestSpecialVarAStMarkAssignUndefinedSheet.xlsx"
+
+	con.code = `@="foo";["A1"] = "new sheet"`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	actual := getCellValue(t, con.topath, "foo", "A1")
+	if actual != "new sheet" {
+		t.Fatalf("no new sheet has been added or no value has been set.")
+	}
+}

@@ -72,7 +72,9 @@ func NewActiveSheetChangeExpression(expr *Expression) *Expression {
 	s := expr.eval().asString()
 	err := execContext.spreadsheet.setActiveSheetByName(s)
 	if err != nil {
-		fatalError("active sheet change error")
+		if err := execContext.spreadsheet.addSheet(s); err != nil {
+			fatalError("active sheet change error")
+		}
 	}
 	return NewStringExpression(s)
 }
