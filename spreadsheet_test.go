@@ -47,3 +47,82 @@ func TestWriteSpreadsheetSpecifiedToPath(t *testing.T) {
 		t.Fatalf("Calling WriteSpreadsheet with topath specified caused an error: %v", err)
 	}
 }
+
+func TestGetActiveSheetName(t *testing.T) {
+	sheet, _ := NewSpreadsheet("test/sheet.xlsx", "")
+	name := sheet.getActiveSheetName()
+	if name != "Sheet3" {
+		t.Fatalf("active sheet want %s, but got %s", "Sheet3", name)
+	}
+}
+
+func TestSetActiveSheetByName(t *testing.T) {
+	sheet, _ := NewSpreadsheet("test/sheet.xlsx", "")
+	if err := sheet.setActiveSheetByName("Sheet1"); err != nil {
+		t.Fatalf("error '%v' on active sheet set.", err)
+	}
+	name := sheet.getActiveSheetName()
+	if name != "Sheet1" {
+		t.Fatalf("active sheet want %s, but got %s", "Sheet1", name)
+	}
+}
+
+func TestSetActiveSheetByNotExistName(t *testing.T) {
+	sheet, _ := NewSpreadsheet("test/sheet.xlsx", "")
+	if err := sheet.setActiveSheetByName("foobar"); err == nil {
+		t.Fatalf("No error occured even through 'setActiveSheetByName' with not exist sheet name")
+	}
+	name := sheet.getActiveSheetName()
+	if name != "Sheet3" || sheet.activeSheet != name {
+		t.Fatalf("active sheet changed by 'setActiveSheetByName' invalided call.")
+	}
+}
+
+func TestGetCellValue(t *testing.T) {
+	sheet, _ := NewSpreadsheet("test/values.xlsx", "")
+
+	sheet.setActiveSheetByName("Sheet1")
+	v := sheet.getCellValue("A1")
+	if v != "2" {
+		t.Fatalf("Sheet1[A1] want %s, but got %s", "2", v)
+	}
+
+	err := sheet.setActiveSheetByName("Sheet2")
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	v = sheet.getCellValue("A1")
+	if v != "sheet2" {
+		t.Fatalf("Sheet2[A1] want %s, but got %s", "sheet2", v)
+	}
+}
+
+func TestSetCellValue(t *testing.T) {
+	sheet, _ := NewSpreadsheet("test/values.xlsx", "")
+
+	sheet.setActiveSheetByName("Sheet1")
+	v := sheet.getCellValue("A1")
+	if v != "2" {
+		t.Fatalf("Sheet1[A1] want %s, but got %s", "2", v)
+	}
+
+	sheet.setCellValue("A1", "20")
+	v = sheet.getCellValue("A1")
+	if v != "20" {
+		t.Fatalf("Sheet1[A1] want %s, but got %s", "20", v)
+	}
+}
+
+func TestGetSheetList(t *testing.T) {
+	sheet, _ := NewSpreadsheet("test/values.xlsx", "")
+	names := sheet.getSheetList()
+
+	if len(names) != 3 {
+		t.Fatalf("test/values.xlsx has sheets want %d, but got %d", 3, len(names))
+	}
+
+	expects := []string{"Sheet1", "Sheet2", "Sheet3"}
+	if names[0] != expects[0] || names[1] != expects[1] || names[2] != expects[2] {
+		t.Fatalf("test/values.xlsx has sheets want '%v', but got '%v'", expects, names)
+	}
+}
