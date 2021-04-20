@@ -14,6 +14,8 @@ const (
 	VarReferExpression
 	VarAssignExpression
 	FuncCallExpression
+	ActiveSheetNameReferExpression
+	ActiveSheetChangeExpression
 )
 
 type Expression struct {
@@ -61,6 +63,20 @@ func NewFuncCallExpression(ident string, args *ArgList) *Expression {
 	return e
 }
 
+func NewActiveSheetNameReferExpression() *Expression {
+	s := execContext.spreadsheet.getActiveSheetName()
+	return NewStringExpression(s)
+}
+
+func NewActiveSheetChangeExpression(expr *Expression) *Expression {
+	s := expr.eval().asString()
+	err := execContext.spreadsheet.setActiveSheetByName(s)
+	if err != nil {
+		fatalError("active sheet change error")
+	}
+	return NewStringExpression(s)
+}
+
 func (e *Expression) eval() Node {
 	switch e.exprType {
 	case NumberExpression:
@@ -98,6 +114,8 @@ func (e *Expression) eval() Node {
 			fatalError("function '%s' is not found.", e.ident)
 		}
 		return f.call(e.args)
+	case ActiveSheetNameReferExpression:
+	case ActiveSheetChangeExpression:
 	}
 	panic("evaluate unknown type.")
 }
@@ -151,6 +169,10 @@ func (e *Expression) String() string {
 		et = "VarAssignExpression"
 	case FuncCallExpression:
 		et = "FuncCallExpression"
+	case ActiveSheetNameReferExpression:
+		et = "ActiveSheetNameReferExpression"
+	case ActiveSheetChangeExpression:
+		et = "ActiveSheetChangeExpression"
 	}
 	return fmt.Sprintf("[Type: Expression] expr type: %s\n", et)
 }

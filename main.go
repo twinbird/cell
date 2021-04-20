@@ -29,6 +29,7 @@ func NewExecContext() *ExecContext {
 	con.functions = builtinFunctions()
 	con.in = os.Stdin
 	con.out = os.Stdout
+	con.errout = os.Stderr
 
 	return con
 }

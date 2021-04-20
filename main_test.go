@@ -56,7 +56,7 @@ func TestSimpleNumberExpression(t *testing.T) {
 	con.code = `1`
 	run(con)
 	if con.exitCode != 0 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 }
 
@@ -65,7 +65,7 @@ func TestSimpleStringExpression(t *testing.T) {
 	con.code = `"str"`
 	run(con)
 	if con.exitCode != 0 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 }
 
@@ -75,7 +75,7 @@ func TestSimpleCellReferExpression(t *testing.T) {
 	con.code = `exit(["A1"]);`
 	run(con)
 	if con.exitCode != 2 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 2, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 2, con.exitCode)
 	}
 }
 
@@ -86,7 +86,7 @@ func TestSimpleCellAssignExpression(t *testing.T) {
 	con.code = `["A1"] = 5`
 	run(con)
 	if con.exitCode != 0 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 5, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 5, con.exitCode)
 	}
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
 	if v != "5" {
@@ -101,7 +101,7 @@ func TestCellAssignToString(t *testing.T) {
 	con.code = `["A1"] = "abc"`
 	run(con)
 	if con.exitCode != 0 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
 	if v != "abc" {
@@ -116,7 +116,7 @@ func TestCellReferFromString(t *testing.T) {
 	con.code = `["A3"] = ["A2"]`
 	run(con)
 	if con.exitCode != 0 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 	v := getCellValue(t, con.topath, "Sheet1", "A3")
 	if v != "test" {
@@ -129,7 +129,7 @@ func TestNumberAssignToVar(t *testing.T) {
 	con.code = `var = 10`
 	run(con)
 	if con.exitCode != 0 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 }
 
@@ -138,7 +138,7 @@ func TestNumberVarRefer(t *testing.T) {
 	con.code = `var = 10;exit(var)`
 	run(con)
 	if con.exitCode != 10 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 10, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 10, con.exitCode)
 	}
 }
 
@@ -148,7 +148,7 @@ func TestStringAssignToVar(t *testing.T) {
 	con.code = `var = "test string";["A1"] = var;0`
 	run(con)
 	if con.exitCode != 0 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
 	if v != "test string" {
@@ -166,7 +166,7 @@ func TestBuiltinPuts(t *testing.T) {
 	run(con)
 
 	if con.exitCode != 0 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 	if out.String() != "test string\n" {
 		t.Fatalf("want stdout 'test string\n', but got %s", out)
@@ -185,10 +185,47 @@ func TestBuiltinGets(t *testing.T) {
 	run(con)
 
 	if con.exitCode != 0 {
-		t.Fatalf("exec code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 
 	if out.String() != "test string\n" {
-		t.Fatalf("want stdout 'test string\n', but got %s", out)
+		t.Fatalf("want stdout 'test string\n', but got '%s'", out)
+	}
+}
+
+func TestSpecialVarAtMarkRefer(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `puts(@)`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "Sheet1\n" {
+		t.Fatalf("want stdout 'Sheet1\n', but got '%s'", out)
+	}
+}
+
+func TestSpecialVarAtMarkAssign(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+	con.frompath = "test/values.xlsx"
+
+	con.code = `@="Sheet2";puts(["A1"])`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "sheet2\n" {
+		t.Fatalf("want stdout 'sheet2\n', but got '%s'", out)
 	}
 }
