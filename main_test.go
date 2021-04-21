@@ -16,7 +16,7 @@ func setCellValue(t *testing.T, filepath string, sheet string, axis string, valu
 	}
 	err = f.SetCellValue(sheet, axis, value)
 	if err != nil {
-		t.Fatalf("on error occured set cell value '%s'.", axis)
+		t.Fatalf("on error occured set cell value '%s'.(%v)", axis, err)
 	}
 }
 
@@ -27,7 +27,7 @@ func getCellValue(t *testing.T, filepath string, sheet string, axis string) stri
 	}
 	v, err := f.GetCellValue(sheet, axis)
 	if err != nil {
-		t.Fatalf("on error occured get cell value '%s'.", axis)
+		t.Fatalf("on error occured get cell value '%s'.(%v)", axis, err)
 	}
 	return v
 }
@@ -230,7 +230,7 @@ func TestSpecialVarAtMarkAssign(t *testing.T) {
 	}
 }
 
-func TestSpecialVarAStMarkAssignUndefinedSheet(t *testing.T) {
+func TestSpecialVarAtMarkAssignUndefinedSheet(t *testing.T) {
 	con := NewExecContext()
 	con.topath = "TestSpecialVarAStMarkAssignUndefinedSheet.xlsx"
 
@@ -244,5 +244,136 @@ func TestSpecialVarAStMarkAssignUndefinedSheet(t *testing.T) {
 	actual := getCellValue(t, con.topath, "foo", "A1")
 	if actual != "new sheet" {
 		t.Fatalf("no new sheet has been added or no value has been set.")
+	}
+}
+
+func TestSpecialVarDollarDefault(t *testing.T) {
+	expect := "aa bb  cc\t \tstring"
+	out := new(bytes.Buffer)
+	in := bytes.NewBufferString(expect)
+
+	con := NewExecContext()
+	con.topath = "TestSpecialVarDollarDefault.xlsx"
+	con.out = out
+	con.in = in
+	con.code = `gets();["A1"]=$0;["A2"]=$1;["A3"]=$2;["A4"]=$3;["A5"]=$4;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	actual := getCellValue(t, con.topath, "Sheet1", "A1")
+	if actual != expect {
+		t.Fatalf("$0 value wrong. want '%s', but got '%s'", expect, actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A2")
+	if actual != "aa" {
+		t.Fatalf("$1 value wrong. want '%s', but got '%s'", "aa", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A3")
+	if actual != "bb" {
+		t.Fatalf("$2 value wrong. want '%s', but got '%s'", "bb", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A4")
+	if actual != "cc" {
+		t.Fatalf("$3 value wrong. want '%s', but got '%s'", "cc", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A5")
+	if actual != "string" {
+		t.Fatalf("$4 value wrong. want '%s', but got '%s'", "string", actual)
+	}
+}
+
+func TestSpecialVarDollarOneChar(t *testing.T) {
+	expect := "aa.bb..cc.test string"
+	out := new(bytes.Buffer)
+	in := bytes.NewBufferString(expect)
+
+	con := NewExecContext()
+	con.topath = "TestSpecialVarDollarOneChar.xlsx"
+	con.out = out
+	con.in = in
+	con.code = `FS=".";gets();["A1"]=$0;["A2"]=$1;["A3"]=$2;["A4"]=$3;["A5"]=$4;["A6"]=$5`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	actual := getCellValue(t, con.topath, "Sheet1", "A1")
+	if actual != expect {
+		t.Fatalf("$0 value wrong. want '%s', but got '%s'", expect, actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A2")
+	if actual != "aa" {
+		t.Fatalf("$1 value wrong. want '%s', but got '%s'", "aa", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A3")
+	if actual != "bb" {
+		t.Fatalf("$2 value wrong. want '%s', but got '%s'", "bb", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A4")
+	if actual != "" {
+		t.Fatalf("$3 value wrong. want '%s', but got '%s'", "", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A5")
+	if actual != "cc" {
+		t.Fatalf("$4 value wrong. want '%s', but got '%s'", "cc", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A6")
+	if actual != "test string" {
+		t.Fatalf("$5 value wrong. want '%s', but got '%s'", "test string", actual)
+	}
+}
+
+func TestSpecialVarDollarRegexp(t *testing.T) {
+	expect := "aa,bb,  cc|string"
+	out := new(bytes.Buffer)
+	in := bytes.NewBufferString(expect)
+
+	con := NewExecContext()
+	con.topath = "TestSpecialVarDollarRegexp.xlsx"
+	con.out = out
+	con.in = in
+	con.code = `FS="[,|] *";gets();["A1"]=$0;["A2"]=$1;["A3"]=$2;["A4"]=$3;["A5"]=$4;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	actual := getCellValue(t, con.topath, "Sheet1", "A1")
+	if actual != expect {
+		t.Fatalf("$0 value wrong. want '%s', but got '%s'", expect, actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A2")
+	if actual != "aa" {
+		t.Fatalf("$1 value wrong. want '%s', but got '%s'", "aa", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A3")
+	if actual != "bb" {
+		t.Fatalf("$2 value wrong. want '%s', but got '%s'", "bb", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A4")
+	if actual != "cc" {
+		t.Fatalf("$3 value wrong. want '%s', but got '%s'", "cc", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A5")
+	if actual != "string" {
+		t.Fatalf("$4 value wrong. want '%s', but got '%s'", "string", actual)
 	}
 }

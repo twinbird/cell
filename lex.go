@@ -109,7 +109,7 @@ func isDigit(c rune) bool {
 }
 
 func isIdent(c rune) bool {
-	return unicode.IsLetter(c) || c == '_' || unicode.IsDigit(c) || c == '@'
+	return unicode.IsLetter(c) || c == '_' || unicode.IsDigit(c) || c == '@' || c == '$'
 }
 
 func (l *Lexer) ident(lval *yySymType) int {

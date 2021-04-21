@@ -81,6 +81,7 @@ func builtinGets(args ...Node) Node {
 	scanner := bufio.NewScanner(execContext.in)
 	scanner.Scan()
 	s := scanner.Text()
+	execContext.scope.setDollarSpecialVars(s)
 	return NewStringExpression(s)
 }
 

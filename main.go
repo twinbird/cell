@@ -30,6 +30,7 @@ func NewExecContext() *ExecContext {
 	con.in = os.Stdin
 	con.out = os.Stdout
 	con.errout = os.Stderr
+	con.scope.set("FS", NewStringExpression(" "))
 
 	return con
 }

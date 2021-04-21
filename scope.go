@@ -1,5 +1,10 @@
 package main
 
+import (
+	"regexp"
+	"strconv"
+)
+
 type Scope struct {
 	vars map[string]Node
 }
@@ -61,4 +66,36 @@ func (s *Scope) setSpecialVar(name string, value Node) Node {
 		return NewStringExpression(s)
 	}
 	panic("assign to unknown special var")
+}
+
+func (s *Scope) setDollarSpecialVars(input string) {
+	fs := execContext.scope.get("FS").asString()
+	reg := s.makeFSSplitReg(fs)
+	a := reg.Split(input, -1)
+	execContext.scope.set("$0", NewStringExpression(input))
+
+	for i, v := range a {
+		idx := strconv.Itoa(i + 1)
+		execContext.scope.set("$"+idx, NewStringExpression(v))
+	}
+}
+
+func (s *Scope) makeFSSplitReg(fs string) *regexp.Regexp {
+	// Note:
+	//   FS rule imitated gawk style
+	//   1. just one char space => space or tab or new line
+	//   2. just one char       => as it is
+	//   3. other               => consider as a regexp
+
+	r := fs
+	if fs == " " {
+		r = "( |\t|\n)+"
+	} else if len(fs) == 1 {
+		r = regexp.QuoteMeta(fs)
+	}
+	reg, err := regexp.Compile(r)
+	if err != nil {
+		fatalError("FS '%s' is invalid format", fs)
+	}
+	return reg
 }
