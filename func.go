@@ -88,7 +88,18 @@ func builtinGets(args ...Node) Node {
 // puts(string)
 // Print string and new line to stdout.
 func builtinPuts(args ...Node) Node {
+	if len(args) == 0 {
+		v := execContext.scope.get("$0")
+		s := v.asString()
+		fmt.Fprintf(execContext.out, "%s\n", s)
+		return nil
+	}
+	ofs := execContext.scope.get("OFS").asString()
 	s := args[0].asString()
+	for i := 1; i < len(args); i++ {
+		s = ofs + s
+		s = args[i].asString() + s
+	}
 	fmt.Fprintf(execContext.out, "%s\n", s)
 	return nil
 }

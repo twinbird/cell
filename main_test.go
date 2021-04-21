@@ -377,3 +377,46 @@ func TestSpecialVarDollarRegexp(t *testing.T) {
 		t.Fatalf("$4 value wrong. want '%s', but got '%s'", "string", actual)
 	}
 }
+
+func TestBuiltinFuncPutsNoArg(t *testing.T) {
+	expect := "aa bb cc"
+	out := new(bytes.Buffer)
+	in := bytes.NewBufferString(expect)
+
+	con := NewExecContext()
+	con.out = out
+	con.in = in
+	con.code = `gets();puts();`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	actual := out.String()
+	if actual != expect+"\n" {
+		t.Fatalf("puts() want '%s', but got '%s'", expect+"\n", actual)
+	}
+}
+
+func TestSpecialVarOFSAndBuiltinPutsFuncMultiArgs(t *testing.T) {
+	src := "aa bb cc"
+	out := new(bytes.Buffer)
+	in := bytes.NewBufferString(src)
+
+	con := NewExecContext()
+	con.out = out
+	con.in = in
+	con.code = `OFS="  ";gets();puts($1, $3);`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	expect := "aa  cc\n"
+	actual := out.String()
+	if actual != expect {
+		t.Fatalf("puts($1, $3) want '%s', but got '%s'", expect, actual)
+	}
+}
