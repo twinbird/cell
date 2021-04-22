@@ -68,7 +68,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			return ','
 		}
 
-		if l.peek() == '"' || l.peek() == '\'' {
+		if l.peek() == '"' {
 			return l.str(lval)
 		}
 
@@ -146,13 +146,46 @@ func (l *Lexer) str(lval *yySymType) int {
 	l.consume()
 	s := ""
 
-	for c := l.consume(); c != '"' && c != '\''; c = l.consume() {
+	for c := l.consume(); c != '"'; c = l.consume() {
 		if c == '\\' {
-			c = l.consume()
+			c = l.consumeEscapeChar()
 		}
 		s += string(c)
 	}
 	lval.str = s
 
 	return STRING
+}
+
+func (l *Lexer) consumeEscapeChar() rune {
+	c := l.consume()
+	if c == 'a' {
+		return '\a'
+	}
+	if c == 'b' {
+		return '\b'
+	}
+	if c == 'f' {
+		return '\f'
+	}
+	if c == 'n' {
+		return '\n'
+	}
+	if c == 'r' {
+		return '\r'
+	}
+	if c == 't' {
+		return '\t'
+	}
+	if c == 'v' {
+		return '\v'
+	}
+	if c == '\\' {
+		return '\\'
+	}
+	if c == '"' {
+		return '"'
+	}
+
+	panic("unknown escape")
 }

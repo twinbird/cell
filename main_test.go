@@ -420,3 +420,25 @@ func TestSpecialVarOFSAndBuiltinPutsFuncMultiArgs(t *testing.T) {
 		t.Fatalf("puts($1, $3) want '%s', but got '%s'", expect, actual)
 	}
 }
+
+func TestEscapeString(t *testing.T) {
+	src := "aa bb cc"
+	out := new(bytes.Buffer)
+	in := bytes.NewBufferString(src)
+
+	con := NewExecContext()
+	con.out = out
+	con.in = in
+	con.code = `OFS="\t";gets();puts($1, $3);`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	expect := "aa\tcc\n"
+	actual := out.String()
+	if actual != expect {
+		t.Fatalf("puts($1, $3) want '%s', but got '%s'", expect, actual)
+	}
+}
