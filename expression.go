@@ -21,6 +21,7 @@ const (
 	NumberGTExpression
 	NumberGEExpression
 	StringEQExpression
+	StringNEExpression
 )
 
 type Expression struct {
@@ -100,6 +101,11 @@ func NewNumberGEExpression(left *Expression, right *Expression) *Expression {
 
 func NewStringEQExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: StringEQExpression, left: left, right: right}
+	return e
+}
+
+func NewStringNEExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: StringNEExpression, left: left, right: right}
 	return e
 }
 
@@ -199,6 +205,15 @@ func (e *Expression) eval() Node {
 		right := e.right.eval().asString()
 
 		if left == right {
+			return NewNumberExpression(1)
+		} else {
+			return NewNumberExpression(0)
+		}
+	case StringNEExpression:
+		left := e.left.eval().asString()
+		right := e.right.eval().asString()
+
+		if left != right {
 			return NewNumberExpression(1)
 		} else {
 			return NewNumberExpression(0)

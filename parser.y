@@ -49,6 +49,7 @@ expr
   | expr '>' expr { $$ = NewNumberGTExpression($1, $3) }
   | expr NUMGE expr { $$ = NewNumberGEExpression($1, $3) }
   | expr STREQ expr { $$ = NewStringEQExpression($1, $3) }
+  | expr STRNE expr { $$ = NewStringNEExpression($1, $3) }
 
 funcCall
   : IDENT '(' ')' { $$ = NewFuncCallExpression($1, NewEmptyArgList()) }
