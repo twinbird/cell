@@ -27,6 +27,7 @@ const (
 	NumberSubExpression
 	NumberMulExpression
 	NumberDivExpression
+	NumberModuloExpression
 )
 
 type Expression struct {
@@ -136,6 +137,11 @@ func NewNumberMulExpression(left *Expression, right *Expression) *Expression {
 
 func NewNumberDivExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: NumberDivExpression, left: left, right: right}
+	return e
+}
+
+func NewNumberModuloExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: NumberModuloExpression, left: left, right: right}
 	return e
 }
 
@@ -273,6 +279,11 @@ func (e *Expression) eval() Node {
 		right := e.right.eval().asNumber()
 
 		return NewNumberExpression(left / right)
+	case NumberModuloExpression:
+		left := e.left.eval().asNumber()
+		right := e.right.eval().asNumber()
+
+		return NewNumberExpression(float64(int(left) % int(right)))
 	}
 	panic("evaluate unknown type.")
 }

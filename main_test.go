@@ -667,10 +667,10 @@ func TestNumberDivExpression(t *testing.T) {
 	}
 }
 
-func TestNumberMulExpression(t *testing.T) {
+func TestNumberModuloExpression(t *testing.T) {
 	con := NewExecContext()
 	con.topath = "TestNumberMulExpression.xlsx"
-	con.code = `["A1"] = 9*3`
+	con.code = `["A1"] = 10%3;["A2"]=9.99%3.33`
 	run(con)
 
 	if con.exitCode != 0 {
@@ -678,7 +678,11 @@ func TestNumberMulExpression(t *testing.T) {
 	}
 
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
-	if v != "27" {
-		t.Fatalf("want cell value '27', but got %s", v)
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "0" {
+		t.Fatalf("want cell value '3', but got %s", v)
 	}
 }
