@@ -15,6 +15,7 @@ const (
 	VarAssignExpression
 	FuncCallExpression
 	NumberEQExpression
+	NumberNEExpression
 )
 
 type Expression struct {
@@ -67,6 +68,11 @@ func NewNumberEQExpression(left *Expression, right *Expression) *Expression {
 	return e
 }
 
+func NewNumberNEExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: NumberNEExpression, left: left, right: right}
+	return e
+}
+
 func (e *Expression) eval() Node {
 	switch e.exprType {
 	case NumberExpression:
@@ -109,6 +115,15 @@ func (e *Expression) eval() Node {
 		right := e.right.eval().asNumber()
 
 		if left == right {
+			return NewNumberExpression(1)
+		} else {
+			return NewNumberExpression(0)
+		}
+	case NumberNEExpression:
+		left := e.left.eval().asNumber()
+		right := e.right.eval().asNumber()
+
+		if left != right {
 			return NewNumberExpression(1)
 		} else {
 			return NewNumberExpression(0)

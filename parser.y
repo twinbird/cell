@@ -20,7 +20,7 @@ package main
 %token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ
 %token<ident> IDENT
 %left '='
-%left NUMEQ
+%left NUMEQ NUMNE
 
 %%
 program
@@ -43,6 +43,7 @@ expr
   | IDENT '=' expr { $$ = NewVarAssignExpression($1, $3) }
   | funcCall
   | expr NUMEQ expr { $$ = NewNumberEQExpression($1, $3) }
+  | expr NUMNE expr { $$ = NewNumberNEExpression($1, $3) }
 
 funcCall
   : IDENT '(' ')' { $$ = NewFuncCallExpression($1, NewEmptyArgList()) }
