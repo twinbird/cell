@@ -465,7 +465,7 @@ func TestNumberEQExpression(t *testing.T) {
 
 func TestNumberNEExpression(t *testing.T) {
 	con := NewExecContext()
-	con.topath = "TestNumberEQExpression.xlsx"
+	con.topath = "TestNumberNEExpression.xlsx"
 	con.code = `["A1"] = 1!=1;["A2"] = 2!=1;`
 	run(con)
 
@@ -479,6 +479,46 @@ func TestNumberNEExpression(t *testing.T) {
 	}
 	v = getCellValue(t, con.topath, "Sheet1", "A2")
 	if v != "1" {
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+}
+
+func TestNumberLTExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestNumberLTExpression.xlsx"
+	con.code = `["A1"] = 1<1;["A2"] = 0<1;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "0" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "1" {
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+}
+
+func TestNumberLEExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestNumberLEExpression.xlsx"
+	con.code = `["A1"] = 1<=1;["A2"] = 2<=1;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "0" {
 		t.Fatalf("want cell value '0', but got %s", v)
 	}
 }
