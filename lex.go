@@ -28,104 +28,83 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			return l.number(lval)
 		}
 
-		if l.peek() == ';' {
-			l.consume()
+		if l.consumeIf(';') {
 			return LF
 		}
 
-		if l.peek() == '\n' {
-			l.consume()
+		if l.consumeIf('\n') {
 			return LF
 		}
 
-		if l.peek() == '[' {
-			l.consume()
+		if l.consumeIf('[') {
 			return '['
 		}
 
-		if l.peek() == ']' {
-			l.consume()
+		if l.consumeIf(']') {
 			return ']'
 		}
 
-		if l.peek() == '+' {
-			l.consume()
+		if l.consumeIf('+') {
 			return '+'
 		}
 
-		if l.peek() == '-' {
-			l.consume()
+		if l.consumeIf('-') {
 			return '-'
 		}
 
-		if l.peek() == '*' {
-			l.consume()
+		if l.consumeIf('*') {
 			return '*'
 		}
 
-		if l.peek() == '/' {
-			l.consume()
+		if l.consumeIf('/') {
 			return '/'
 		}
 
-		if l.peek() == '%' {
-			l.consume()
+		if l.consumeIf('%') {
 			return '%'
 		}
 
-		if l.peek() == '=' {
-			l.consume()
-			if l.peek() == '=' {
-				l.consume()
+		if l.consumeIf('=') {
+			if l.consumeIf('=') {
 				return NUMEQ
 			}
 			return '='
 		}
 
-		if l.peek() == '!' {
-			l.consume()
-			if l.peek() == '=' {
-				l.consume()
+		if l.consumeIf('!') {
+			if l.consumeIf('=') {
 				return NUMNE
 			}
 			return '!'
 		}
 
-		if l.peek() == '<' {
-			l.consume()
-			if l.peek() == '=' {
-				l.consume()
+		if l.consumeIf('<') {
+			if l.consumeIf('=') {
 				return NUMLE
 			}
 			return '<'
 		}
 
-		if l.peek() == '>' {
-			l.consume()
-			if l.peek() == '=' {
-				l.consume()
+		if l.consumeIf('>') {
+			if l.consumeIf('=') {
 				return NUMGE
 			}
 			return '>'
 		}
 
-		if l.peek() == '.' {
-			l.consume()
+		if l.consumeIf('.') {
 			return '.'
 		}
 
-		if l.peek() == '(' {
-			l.consume()
+		if l.consumeIf('(') {
 			return '('
 		}
 
-		if l.peek() == ')' {
-			l.consume()
+		if l.consumeIf(')') {
 			return ')'
 		}
 
-		if l.peek() == ',' {
-			l.consume()
+		if l.consumeIf(',') {
 			return ','
 		}
 
@@ -163,6 +142,14 @@ func (l *Lexer) consume() rune {
 	c := l.src[l.current]
 	l.current++
 	return c
+}
+
+func (l *Lexer) consumeIf(r rune) bool {
+	if l.peek() == r {
+		l.consume()
+		return true
+	}
+	return false
 }
 
 func isDigit(c rune) bool {
