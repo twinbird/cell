@@ -5,6 +5,7 @@ y.go: parser.y
 	goyacc parser.y
 
 test: cell *_test.go
+	rm -f *.xlsx
 	go test
 	./test.sh
 
