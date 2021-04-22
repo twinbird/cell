@@ -75,6 +75,15 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			return '<'
 		}
 
+		if l.peek() == '>' {
+			l.consume()
+			if l.peek() == '=' {
+				l.consume()
+				return NUMGE
+			}
+			return '>'
+		}
+
 		if l.peek() == '(' {
 			l.consume()
 			return '('

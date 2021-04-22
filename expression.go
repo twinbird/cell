@@ -18,6 +18,8 @@ const (
 	NumberNEExpression
 	NumberLTExpression
 	NumberLEExpression
+	NumberGTExpression
+	NumberGEExpression
 )
 
 type Expression struct {
@@ -82,6 +84,16 @@ func NewNumberLTExpression(left *Expression, right *Expression) *Expression {
 
 func NewNumberLEExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: NumberLEExpression, left: left, right: right}
+	return e
+}
+
+func NewNumberGTExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: NumberGTExpression, left: left, right: right}
+	return e
+}
+
+func NewNumberGEExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: NumberGEExpression, left: left, right: right}
 	return e
 }
 
@@ -154,6 +166,24 @@ func (e *Expression) eval() Node {
 		right := e.right.eval().asNumber()
 
 		if left <= right {
+			return NewNumberExpression(1)
+		} else {
+			return NewNumberExpression(0)
+		}
+	case NumberGTExpression:
+		left := e.left.eval().asNumber()
+		right := e.right.eval().asNumber()
+
+		if left > right {
+			return NewNumberExpression(1)
+		} else {
+			return NewNumberExpression(0)
+		}
+	case NumberGEExpression:
+		left := e.left.eval().asNumber()
+		right := e.right.eval().asNumber()
+
+		if left >= right {
 			return NewNumberExpression(1)
 		} else {
 			return NewNumberExpression(0)
