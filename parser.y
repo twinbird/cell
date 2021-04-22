@@ -17,10 +17,10 @@ package main
 %type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-'
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/'
 %token<ident> IDENT
 %left '='
-%left NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-'
+%left NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/'
 
 %%
 program
@@ -53,6 +53,7 @@ expr
   | expr '.' expr { $$ = NewStringConcatExpression($1, $3) }
   | expr '+' expr { $$ = NewNumberAddExpression($1, $3) }
   | expr '-' expr { $$ = NewNumberSubExpression($1, $3) }
+  | expr '/' expr { $$ = NewNumberDivExpression($1, $3) }
 
 funcCall
   : IDENT '(' ')' { $$ = NewFuncCallExpression($1, NewEmptyArgList()) }
