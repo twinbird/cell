@@ -25,6 +25,7 @@ const (
 	StringConcatExpression
 	NumberAddExpression
 	NumberSubExpression
+	NumberMulExpression
 	NumberDivExpression
 )
 
@@ -125,6 +126,11 @@ func NewNumberAddExpression(left *Expression, right *Expression) *Expression {
 
 func NewNumberSubExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: NumberSubExpression, left: left, right: right}
+	return e
+}
+
+func NewNumberMulExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: NumberMulExpression, left: left, right: right}
 	return e
 }
 
@@ -257,6 +263,11 @@ func (e *Expression) eval() Node {
 		right := e.right.eval().asNumber()
 
 		return NewNumberExpression(left - right)
+	case NumberMulExpression:
+		left := e.left.eval().asNumber()
+		right := e.right.eval().asNumber()
+
+		return NewNumberExpression(left * right)
 	case NumberDivExpression:
 		left := e.left.eval().asNumber()
 		right := e.right.eval().asNumber()

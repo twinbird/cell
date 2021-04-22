@@ -666,3 +666,19 @@ func TestNumberDivExpression(t *testing.T) {
 		t.Fatalf("want cell value '3', but got %s", v)
 	}
 }
+
+func TestNumberMulExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestNumberMulExpression.xlsx"
+	con.code = `["A1"] = 9*3`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "27" {
+		t.Fatalf("want cell value '27', but got %s", v)
+	}
+}
