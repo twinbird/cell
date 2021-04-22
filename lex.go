@@ -50,6 +50,10 @@ func (l *Lexer) Lex(lval *yySymType) int {
 
 		if l.peek() == '=' {
 			l.consume()
+			if l.peek() == '=' {
+				l.consume()
+				return NUMEQ
+			}
 			return '='
 		}
 

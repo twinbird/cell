@@ -14,6 +14,7 @@ const (
 	VarReferExpression
 	VarAssignExpression
 	FuncCallExpression
+	NumberEQExpression
 )
 
 type Expression struct {
@@ -61,6 +62,11 @@ func NewFuncCallExpression(ident string, args *ArgList) *Expression {
 	return e
 }
 
+func NewNumberEQExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: NumberEQExpression, left: left, right: right}
+	return e
+}
+
 func (e *Expression) eval() Node {
 	switch e.exprType {
 	case NumberExpression:
@@ -98,6 +104,15 @@ func (e *Expression) eval() Node {
 			fatalError("function '%s' is not found.", e.ident)
 		}
 		return f.call(e.args)
+	case NumberEQExpression:
+		left := e.left.eval().asNumber()
+		right := e.right.eval().asNumber()
+
+		if left == right {
+			return NewNumberExpression(1)
+		} else {
+			return NewNumberExpression(0)
+		}
 	}
 	panic("evaluate unknown type.")
 }

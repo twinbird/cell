@@ -17,8 +17,10 @@ package main
 %type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ','
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ
 %token<ident> IDENT
+%left '='
+%left NUMEQ
 
 %%
 program
@@ -40,6 +42,7 @@ expr
   | IDENT { $$ = NewVarReferExpression($1) }
   | IDENT '=' expr { $$ = NewVarAssignExpression($1, $3) }
   | funcCall
+  | expr NUMEQ expr { $$ = NewNumberEQExpression($1, $3) }
 
 funcCall
   : IDENT '(' ')' { $$ = NewFuncCallExpression($1, NewEmptyArgList()) }
