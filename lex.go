@@ -104,7 +104,7 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		}
 
 		if isIdent(l.peek()) {
-			return l.ident(lval)
+			return l.word(lval)
 		}
 	}
 	return -1
@@ -143,11 +143,18 @@ func isIdent(c rune) bool {
 	return unicode.IsLetter(c) || c == '_' || unicode.IsDigit(c) || c == '@' || c == '$'
 }
 
-func (l *Lexer) ident(lval *yySymType) int {
+func (l *Lexer) word(lval *yySymType) int {
 	s := string(l.consume())
 
 	for isIdent(l.peek()) {
 		s += string(l.consume())
+	}
+
+	if s == "eq" {
+		return STREQ
+	}
+	if s == "ne" {
+		return STRNE
 	}
 
 	lval.ident = s
