@@ -602,3 +602,19 @@ func TestStringNEExpression(t *testing.T) {
 		t.Fatalf("want cell value '1', but got %s", v)
 	}
 }
+
+func TestStringConcatExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestStringConcatExpression.xlsx"
+	con.code = `["A1"] = "hello"." world"`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "hello world" {
+		t.Fatalf("want cell value 'hello world', but got %s", v)
+	}
+}
