@@ -24,6 +24,7 @@ const (
 	StringNEExpression
 	StringConcatExpression
 	NumberAddExpression
+	NumberSubExpression
 )
 
 type Expression struct {
@@ -118,6 +119,11 @@ func NewStringConcatExpression(left *Expression, right *Expression) *Expression 
 
 func NewNumberAddExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: NumberAddExpression, left: left, right: right}
+	return e
+}
+
+func NewNumberSubExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: NumberSubExpression, left: left, right: right}
 	return e
 }
 
@@ -240,6 +246,11 @@ func (e *Expression) eval() Node {
 		right := e.right.eval().asNumber()
 
 		return NewNumberExpression(left + right)
+	case NumberSubExpression:
+		left := e.left.eval().asNumber()
+		right := e.right.eval().asNumber()
+
+		return NewNumberExpression(left - right)
 	}
 	panic("evaluate unknown type.")
 }

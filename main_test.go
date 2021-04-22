@@ -634,3 +634,19 @@ func TestNumberAddExpression(t *testing.T) {
 		t.Fatalf("want cell value '4', but got %s", v)
 	}
 }
+
+func TestNumberSubExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestNumberSubExpression.xlsx"
+	con.code = `["A1"] = 1-3`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "-2" {
+		t.Fatalf("want cell value '-2', but got %s", v)
+	}
+}
