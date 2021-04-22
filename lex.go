@@ -48,6 +48,11 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			return ']'
 		}
 
+		if l.peek() == '+' {
+			l.consume()
+			return '+'
+		}
+
 		if l.peek() == '=' {
 			l.consume()
 			if l.peek() == '=' {
