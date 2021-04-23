@@ -13,6 +13,7 @@ const (
 	CellAssignExpression
 	VarReferExpression
 	VarAssignExpression
+	AddAssignExpression
 	FuncCallExpression
 	NumberEQExpression
 	NumberNEExpression
@@ -71,6 +72,11 @@ func NewVarReferExpression(ident string) *Expression {
 
 func NewVarAssignExpression(ident string, expr *Expression) *Expression {
 	e := &Expression{exprType: VarAssignExpression, ident: ident, right: expr}
+	return e
+}
+
+func NewAddAssignExpression(ident string, expr *Expression) *Expression {
+	e := &Expression{exprType: AddAssignExpression, ident: ident, right: expr}
 	return e
 }
 
@@ -198,6 +204,12 @@ func (e *Expression) eval() Node {
 		return execContext.scope.get(e.ident)
 	case VarAssignExpression:
 		v := e.right.eval()
+		execContext.scope.set(e.ident, v)
+		return v
+	case AddAssignExpression:
+		r := e.right.eval()
+		l := execContext.scope.get(e.ident)
+		v := NewNumberExpression(l.asNumber() + r.asNumber())
 		execContext.scope.set(e.ident, v)
 		return v
 	case FuncCallExpression:
@@ -406,6 +418,8 @@ func (e *Expression) String() string {
 		et = "VarReferExpression"
 	case VarAssignExpression:
 		et = "VarAssignExpression"
+	case AddAssignExpression:
+		et = "AddAssignExpression"
 	case FuncCallExpression:
 		et = "FuncCallExpression"
 	case NumberEQExpression:

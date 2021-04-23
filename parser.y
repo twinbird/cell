@@ -17,9 +17,9 @@ package main
 %type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' AND OR '!'
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' AND OR '!' ADD_ASSIGN
 %token<ident> IDENT
-%left '='
+%left '=' ADD_ASSIGN
 %left AND OR '!'
 %left NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE 
 %left '.' '+' '-'
@@ -46,6 +46,7 @@ expr
   | '[' expr ']' '=' expr { $$ = NewCellAssignExpression($2, $5) }
   | IDENT { $$ = NewVarReferExpression($1) }
   | IDENT '=' expr { $$ = NewVarAssignExpression($1, $3) }
+  | IDENT ADD_ASSIGN expr { $$ = NewAddAssignExpression($1, $3) }
   | funcCall
   | expr NUMEQ expr { $$ = NewNumberEQExpression($1, $3) }
   | expr NUMNE expr { $$ = NewNumberNEExpression($1, $3) }
