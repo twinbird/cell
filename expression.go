@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 )
 
@@ -33,6 +34,7 @@ const (
 	NumberMulExpression
 	NumberDivExpression
 	NumberModuloExpression
+	NumberPowerExpression
 	LogicalAndExpression
 	LogicalOrExpression
 	LogicalNotExpression
@@ -176,6 +178,11 @@ func NewNumberDivExpression(left *Expression, right *Expression) *Expression {
 
 func NewNumberModuloExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: NumberModuloExpression, left: left, right: right}
+	return e
+}
+
+func NewNumberPowerExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: NumberPowerExpression, left: left, right: right}
 	return e
 }
 
@@ -368,6 +375,11 @@ func (e *Expression) eval() Node {
 		right := e.right.eval().asNumber()
 
 		return NewNumberExpression(float64(int(left) % int(right)))
+	case NumberPowerExpression:
+		left := e.left.eval().asNumber()
+		right := e.right.eval().asNumber()
+
+		return NewNumberExpression(math.Pow(left, right))
 	case LogicalAndExpression:
 		left := e.left.eval().isTruthy()
 		if !left {
@@ -506,6 +518,8 @@ func (e *Expression) String() string {
 		et = "NumberDivExpression"
 	case NumberModuloExpression:
 		et = "NumberModuloExpression"
+	case NumberPowerExpression:
+		et = "NumberPowerExpression"
 	case LogicalAndExpression:
 		et = "LogicalAndExpression"
 	case LogicalOrExpression:

@@ -17,7 +17,7 @@ package main
 %type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %token<ident> IDENT
 %left '=' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 %left AND OR '!'
@@ -25,6 +25,7 @@ package main
 %left '.' '+' '-'
 %left '/' '*' '%'
 %right MINUS
+%right POW
 %left '(' ')'
 
 %%
@@ -66,6 +67,7 @@ expr
   | expr '*' expr { $$ = NewNumberMulExpression($1, $3) }
   | expr '/' expr { $$ = NewNumberDivExpression($1, $3) }
   | expr '%' expr { $$ = NewNumberModuloExpression($1, $3) }
+  | expr POW expr { $$ = NewNumberPowerExpression($1, $3) }
   | expr AND expr { $$ = NewLogicalAndExpression($1, $3) }
   | expr OR expr { $$ = NewLogicalOrExpression($1, $3) }
   | '!' expr { $$ = NewLogicalNotExpression($2) }

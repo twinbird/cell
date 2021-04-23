@@ -59,6 +59,9 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		}
 
 		if l.consumeIf('*') {
+			if l.consumeIf('*') {
+				return POW
+			}
 			if l.consumeIf('=') {
 				return MUL_ASSIGN
 			}
