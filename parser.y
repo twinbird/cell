@@ -17,9 +17,9 @@ package main
 %type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN
 %token<ident> IDENT
-%left '=' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN
+%left '=' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN
 %left AND OR '!'
 %left NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE 
 %left '.' '+' '-'
@@ -49,6 +49,7 @@ expr
   | IDENT ADD_ASSIGN expr { $$ = NewAddAssignExpression($1, $3) }
   | IDENT SUB_ASSIGN expr { $$ = NewSubAssignExpression($1, $3) }
   | IDENT MUL_ASSIGN expr { $$ = NewMulAssignExpression($1, $3) }
+  | IDENT DIV_ASSIGN expr { $$ = NewDivAssignExpression($1, $3) }
   | funcCall
   | expr NUMEQ expr { $$ = NewNumberEQExpression($1, $3) }
   | expr NUMNE expr { $$ = NewNumberNEExpression($1, $3) }
