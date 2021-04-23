@@ -29,6 +29,7 @@ const (
 	NumberDivExpression
 	NumberModuloExpression
 	LogicalAndExpression
+	LogicalOrExpression
 )
 
 type Expression struct {
@@ -148,6 +149,11 @@ func NewNumberModuloExpression(left *Expression, right *Expression) *Expression 
 
 func NewLogicalAndExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: LogicalAndExpression, left: left, right: right}
+	return e
+}
+
+func NewLogicalOrExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: LogicalOrExpression, left: left, right: right}
 	return e
 }
 
@@ -300,6 +306,16 @@ func (e *Expression) eval() Node {
 			return NewNumberExpression(0)
 		}
 		return NewNumberExpression(1)
+	case LogicalOrExpression:
+		left := e.left.eval().isTruthy()
+		if left {
+			return NewNumberExpression(1)
+		}
+		right := e.right.eval().isTruthy()
+		if right {
+			return NewNumberExpression(1)
+		}
+		return NewNumberExpression(0)
 	}
 	panic("evaluate unknown type.")
 }

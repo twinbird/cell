@@ -99,6 +99,13 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			panic("invalid char &")
 		}
 
+		if l.consumeIf('|') {
+			if l.consumeIf('|') {
+				return OR
+			}
+			panic("invalid char |")
+		}
+
 		if l.consumeIf('.') {
 			return '.'
 		}

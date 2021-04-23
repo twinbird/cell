@@ -17,11 +17,11 @@ package main
 %type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' AND
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' AND OR
 %token<ident> IDENT
 %left '='
 %left NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%'
-%left AND
+%left AND OR
 
 %%
 program
@@ -58,6 +58,7 @@ expr
   | expr '/' expr { $$ = NewNumberDivExpression($1, $3) }
   | expr '%' expr { $$ = NewNumberModuloExpression($1, $3) }
   | expr AND expr { $$ = NewLogicalAndExpression($1, $3) }
+  | expr OR expr { $$ = NewLogicalOrExpression($1, $3) }
 
 funcCall
   : IDENT '(' ')' { $$ = NewFuncCallExpression($1, NewEmptyArgList()) }
