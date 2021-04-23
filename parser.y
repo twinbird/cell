@@ -22,6 +22,7 @@ package main
 %left '='
 %left NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%'
 %left AND OR '!'
+%left '(' ')'
 
 %%
 program
@@ -60,6 +61,7 @@ expr
   | expr AND expr { $$ = NewLogicalAndExpression($1, $3) }
   | expr OR expr { $$ = NewLogicalOrExpression($1, $3) }
   | '!' expr { $$ = NewLogicalNotExpression($2) }
+  | '(' expr ')' { $$ = $2 }
 
 funcCall
   : IDENT '(' ')' { $$ = NewFuncCallExpression($1, NewEmptyArgList()) }
