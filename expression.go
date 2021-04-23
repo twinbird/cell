@@ -399,6 +399,40 @@ func (e *Expression) String() string {
 		et = "VarAssignExpression"
 	case FuncCallExpression:
 		et = "FuncCallExpression"
+	case NumberEQExpression:
+		et = "NumberEQExpression"
+	case NumberNEExpression:
+		et = "NumberNEExpression"
+	case NumberLTExpression:
+		et = "NumberLTExpression"
+	case NumberLEExpression:
+		et = "NumberLEExpression"
+	case NumberGTExpression:
+		et = "NumberGTExpression"
+	case NumberGEExpression:
+		et = "NumberGEExpression"
+	case StringEQExpression:
+		et = "StringEQExpression"
+	case StringNEExpression:
+		et = "StringNEExpression"
+	case StringConcatExpression:
+		et = "StringConcatExpression"
+	case NumberAddExpression:
+		et = "NumberAddExpression"
+	case NumberSubExpression:
+		et = "NumberSubExpression"
+	case NumberMulExpression:
+		et = "NumberMulExpression"
+	case NumberDivExpression:
+		et = "NumberDivExpression"
+	case NumberModuloExpression:
+		et = "NumberModuloExpression"
+	case LogicalAndExpression:
+		et = "LogicalAndExpression"
+	case LogicalOrExpression:
+		et = "LogicalOrExpression"
+	case LogicalNotExpression:
+		et = "LogicalNotExpression"
 	}
 	return fmt.Sprintf("[Type: Expression] expr type: %s\n", et)
 }
