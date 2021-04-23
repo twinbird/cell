@@ -19,6 +19,7 @@ const (
 	MulAssignExpression
 	DivAssignExpression
 	ModAssignExpression
+	PowAssignExpression
 	FuncCallExpression
 	NumberEQExpression
 	NumberNEExpression
@@ -103,6 +104,11 @@ func NewDivAssignExpression(ident string, expr *Expression) *Expression {
 
 func NewModAssignExpression(ident string, expr *Expression) *Expression {
 	e := &Expression{exprType: ModAssignExpression, ident: ident, right: expr}
+	return e
+}
+
+func NewPowAssignExpression(ident string, expr *Expression) *Expression {
+	e := &Expression{exprType: PowAssignExpression, ident: ident, right: expr}
 	return e
 }
 
@@ -265,6 +271,12 @@ func (e *Expression) eval() Node {
 		r := e.right.eval()
 		l := execContext.scope.get(e.ident)
 		v := NewNumberExpression(float64(int(l.asNumber()) % int(r.asNumber())))
+		execContext.scope.set(e.ident, v)
+		return v
+	case PowAssignExpression:
+		r := e.right.eval()
+		l := execContext.scope.get(e.ident)
+		v := NewNumberExpression(math.Pow(l.asNumber(), r.asNumber()))
 		execContext.scope.set(e.ident, v)
 		return v
 	case FuncCallExpression:
@@ -488,6 +500,8 @@ func (e *Expression) String() string {
 		et = "DivAssignExpression"
 	case ModAssignExpression:
 		et = "ModAssignExpression"
+	case PowAssignExpression:
+		et = "PowAssignExpression"
 	case FuncCallExpression:
 		et = "FuncCallExpression"
 	case NumberEQExpression:
