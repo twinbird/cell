@@ -24,6 +24,10 @@ func (l *Lexer) Lex(lval *yySymType) int {
 	for !l.isEof() {
 		l.skipSpace()
 
+		if l.consumeIf('#') {
+			l.skipComment()
+		}
+
 		if isDigit(l.peek()) {
 			return l.number(lval)
 		}
@@ -165,6 +169,12 @@ func (l *Lexer) isEof() bool {
 
 func (l *Lexer) skipSpace() {
 	for l.peek() == ' ' || l.peek() == '\t' {
+		l.consume()
+	}
+}
+
+func (l *Lexer) skipComment() {
+	for l.peek() != '\n' {
 		l.consume()
 	}
 }

@@ -946,3 +946,20 @@ func TestPowAssignExpression(t *testing.T) {
 		t.Fatalf("want cell value '0', but got %s", v)
 	}
 }
+
+func TestComment(t *testing.T) {
+	out := new(bytes.Buffer)
+	con := NewExecContext()
+	con.out = out
+	con.code = `
+	# this is a comment
+	a=10 # and also 
+	# puts(a) <-no output
+	puts(a)
+	`
+	run(con)
+
+	if out.String() != "10\n" {
+		t.Fatalf("comments are not working")
+	}
+}
