@@ -14,6 +14,7 @@ const (
 	VarReferExpression
 	VarAssignExpression
 	AddAssignExpression
+	SubAssignExpression
 	FuncCallExpression
 	NumberEQExpression
 	NumberNEExpression
@@ -77,6 +78,11 @@ func NewVarAssignExpression(ident string, expr *Expression) *Expression {
 
 func NewAddAssignExpression(ident string, expr *Expression) *Expression {
 	e := &Expression{exprType: AddAssignExpression, ident: ident, right: expr}
+	return e
+}
+
+func NewSubAssignExpression(ident string, expr *Expression) *Expression {
+	e := &Expression{exprType: SubAssignExpression, ident: ident, right: expr}
 	return e
 }
 
@@ -210,6 +216,12 @@ func (e *Expression) eval() Node {
 		r := e.right.eval()
 		l := execContext.scope.get(e.ident)
 		v := NewNumberExpression(l.asNumber() + r.asNumber())
+		execContext.scope.set(e.ident, v)
+		return v
+	case SubAssignExpression:
+		r := e.right.eval()
+		l := execContext.scope.get(e.ident)
+		v := NewNumberExpression(l.asNumber() - r.asNumber())
 		execContext.scope.set(e.ident, v)
 		return v
 	case FuncCallExpression:
