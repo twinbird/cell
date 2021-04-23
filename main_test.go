@@ -846,3 +846,23 @@ func TestSubAssignExpression(t *testing.T) {
 		t.Fatalf("want cell value '-10', but got %s", v)
 	}
 }
+
+func TestMulAssignExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestMulAssignExpression.xlsx"
+	con.code = `a = 10; a *= 5; ["A1"]=a; b*=10;["A2"]=b;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "50" {
+		t.Fatalf("want cell value '50', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "0" {
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+}
