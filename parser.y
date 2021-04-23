@@ -20,8 +20,10 @@ package main
 %token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' AND OR '!'
 %token<ident> IDENT
 %left '='
-%left NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%'
 %left AND OR '!'
+%left NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE 
+%left '.' '+' '-'
+%left '/' '*' '%'
 %left '(' ')'
 
 %%
