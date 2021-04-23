@@ -886,3 +886,23 @@ func TestDivAssignExpression(t *testing.T) {
 		t.Fatalf("want cell value '0', but got %s", v)
 	}
 }
+
+func TestModAssignExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestModAssignExpression.xlsx"
+	con.code = `a = 11; a %= 5; ["A1"]=a; b%=10;["A2"]=b;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "0" {
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+}
