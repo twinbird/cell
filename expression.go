@@ -28,6 +28,7 @@ const (
 	NumberMulExpression
 	NumberDivExpression
 	NumberModuloExpression
+	LogicalAndExpression
 )
 
 type Expression struct {
@@ -142,6 +143,11 @@ func NewNumberDivExpression(left *Expression, right *Expression) *Expression {
 
 func NewNumberModuloExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: NumberModuloExpression, left: left, right: right}
+	return e
+}
+
+func NewLogicalAndExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: LogicalAndExpression, left: left, right: right}
 	return e
 }
 
@@ -284,6 +290,16 @@ func (e *Expression) eval() Node {
 		right := e.right.eval().asNumber()
 
 		return NewNumberExpression(float64(int(left) % int(right)))
+	case LogicalAndExpression:
+		left := e.left.eval().isTruthy()
+		if !left {
+			return NewNumberExpression(0)
+		}
+		right := e.right.eval().isTruthy()
+		if !right {
+			return NewNumberExpression(0)
+		}
+		return NewNumberExpression(1)
 	}
 	panic("evaluate unknown type.")
 }
@@ -314,6 +330,24 @@ func (e *Expression) asString() string {
 		return fmt.Sprintf("%g", e.number)
 	}
 	return e.asString()
+}
+
+func (e *Expression) isTruthy() bool {
+	if e.exprType == StringExpression {
+		if e.str == "" {
+			return false
+		} else {
+			return true
+		}
+	}
+	if e.exprType == NumberExpression {
+		if e.number == 0 {
+			return false
+		} else {
+			return true
+		}
+	}
+	return e.eval().isTruthy()
 }
 
 func (e *Expression) nodeType() int {

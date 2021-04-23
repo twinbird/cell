@@ -15,6 +15,7 @@ type Node interface {
 	asNumber() float64
 	asString() string
 	nodeType() int
+	isTruthy() bool
 
 	// for debugging
 	String() string

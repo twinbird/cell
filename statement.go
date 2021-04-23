@@ -40,6 +40,10 @@ func (stmts *Statement) asString() string {
 	panic("statement can not evaluate as a string")
 }
 
+func (stmts *Statement) isTruthy() bool {
+	panic("statement can not evaluate as a truthy")
+}
+
 func (stmts *Statement) nodeType() int {
 	return NodeTypeStatement
 }

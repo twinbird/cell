@@ -683,6 +683,30 @@ func TestNumberModuloExpression(t *testing.T) {
 	}
 	v = getCellValue(t, con.topath, "Sheet1", "A2")
 	if v != "0" {
-		t.Fatalf("want cell value '3', but got %s", v)
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+}
+
+func TestLogicalAndExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestLogicalAndExpression.xlsx"
+	con.code = `["A1"] = 1 && 0;["A2"]="" && 1;["A3"]="a"&&1`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "0" {
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "0" {
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A3")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
 	}
 }
