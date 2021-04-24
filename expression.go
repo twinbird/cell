@@ -35,6 +35,7 @@ const (
 	NumberMulExpression
 	NumberDivExpression
 	NumberModuloExpression
+	StringMatchExpression
 	NumberPowerExpression
 	LogicalAndExpression
 	LogicalOrExpression
@@ -184,6 +185,11 @@ func NewNumberDivExpression(left *Expression, right *Expression) *Expression {
 
 func NewNumberModuloExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: NumberModuloExpression, left: left, right: right}
+	return e
+}
+
+func NewStringMatchExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: StringMatchExpression, left: left, right: right}
 	return e
 }
 
@@ -387,6 +393,16 @@ func (e *Expression) eval() Node {
 		right := e.right.eval().asNumber()
 
 		return NewNumberExpression(float64(int(left) % int(right)))
+	case StringMatchExpression:
+		left := e.left.eval().asString()
+		right := e.right.eval().asString()
+		b := execContext.scope.setAmpersandSpecialVars(left, right)
+
+		if b {
+			return NewNumberExpression(1)
+		} else {
+			return NewNumberExpression(0)
+		}
 	case NumberPowerExpression:
 		left := e.left.eval().asNumber()
 		right := e.right.eval().asNumber()

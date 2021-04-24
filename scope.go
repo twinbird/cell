@@ -99,3 +99,18 @@ func (s *Scope) makeFSSplitReg(fs string) *regexp.Regexp {
 	}
 	return reg
 }
+
+func (s *Scope) setAmpersandSpecialVars(str string, reg string) bool {
+	r := regexp.MustCompile(reg)
+	if !r.MatchString(str) {
+		return false
+	}
+	g := r.FindStringSubmatch(str)
+
+	for i, v := range g {
+		idx := strconv.Itoa(i)
+		execContext.scope.set("$_"+idx, NewStringExpression(v))
+	}
+
+	return true
+}
