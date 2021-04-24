@@ -1063,3 +1063,23 @@ func TestIfStatement(t *testing.T) {
 		t.Fatalf("if then statement could not working")
 	}
 }
+
+func TestIfElseStatement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestIfElseStatement.xlsx"
+	con.code = `["A1"]=0;if(0)["A1"]=2;else["A1"]=1;if(1)["A2"]=2;else["A2"]=3;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "1" {
+		t.Fatalf("else statement could not working")
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "2" {
+		t.Fatalf("else then statement could not working")
+	}
+}

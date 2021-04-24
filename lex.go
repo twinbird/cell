@@ -222,9 +222,15 @@ func (l *Lexer) word(lval *yySymType) int {
 	if s == "if" {
 		return IF
 	}
+
+	if s == "else" {
+		return ELSE
+	}
+
 	if s == "eq" {
 		return STREQ
 	}
+
 	if s == "ne" {
 		return STRNE
 	}

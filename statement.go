@@ -6,12 +6,14 @@ const (
 	BlankStatement = iota
 	ExpressionStatement
 	IfStatement
+	IfElseStatement
 )
 
 type Statement struct {
 	stmtType int
 	expr     *Expression
 	thenStmt *Statement
+	elseStmt *Statement
 }
 
 func NewBlankStatement() *Statement {
@@ -29,6 +31,11 @@ func NewIfStatement(expr *Expression, then *Statement) *Statement {
 	return s
 }
 
+func NewIfElseStatement(expr *Expression, then *Statement, els *Statement) *Statement {
+	s := &Statement{stmtType: IfElseStatement, expr: expr, thenStmt: then, elseStmt: els}
+	return s
+}
+
 func (s *Statement) eval() Node {
 	switch s.stmtType {
 	case BlankStatement:
@@ -38,6 +45,13 @@ func (s *Statement) eval() Node {
 	case IfStatement:
 		if s.expr.eval().isTruthy() {
 			s.thenStmt.eval()
+		}
+		return NewBlankStatement()
+	case IfElseStatement:
+		if s.expr.eval().isTruthy() {
+			s.thenStmt.eval()
+		} else {
+			s.elseStmt.eval()
 		}
 		return NewBlankStatement()
 	}
