@@ -100,6 +100,9 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			if l.consumeIf('=') {
 				return NUMNE
 			}
+			if l.consumeIf('~') {
+				return NOT_MATCH
+			}
 			return '!'
 		}
 

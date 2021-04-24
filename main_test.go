@@ -986,8 +986,48 @@ func TestMatchExpression(t *testing.T) {
 
 func TestMatchSpecialVar(t *testing.T) {
 	con := NewExecContext()
-	con.topath = "TestMatchExpression.xlsx"
+	con.topath = "TestMatchSpecialVar.xlsx"
 	con.code = `"Hello, world" ~ "Hell(o)?";["A1"] = $_0;["A2"]=$_1;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "Hello" {
+		t.Fatalf("special variable $_0 dont working. want '%s', but got '%s'", "Hello", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "o" {
+		t.Fatalf("special variable $_0 dont working. want '%s', but got '%s'", "o", v)
+	}
+}
+
+func TestNotMatchExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestNotMatchExpression.xlsx"
+	con.code = `["A1"] = "Hello, world" !~ "Hell(o)?";["A2"]="Hello, world" !~ "foo"`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "0" {
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+}
+
+func TestMatchSpecialVarWhenNotMatch(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestMatchSpecialVar.xlsx"
+	con.code = `"Hello, world" !~ "Hell(o)?";["A1"] = $_0;["A2"]=$_1;`
 	run(con)
 
 	if con.exitCode != 0 {
