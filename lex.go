@@ -219,6 +219,9 @@ func (l *Lexer) word(lval *yySymType) int {
 		s += string(l.consume())
 	}
 
+	if s == "if" {
+		return IF
+	}
 	if s == "eq" {
 		return STREQ
 	}

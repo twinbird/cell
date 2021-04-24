@@ -5,11 +5,13 @@ import "fmt"
 const (
 	BlankStatement = iota
 	ExpressionStatement
+	IfStatement
 )
 
 type Statement struct {
 	stmtType int
 	expr     *Expression
+	thenStmt *Statement
 }
 
 func NewBlankStatement() *Statement {
@@ -22,12 +24,22 @@ func NewExpressionStatement(expr *Expression) *Statement {
 	return s
 }
 
+func NewIfStatement(expr *Expression, then *Statement) *Statement {
+	s := &Statement{stmtType: IfStatement, expr: expr, thenStmt: then}
+	return s
+}
+
 func (s *Statement) eval() Node {
 	switch s.stmtType {
 	case BlankStatement:
 		return s
 	case ExpressionStatement:
 		return s.expr.eval()
+	case IfStatement:
+		if s.expr.eval().isTruthy() {
+			s.thenStmt.eval()
+		}
+		return NewBlankStatement()
 	}
 	panic("evaluate unknown type.")
 }

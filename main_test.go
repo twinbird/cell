@@ -1026,7 +1026,7 @@ func TestNotMatchExpression(t *testing.T) {
 
 func TestMatchSpecialVarWhenNotMatch(t *testing.T) {
 	con := NewExecContext()
-	con.topath = "TestMatchSpecialVar.xlsx"
+	con.topath = "TestMatchSpecialVarWhenNotMatch.xlsx"
 	con.code = `"Hello, world" !~ "Hell(o)?";["A1"] = $_0;["A2"]=$_1;`
 	run(con)
 
@@ -1036,10 +1036,30 @@ func TestMatchSpecialVarWhenNotMatch(t *testing.T) {
 
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
 	if v != "Hello" {
-		t.Fatalf("special variable $_0 dont working. want '%s', but got '%s'", "Hello", v)
+		t.Fatalf("special variable $_0 could not working. want '%s', but got '%s'", "Hello", v)
 	}
 	v = getCellValue(t, con.topath, "Sheet1", "A2")
 	if v != "o" {
-		t.Fatalf("special variable $_0 dont working. want '%s', but got '%s'", "o", v)
+		t.Fatalf("special variable $_0 could not working. want '%s', but got '%s'", "o", v)
+	}
+}
+
+func TestIfStatement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestIfStatement.xlsx"
+	con.code = `["A1"]=1;if(0)["A1"]=2;["A2"]=1;if(1)["A2"]=2;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "1" {
+		t.Fatalf("if statement could not working")
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "2" {
+		t.Fatalf("if then statement could not working")
 	}
 }

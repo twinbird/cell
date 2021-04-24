@@ -17,7 +17,7 @@ package main
 %type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF
 %token<ident> IDENT
 %left '=' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN
 %left AND OR '!'
@@ -28,6 +28,7 @@ package main
 %right MINUS
 %right POW
 %left '(' ')'
+%nonassoc THEN
 
 %%
 program
@@ -40,6 +41,7 @@ stmts
 stmt
   : LF { $$ = NewBlankStatement() }
   | expr LF { $$ = NewExpressionStatement($1) }
+  | IF '(' expr ')' stmt %prec THEN { $$ = NewIfStatement($3, $5) }
 
 expr
   : NUMBER { $$ = NewNumberExpression($1) }
