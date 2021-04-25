@@ -1135,3 +1135,18 @@ func TestWhileStatement(t *testing.T) {
 		t.Fatalf("while statement could not working. want '45', but got %v", v)
 	}
 }
+
+func TestCalculatedCellAssignToString(t *testing.T) {
+	con := NewExecContext()
+	con.frompath = "test/values.xlsx"
+	con.topath = "TestCalculatedCellAssignToString.xlsx"
+	con.code = `["A"."1"] = "abc"`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "abc" {
+		t.Fatalf("want cell value 'abc', but got %s", v)
+	}
+}

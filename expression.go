@@ -237,7 +237,7 @@ func (e *Expression) eval() Node {
 	case StringExpression:
 		return e
 	case CellReferExpression:
-		v := execContext.spreadsheet.getCellValue(e.left.asString())
+		v := execContext.spreadsheet.getCellValue(e.left.eval().asString())
 
 		f, ok := maybeNumber(v)
 		if !ok {
@@ -249,9 +249,9 @@ func (e *Expression) eval() Node {
 
 		_, isnum := maybeNumber(v.asString())
 		if isnum {
-			execContext.spreadsheet.setCellValue(e.left.asString(), v.asNumber())
+			execContext.spreadsheet.setCellValue(e.left.eval().asString(), v.asNumber())
 		} else {
-			execContext.spreadsheet.setCellValue(e.left.asString(), v.asString())
+			execContext.spreadsheet.setCellValue(e.left.eval().asString(), v.asString())
 		}
 
 		return v
