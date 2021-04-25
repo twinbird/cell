@@ -147,6 +147,9 @@ func (l *Lexer) Lex(lval *yySymType) int {
 		}
 
 		if l.consumeIf('.') {
+			if l.consumeIf('=') {
+				return CONCAT_ASSIGN
+			}
 			return '.'
 		}
 

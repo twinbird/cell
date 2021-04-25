@@ -20,6 +20,7 @@ const (
 	DivAssignExpression
 	ModAssignExpression
 	PowAssignExpression
+	ConcatAssignExpression
 	FuncCallExpression
 	NumberEQExpression
 	NumberNEExpression
@@ -111,6 +112,11 @@ func NewModAssignExpression(ident string, expr *Expression) *Expression {
 
 func NewPowAssignExpression(ident string, expr *Expression) *Expression {
 	e := &Expression{exprType: PowAssignExpression, ident: ident, right: expr}
+	return e
+}
+
+func NewConcatAssignExpression(ident string, expr *Expression) *Expression {
+	e := &Expression{exprType: ConcatAssignExpression, ident: ident, right: expr}
 	return e
 }
 
@@ -289,6 +295,12 @@ func (e *Expression) eval() Node {
 		r := e.right.eval()
 		l := execContext.scope.get(e.ident)
 		v := NewNumberExpression(math.Pow(l.asNumber(), r.asNumber()))
+		execContext.scope.set(e.ident, v)
+		return v
+	case ConcatAssignExpression:
+		r := e.right.eval()
+		l := execContext.scope.get(e.ident)
+		v := NewStringExpression(l.asString() + r.asString())
 		execContext.scope.set(e.ident, v)
 		return v
 	case FuncCallExpression:
@@ -534,6 +546,8 @@ func (e *Expression) String() string {
 		et = "ModAssignExpression"
 	case PowAssignExpression:
 		et = "PowAssignExpression"
+	case ConcatAssignExpression:
+		et = "ConcatAssignExpression"
 	case FuncCallExpression:
 		et = "FuncCallExpression"
 	case NumberEQExpression:

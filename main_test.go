@@ -947,6 +947,22 @@ func TestPowAssignExpression(t *testing.T) {
 	}
 }
 
+func TestConcatAssignExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestConcatAssignExpression.xlsx"
+	con.code = `a = "Hello, "; a .= "world"; ["A1"]=a;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "Hello, world" {
+		t.Fatalf("concat assign could not working. want cell value 'Hello, world', but got %s", v)
+	}
+}
+
 func TestComment(t *testing.T) {
 	out := new(bytes.Buffer)
 	con := NewExecContext()
