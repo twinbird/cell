@@ -7,6 +7,7 @@ const (
 	ExpressionStatement
 	IfStatement
 	IfElseStatement
+	BlockStatement
 )
 
 type Statement struct {
@@ -14,6 +15,7 @@ type Statement struct {
 	expr     *Expression
 	thenStmt *Statement
 	elseStmt *Statement
+	block    *Statements
 }
 
 func NewBlankStatement() *Statement {
@@ -36,6 +38,11 @@ func NewIfElseStatement(expr *Expression, then *Statement, els *Statement) *Stat
 	return s
 }
 
+func NewBlockStatement(block *Statements) *Statement {
+	s := &Statement{stmtType: BlockStatement, block: block}
+	return s
+}
+
 func (s *Statement) eval() Node {
 	switch s.stmtType {
 	case BlankStatement:
@@ -54,6 +61,8 @@ func (s *Statement) eval() Node {
 			s.elseStmt.eval()
 		}
 		return NewBlankStatement()
+	case BlockStatement:
+		return s.block.eval()
 	}
 	panic("evaluate unknown type.")
 }

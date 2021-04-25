@@ -48,6 +48,14 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			return ']'
 		}
 
+		if l.consumeIf('{') {
+			return '{'
+		}
+
+		if l.consumeIf('}') {
+			return '}'
+		}
+
 		if l.consumeIf('+') {
 			if l.consumeIf('=') {
 				return ADD_ASSIGN
