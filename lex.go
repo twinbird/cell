@@ -243,6 +243,10 @@ func (l *Lexer) word(lval *yySymType) int {
 		return STRNE
 	}
 
+	if s == "while" {
+		return WHILE
+	}
+
 	lval.ident = s
 	return IDENT
 }

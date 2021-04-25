@@ -8,6 +8,7 @@ const (
 	IfStatement
 	IfElseStatement
 	BlockStatement
+	WhileStatement
 )
 
 type Statement struct {
@@ -43,6 +44,11 @@ func NewBlockStatement(block *Statements) *Statement {
 	return s
 }
 
+func NewWhileStatement(expr *Expression, then *Statement) *Statement {
+	s := &Statement{stmtType: WhileStatement, expr: expr, thenStmt: then}
+	return s
+}
+
 func (s *Statement) eval() Node {
 	switch s.stmtType {
 	case BlankStatement:
@@ -63,6 +69,11 @@ func (s *Statement) eval() Node {
 		return NewBlankStatement()
 	case BlockStatement:
 		return s.block.eval()
+	case WhileStatement:
+		for s.expr.eval().isTruthy() {
+			s.thenStmt.eval()
+		}
+		return NewBlankStatement()
 	}
 	panic("evaluate unknown type.")
 }

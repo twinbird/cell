@@ -1103,3 +1103,19 @@ func TestBlockStatement(t *testing.T) {
 		t.Fatalf("else block statement could not working")
 	}
 }
+
+func TestWhileStatement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestWhileStatement.xlsx"
+	con.code = `while(i<10){sum+=i;i+=1;}["A1"]=sum`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "45" {
+		t.Fatalf("while statement could not working. want '45', but got %v", v)
+	}
+}
