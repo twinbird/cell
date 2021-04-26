@@ -54,6 +54,7 @@ expr
   | '[' expr ']' '=' expr { $$ = NewCellAssignExpression($2, $5) }
   | '[' expr ']' ADD_ASSIGN expr { $$ = NewAddCellAssignExpression($2, $5) }
   | '[' expr ']' SUB_ASSIGN expr { $$ = NewSubCellAssignExpression($2, $5) }
+  | '[' expr ']' MUL_ASSIGN expr { $$ = NewMulCellAssignExpression($2, $5) }
   | IDENT { $$ = NewVarReferExpression($1) }
   | IDENT '=' expr { $$ = NewVarAssignExpression($1, $3) }
   | IDENT ADD_ASSIGN expr { $$ = NewAddAssignExpression($1, $3) }
