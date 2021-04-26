@@ -18,6 +18,7 @@ const (
 	DivCellAssignExpression
 	ModCellAssignExpression
 	PowCellAssignExpression
+	ConcatCellAssignExpression
 	VarReferExpression
 	VarAssignExpression
 	AddAssignExpression
@@ -108,6 +109,11 @@ func NewModCellAssignExpression(axis *Expression, expr *Expression) *Expression 
 
 func NewPowCellAssignExpression(axis *Expression, expr *Expression) *Expression {
 	e := &Expression{exprType: PowCellAssignExpression, left: axis, right: expr}
+	return e
+}
+
+func NewConcatCellAssignExpression(axis *Expression, expr *Expression) *Expression {
+	e := &Expression{exprType: ConcatCellAssignExpression, left: axis, right: expr}
 	return e
 }
 
@@ -345,6 +351,14 @@ func (e *Expression) eval() Node {
 		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
 
 		return NewNumberExpression(v)
+	case ConcatCellAssignExpression:
+		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
+		r := e.right.eval().asString()
+		v := l + r
+
+		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
+
+		return NewStringExpression(v)
 	case VarReferExpression:
 		return execContext.scope.get(e.ident)
 	case VarAssignExpression:
@@ -630,6 +644,8 @@ func (e *Expression) String() string {
 		et = "ModCellAssignExpression"
 	case PowCellAssignExpression:
 		et = "PowCellAssignExpression"
+	case ConcatCellAssignExpression:
+		et = "ConcatCellAssignExpression"
 	case VarReferExpression:
 		et = "VarReferExpression"
 	case VarAssignExpression:

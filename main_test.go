@@ -1233,3 +1233,17 @@ func TestPowAndCellAssign(t *testing.T) {
 		t.Fatalf("want cell value '100', but got %s", v)
 	}
 }
+
+func TestConcatAndCellAssign(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestConcatAndCellAssign.xlsx"
+	con.code = `["A1"] = "Hello";["A1"].=" world";`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "Hello world" {
+		t.Fatalf("want cell value 'Hello world', but got %s", v)
+	}
+}
