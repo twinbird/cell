@@ -9,6 +9,7 @@ const (
 	IfElseStatement
 	BlockStatement
 	WhileStatement
+	BreakStatement
 )
 
 type Statement struct {
@@ -49,6 +50,11 @@ func NewWhileStatement(expr *Expression, then *Statement) *Statement {
 	return s
 }
 
+func NewBreakStatement() *Statement {
+	s := &Statement{stmtType: BreakStatement}
+	return s
+}
+
 func (s *Statement) eval() Node {
 	switch s.stmtType {
 	case BlankStatement:
@@ -72,7 +78,17 @@ func (s *Statement) eval() Node {
 	case WhileStatement:
 		for s.expr.eval().isTruthy() {
 			s.thenStmt.eval()
+			if execContext.doExit {
+				break
+			}
+			if execContext.doBreak {
+				execContext.doBreak = false
+				break
+			}
 		}
+		return NewBlankStatement()
+	case BreakStatement:
+		execContext.doBreak = true
 		return NewBlankStatement()
 	}
 	panic("evaluate unknown type.")

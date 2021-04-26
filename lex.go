@@ -250,6 +250,10 @@ func (l *Lexer) word(lval *yySymType) int {
 		return WHILE
 	}
 
+	if s == "break" {
+		return BREAK
+	}
+
 	lval.ident = s
 	return IDENT
 }

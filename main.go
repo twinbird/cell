@@ -16,6 +16,7 @@ type ExecContext struct {
 	scope       *Scope
 	functions   map[string]*Function
 	doExit      bool
+	doBreak     bool
 	in          io.Reader
 	out         io.Writer
 	errout      io.Writer
@@ -83,10 +84,19 @@ func execScript() int {
 	yyParse(lexer)
 
 	lexer.ast.eval()
+
+	if execContext.doBreak {
+		fatalError("'break' is not allowed outside a loop")
+	}
+
 	return 0
 }
 
 func fatalError(format string, a ...interface{}) {
-	fmt.Fprintf(os.Stderr, "ERROR: "+format+"\n", a)
+	if len(a) > 0 {
+		fmt.Fprintf(os.Stderr, "ERROR: "+format+"\n", a)
+	} else {
+		fmt.Fprintf(os.Stderr, "ERROR: "+format+"\n")
+	}
 	os.Exit(1)
 }
