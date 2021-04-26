@@ -1219,3 +1219,17 @@ func TestModAndCellAssignToString(t *testing.T) {
 		t.Fatalf("want cell value '1', but got %s", v)
 	}
 }
+
+func TestPowAndCellAssign(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestPowAndCellAssign.xlsx"
+	con.code = `["A1"] = 10;["A1"]**=2;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "100" {
+		t.Fatalf("want cell value '100', but got %s", v)
+	}
+}

@@ -17,6 +17,7 @@ const (
 	MulCellAssignExpression
 	DivCellAssignExpression
 	ModCellAssignExpression
+	PowCellAssignExpression
 	VarReferExpression
 	VarAssignExpression
 	AddAssignExpression
@@ -102,6 +103,11 @@ func NewDivCellAssignExpression(axis *Expression, expr *Expression) *Expression 
 
 func NewModCellAssignExpression(axis *Expression, expr *Expression) *Expression {
 	e := &Expression{exprType: ModCellAssignExpression, left: axis, right: expr}
+	return e
+}
+
+func NewPowCellAssignExpression(axis *Expression, expr *Expression) *Expression {
+	e := &Expression{exprType: PowCellAssignExpression, left: axis, right: expr}
 	return e
 }
 
@@ -326,6 +332,15 @@ func (e *Expression) eval() Node {
 		f, _ := maybeNumber(l)
 		r := e.right.eval().asNumber()
 		v := float64(int(f) % int(r))
+
+		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
+
+		return NewNumberExpression(v)
+	case PowCellAssignExpression:
+		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
+		f, _ := maybeNumber(l)
+		r := e.right.eval().asNumber()
+		v := math.Pow(f, r)
 
 		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
 
@@ -613,6 +628,8 @@ func (e *Expression) String() string {
 		et = "MulCellAssignExpression"
 	case ModCellAssignExpression:
 		et = "ModCellAssignExpression"
+	case PowCellAssignExpression:
+		et = "PowCellAssignExpression"
 	case VarReferExpression:
 		et = "VarReferExpression"
 	case VarAssignExpression:
