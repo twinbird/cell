@@ -13,6 +13,7 @@ const (
 	CellReferExpression
 	CellAssignExpression
 	AddCellAssignExpression
+	SubCellAssignExpression
 	VarReferExpression
 	VarAssignExpression
 	AddAssignExpression
@@ -78,6 +79,11 @@ func NewCellAssignExpression(axis *Expression, expr *Expression) *Expression {
 
 func NewAddCellAssignExpression(axis *Expression, expr *Expression) *Expression {
 	e := &Expression{exprType: AddCellAssignExpression, left: axis, right: expr}
+	return e
+}
+
+func NewSubCellAssignExpression(axis *Expression, expr *Expression) *Expression {
+	e := &Expression{exprType: SubCellAssignExpression, left: axis, right: expr}
 	return e
 }
 
@@ -266,6 +272,15 @@ func (e *Expression) eval() Node {
 		f, _ := maybeNumber(l)
 		r := e.right.eval().asNumber()
 		v := f + r
+
+		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
+
+		return NewNumberExpression(v)
+	case SubCellAssignExpression:
+		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
+		f, _ := maybeNumber(l)
+		r := e.right.eval().asNumber()
+		v := f - r
 
 		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
 
@@ -547,6 +562,8 @@ func (e *Expression) String() string {
 		et = "CellAssignExpression"
 	case AddCellAssignExpression:
 		et = "AddCellAssignExpression"
+	case SubCellAssignExpression:
+		et = "SubCellAssignExpression"
 	case VarReferExpression:
 		et = "VarReferExpression"
 	case VarAssignExpression:
