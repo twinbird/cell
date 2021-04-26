@@ -15,6 +15,7 @@ const (
 	AddCellAssignExpression
 	SubCellAssignExpression
 	MulCellAssignExpression
+	DivCellAssignExpression
 	VarReferExpression
 	VarAssignExpression
 	AddAssignExpression
@@ -90,6 +91,11 @@ func NewSubCellAssignExpression(axis *Expression, expr *Expression) *Expression 
 
 func NewMulCellAssignExpression(axis *Expression, expr *Expression) *Expression {
 	e := &Expression{exprType: MulCellAssignExpression, left: axis, right: expr}
+	return e
+}
+
+func NewDivCellAssignExpression(axis *Expression, expr *Expression) *Expression {
+	e := &Expression{exprType: DivCellAssignExpression, left: axis, right: expr}
 	return e
 }
 
@@ -296,6 +302,15 @@ func (e *Expression) eval() Node {
 		f, _ := maybeNumber(l)
 		r := e.right.eval().asNumber()
 		v := f * r
+
+		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
+
+		return NewNumberExpression(v)
+	case DivCellAssignExpression:
+		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
+		f, _ := maybeNumber(l)
+		r := e.right.eval().asNumber()
+		v := float64(int(f) / int(r))
 
 		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
 
