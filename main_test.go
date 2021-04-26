@@ -1150,9 +1150,9 @@ func TestCalculatedCellAssignToString(t *testing.T) {
 	}
 }
 
-func TestAddAndCellAssignToString(t *testing.T) {
+func TestAddAndCellAssign(t *testing.T) {
 	con := NewExecContext()
-	con.topath = "TestAddAndCellAssignToString.xlsx"
+	con.topath = "TestAddAndCellAssign.xlsx"
 	con.code = `["A1"] = 1;["A1"]+=3;`
 	run(con)
 	if con.exitCode != 0 {
@@ -1164,9 +1164,9 @@ func TestAddAndCellAssignToString(t *testing.T) {
 	}
 }
 
-func TestSubAndCellAssignToString(t *testing.T) {
+func TestSubAndCellAssign(t *testing.T) {
 	con := NewExecContext()
-	con.topath = "TestSubAndCellAssignToString.xlsx"
+	con.topath = "TestSubAndCellAssign.xlsx"
 	con.code = `["A1"] = 1;["A1"]-=3;`
 	run(con)
 	if con.exitCode != 0 {
@@ -1178,9 +1178,9 @@ func TestSubAndCellAssignToString(t *testing.T) {
 	}
 }
 
-func TestMulAndCellAssignToString(t *testing.T) {
+func TestMulAndCellAssign(t *testing.T) {
 	con := NewExecContext()
-	con.topath = "TestMulAndCellAssignToString.xlsx"
+	con.topath = "TestMulAndCellAssign.xlsx"
 	con.code = `["A1"] = 2;["A1"]*=3;`
 	run(con)
 	if con.exitCode != 0 {
@@ -1192,9 +1192,9 @@ func TestMulAndCellAssignToString(t *testing.T) {
 	}
 }
 
-func TestDivAndCellAssignToString(t *testing.T) {
+func TestDivAndCellAssign(t *testing.T) {
 	con := NewExecContext()
-	con.topath = "TestDivAndCellAssignToString.xlsx"
+	con.topath = "TestDivAndCellAssign.xlsx"
 	con.code = `["A1"] = 9;["A1"]/=3;`
 	run(con)
 	if con.exitCode != 0 {
@@ -1206,9 +1206,9 @@ func TestDivAndCellAssignToString(t *testing.T) {
 	}
 }
 
-func TestModAndCellAssignToString(t *testing.T) {
+func TestModAndCellAssign(t *testing.T) {
 	con := NewExecContext()
-	con.topath = "TestModAndCellAssignToString.xlsx"
+	con.topath = "TestModAndCellAssign.xlsx"
 	con.code = `["A1"] = 10;["A1"]%=3;`
 	run(con)
 	if con.exitCode != 0 {
