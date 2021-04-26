@@ -17,6 +17,7 @@ type ExecContext struct {
 	functions   map[string]*Function
 	doExit      bool
 	doBreak     bool
+	doContinue  bool
 	in          io.Reader
 	out         io.Writer
 	errout      io.Writer
@@ -87,6 +88,9 @@ func execScript() int {
 
 	if execContext.doBreak {
 		fatalError("'break' is not allowed outside a loop")
+	}
+	if execContext.doContinue {
+		fatalError("'continue' is not allowed outside a loop")
 	}
 
 	return 0

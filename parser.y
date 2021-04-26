@@ -17,7 +17,7 @@ package main
 %type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE
 %token<ident> IDENT
 %left '=' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN CONCAT_ASSIGN
 %left AND OR '!'
@@ -46,7 +46,8 @@ stmt
   | IF '(' expr ')' stmt ELSE stmt { $$ = NewIfElseStatement($3, $5, $7) }
   | '{' stmts '}' { $$ = NewBlockStatement($2) }
   | WHILE '(' expr ')' stmt { $$ = NewWhileStatement($3, $5) }
-  | BREAK { $$ = NewBreakStatement() }
+  | BREAK LF { $$ = NewBreakStatement() }
+  | CONTINUE LF { $$ = NewContinueStatement() }
 
 expr
   : NUMBER { $$ = NewNumberExpression($1) }

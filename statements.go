@@ -30,6 +30,9 @@ func (stmts *Statements) eval() Node {
 		if execContext.doBreak {
 			break
 		}
+		if execContext.doContinue {
+			break
+		}
 	}
 	return ret
 }

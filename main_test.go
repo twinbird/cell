@@ -1261,3 +1261,17 @@ func TestBreakStatement(t *testing.T) {
 		t.Fatalf("want cell value '6', but got %s", v)
 	}
 }
+
+func TestContinueStatement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestContinueStatement.xlsx"
+	con.code = `while(i<10){sum+=i;i+=1;if(i==3)continue;}["A1"]=sum`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "45" {
+		t.Fatalf("want cell value '45', but got %s", v)
+	}
+}

@@ -254,6 +254,10 @@ func (l *Lexer) word(lval *yySymType) int {
 		return BREAK
 	}
 
+	if s == "continue" {
+		return CONTINUE
+	}
+
 	lval.ident = s
 	return IDENT
 }

@@ -10,6 +10,7 @@ const (
 	BlockStatement
 	WhileStatement
 	BreakStatement
+	ContinueStatement
 )
 
 type Statement struct {
@@ -55,6 +56,11 @@ func NewBreakStatement() *Statement {
 	return s
 }
 
+func NewContinueStatement() *Statement {
+	s := &Statement{stmtType: ContinueStatement}
+	return s
+}
+
 func (s *Statement) eval() Node {
 	switch s.stmtType {
 	case BlankStatement:
@@ -85,10 +91,17 @@ func (s *Statement) eval() Node {
 				execContext.doBreak = false
 				break
 			}
+			if execContext.doContinue {
+				execContext.doContinue = false
+				continue
+			}
 		}
 		return NewBlankStatement()
 	case BreakStatement:
 		execContext.doBreak = true
+		return NewBlankStatement()
+	case ContinueStatement:
+		execContext.doContinue = true
 		return NewBlankStatement()
 	}
 	panic("evaluate unknown type.")
