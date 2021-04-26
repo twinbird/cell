@@ -52,6 +52,7 @@ expr
   | STRING { $$ = NewStringExpression($1) }
   | '[' expr ']' { $$ = NewCellReferExpression($2) }
   | '[' expr ']' '=' expr { $$ = NewCellAssignExpression($2, $5) }
+  | '[' expr ']' ADD_ASSIGN expr { $$ = NewAddCellAssignExpression($2, $5) }
   | IDENT { $$ = NewVarReferExpression($1) }
   | IDENT '=' expr { $$ = NewVarAssignExpression($1, $3) }
   | IDENT ADD_ASSIGN expr { $$ = NewAddAssignExpression($1, $3) }

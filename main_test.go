@@ -1138,7 +1138,6 @@ func TestWhileStatement(t *testing.T) {
 
 func TestCalculatedCellAssignToString(t *testing.T) {
 	con := NewExecContext()
-	con.frompath = "test/values.xlsx"
 	con.topath = "TestCalculatedCellAssignToString.xlsx"
 	con.code = `["A"."1"] = "abc"`
 	run(con)
@@ -1148,5 +1147,19 @@ func TestCalculatedCellAssignToString(t *testing.T) {
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
 	if v != "abc" {
 		t.Fatalf("want cell value 'abc', but got %s", v)
+	}
+}
+
+func TestAddAndCellAssignToString(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestAddAndCellAssignToString.xlsx"
+	con.code = `["A1"] = 1;["A1"]+=3;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "4" {
+		t.Fatalf("want cell value '4', but got %s", v)
 	}
 }
