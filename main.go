@@ -1,3 +1,4 @@
+//go:generate goyacc parser.y
 package main
 
 import (

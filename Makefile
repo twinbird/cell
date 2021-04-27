@@ -2,7 +2,7 @@ cell: *.go y.go
 	go build
 
 y.go: parser.y
-	goyacc parser.y
+	go generate
 
 test: cell *_test.go
 	rm -f *.xlsx
