@@ -27,6 +27,7 @@ package main
 %left '~' NOT_MATCH
 %right MINUS PLUS
 %right POW
+%right PREINC
 %left INC DEC
 %left '(' ')'
 %nonassoc THEN
@@ -63,6 +64,7 @@ expr
   | '[' expr ']' POW_ASSIGN expr { $$ = NewPowCellAssignExpression($2, $5) }
   | '[' expr ']' CONCAT_ASSIGN expr { $$ = NewConcatCellAssignExpression($2, $5) }
   | '[' expr ']' INC { $$ = NewIncrementCellExpression($2) }
+  | INC '[' expr ']' %prec PREINC { $$ = NewPreIncrementCellExpression($3) }
   | '[' expr ']' DEC { $$ = NewDecrementCellExpression($2) }
   | IDENT { $$ = NewVarReferExpression($1) }
   | IDENT '=' expr { $$ = NewVarAssignExpression($1, $3) }
@@ -74,6 +76,7 @@ expr
   | IDENT POW_ASSIGN expr { $$ = NewPowAssignExpression($1, $3) }
   | IDENT CONCAT_ASSIGN expr { $$ = NewConcatAssignExpression($1, $3) }
   | IDENT INC { $$ = NewIncrementExpression($1) }
+  | INC IDENT %prec PREINC { $$ = NewPreIncrementExpression($2) }
   | IDENT DEC { $$ = NewDecrementExpression($1) }
   | funcCall
   | expr NUMEQ expr { $$ = NewNumberEQExpression($1, $3) }

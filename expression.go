@@ -20,6 +20,7 @@ const (
 	PowCellAssignExpression
 	ConcatCellAssignExpression
 	IncrementCellExpression
+	PreIncrementCellExpression
 	DecrementCellExpression
 	VarReferExpression
 	VarAssignExpression
@@ -31,6 +32,7 @@ const (
 	PowAssignExpression
 	ConcatAssignExpression
 	IncrementExpression
+	PreIncrementExpression
 	DecrementExpression
 	FuncCallExpression
 	NumberEQExpression
@@ -127,6 +129,11 @@ func NewIncrementCellExpression(axis *Expression) *Expression {
 	return e
 }
 
+func NewPreIncrementCellExpression(axis *Expression) *Expression {
+	e := &Expression{exprType: PreIncrementCellExpression, left: axis}
+	return e
+}
+
 func NewDecrementCellExpression(axis *Expression) *Expression {
 	e := &Expression{exprType: DecrementCellExpression, left: axis}
 	return e
@@ -179,6 +186,11 @@ func NewConcatAssignExpression(ident string, expr *Expression) *Expression {
 
 func NewIncrementExpression(ident string) *Expression {
 	e := &Expression{exprType: IncrementExpression, ident: ident}
+	return e
+}
+
+func NewPreIncrementExpression(ident string) *Expression {
+	e := &Expression{exprType: PreIncrementExpression, ident: ident}
 	return e
 }
 
@@ -397,6 +409,14 @@ func (e *Expression) eval() Node {
 		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
 
 		return NewNumberExpression(f)
+	case PreIncrementCellExpression:
+		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
+		f, _ := maybeNumber(l)
+		v := f + 1
+
+		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
+
+		return NewNumberExpression(v)
 	case DecrementCellExpression:
 		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
 		f, _ := maybeNumber(l)
@@ -458,6 +478,11 @@ func (e *Expression) eval() Node {
 		v := NewNumberExpression(l.asNumber() + 1)
 		execContext.scope.set(e.ident, v)
 		return l
+	case PreIncrementExpression:
+		l := execContext.scope.get(e.ident)
+		v := NewNumberExpression(l.asNumber() + 1)
+		execContext.scope.set(e.ident, v)
+		return v
 	case DecrementExpression:
 		l := execContext.scope.get(e.ident)
 		v := NewNumberExpression(l.asNumber() - 1)
@@ -707,6 +732,8 @@ func (e *Expression) String() string {
 		et = "ConcatCellAssignExpression"
 	case IncrementCellExpression:
 		et = "IncrementCellExpression"
+	case PreIncrementCellExpression:
+		et = "PreIncrementCellExpression"
 	case DecrementCellExpression:
 		et = "DecrementCellExpression"
 	case VarReferExpression:
@@ -729,6 +756,8 @@ func (e *Expression) String() string {
 		et = "ConcatAssignExpression"
 	case IncrementExpression:
 		et = "IncrementExpression"
+	case PreIncrementExpression:
+		et = "PreIncrementExpression"
 	case DecrementExpression:
 		et = "DecrementExpression"
 	case FuncCallExpression:

@@ -1352,3 +1352,31 @@ func TestDecrementCellExpression(t *testing.T) {
 		t.Fatalf("want cell value '-1', but got %s", v)
 	}
 }
+
+func TestPreIncrementExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestPreIncrementExpression.xlsx"
+	con.code = `a=0;if(++a)a=100;["A1"]=++a;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "101" {
+		t.Fatalf("want cell value '101', but got %s", v)
+	}
+}
+
+func TestPreIncrementCellExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestPreIncrementCellExpression.xlsx"
+	con.code = `["A1"]=0;if(++["A1"])["A1"]=100;++["A1"]`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "101" {
+		t.Fatalf("want cell value '101', but got %s", v)
+	}
+}
