@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"io"
 	"os"
@@ -174,7 +175,7 @@ func TestBuiltinPuts(t *testing.T) {
 }
 
 func TestBuiltinGets(t *testing.T) {
-	in := bytes.NewBufferString("test string")
+	in := bufio.NewReader(bytes.NewBufferString("test string"))
 	out := new(bytes.Buffer)
 
 	con := NewExecContext()
@@ -250,7 +251,7 @@ func TestSpecialVarAtMarkAssignUndefinedSheet(t *testing.T) {
 func TestSpecialVarDollarDefault(t *testing.T) {
 	expect := "aa bb  cc\t \tstring"
 	out := new(bytes.Buffer)
-	in := bytes.NewBufferString(expect)
+	in := bufio.NewReader(bytes.NewBufferString(expect))
 
 	con := NewExecContext()
 	con.topath = "TestSpecialVarDollarDefault.xlsx"
@@ -292,7 +293,7 @@ func TestSpecialVarDollarDefault(t *testing.T) {
 func TestSpecialVarDollarOneChar(t *testing.T) {
 	expect := "aa.bb..cc.test string"
 	out := new(bytes.Buffer)
-	in := bytes.NewBufferString(expect)
+	in := bufio.NewReader(bytes.NewBufferString(expect))
 
 	con := NewExecContext()
 	con.topath = "TestSpecialVarDollarOneChar.xlsx"
@@ -339,7 +340,7 @@ func TestSpecialVarDollarOneChar(t *testing.T) {
 func TestSpecialVarDollarRegexp(t *testing.T) {
 	expect := "aa,bb,  cc|string"
 	out := new(bytes.Buffer)
-	in := bytes.NewBufferString(expect)
+	in := bufio.NewReader(bytes.NewBufferString(expect))
 
 	con := NewExecContext()
 	con.topath = "TestSpecialVarDollarRegexp.xlsx"
@@ -381,7 +382,7 @@ func TestSpecialVarDollarRegexp(t *testing.T) {
 func TestBuiltinFuncPutsNoArg(t *testing.T) {
 	expect := "aa bb cc"
 	out := new(bytes.Buffer)
-	in := bytes.NewBufferString(expect)
+	in := bufio.NewReader(bytes.NewBufferString(expect))
 
 	con := NewExecContext()
 	con.out = out
@@ -402,7 +403,7 @@ func TestBuiltinFuncPutsNoArg(t *testing.T) {
 func TestSpecialVarOFSAndBuiltinPutsFuncMultiArgs(t *testing.T) {
 	src := "aa bb cc"
 	out := new(bytes.Buffer)
-	in := bytes.NewBufferString(src)
+	in := bufio.NewReader(bytes.NewBufferString(src))
 
 	con := NewExecContext()
 	con.out = out
@@ -424,7 +425,7 @@ func TestSpecialVarOFSAndBuiltinPutsFuncMultiArgs(t *testing.T) {
 func TestEscapeString(t *testing.T) {
 	src := "aa bb cc"
 	out := new(bytes.Buffer)
-	in := bytes.NewBufferString(src)
+	in := bufio.NewReader(bytes.NewBufferString(src))
 
 	con := NewExecContext()
 	con.out = out

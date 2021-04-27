@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io"
@@ -18,7 +19,7 @@ type ExecContext struct {
 	doExit      bool
 	doBreak     bool
 	doContinue  bool
-	in          io.Reader
+	in          *bufio.Reader
 	out         io.Writer
 	errout      io.Writer
 }
@@ -29,7 +30,7 @@ func NewExecContext() *ExecContext {
 	con := &ExecContext{}
 	con.scope = NewScope()
 	con.functions = builtinFunctions()
-	con.in = os.Stdin
+	con.in = bufio.NewReader(os.Stdin)
 	con.out = os.Stdout
 	con.errout = os.Stderr
 	con.scope.set("FS", NewStringExpression(" "))

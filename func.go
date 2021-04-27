@@ -1,9 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"io"
 	"os"
+	"strings"
 )
 
 type ArgList struct {
@@ -78,9 +79,11 @@ func builtinAbort(args ...Node) Node {
 // gets(void) string
 // Get character line from stdin.
 func builtinGets(args ...Node) Node {
-	scanner := bufio.NewScanner(execContext.in)
-	scanner.Scan()
-	s := scanner.Text()
+	s, err := execContext.in.ReadString('\n')
+	if err != io.EOF && err != nil {
+		fatalError("builtin function 'gets' raised error '%v'", err)
+	}
+	s = strings.TrimRight(s, "\r\n")
 	execContext.scope.setDollarSpecialVars(s)
 	return NewStringExpression(s)
 }
