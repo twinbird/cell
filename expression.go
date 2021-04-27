@@ -20,6 +20,7 @@ const (
 	PowCellAssignExpression
 	ConcatCellAssignExpression
 	IncrementCellExpression
+	DecrementCellExpression
 	VarReferExpression
 	VarAssignExpression
 	AddAssignExpression
@@ -30,6 +31,7 @@ const (
 	PowAssignExpression
 	ConcatAssignExpression
 	IncrementExpression
+	DecrementExpression
 	FuncCallExpression
 	NumberEQExpression
 	NumberNEExpression
@@ -125,6 +127,11 @@ func NewIncrementCellExpression(axis *Expression) *Expression {
 	return e
 }
 
+func NewDecrementCellExpression(axis *Expression) *Expression {
+	e := &Expression{exprType: DecrementCellExpression, left: axis}
+	return e
+}
+
 func NewVarReferExpression(ident string) *Expression {
 	e := &Expression{exprType: VarReferExpression, ident: ident}
 	return e
@@ -172,6 +179,11 @@ func NewConcatAssignExpression(ident string, expr *Expression) *Expression {
 
 func NewIncrementExpression(ident string) *Expression {
 	e := &Expression{exprType: IncrementExpression, ident: ident}
+	return e
+}
+
+func NewDecrementExpression(ident string) *Expression {
+	e := &Expression{exprType: DecrementExpression, ident: ident}
 	return e
 }
 
@@ -385,6 +397,14 @@ func (e *Expression) eval() Node {
 		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
 
 		return NewNumberExpression(f)
+	case DecrementCellExpression:
+		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
+		f, _ := maybeNumber(l)
+		v := f - 1
+
+		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
+
+		return NewNumberExpression(f)
 	case VarReferExpression:
 		return execContext.scope.get(e.ident)
 	case VarAssignExpression:
@@ -436,6 +456,11 @@ func (e *Expression) eval() Node {
 	case IncrementExpression:
 		l := execContext.scope.get(e.ident)
 		v := NewNumberExpression(l.asNumber() + 1)
+		execContext.scope.set(e.ident, v)
+		return l
+	case DecrementExpression:
+		l := execContext.scope.get(e.ident)
+		v := NewNumberExpression(l.asNumber() - 1)
 		execContext.scope.set(e.ident, v)
 		return l
 	case FuncCallExpression:
@@ -682,6 +707,8 @@ func (e *Expression) String() string {
 		et = "ConcatCellAssignExpression"
 	case IncrementCellExpression:
 		et = "IncrementCellExpression"
+	case DecrementCellExpression:
+		et = "DecrementCellExpression"
 	case VarReferExpression:
 		et = "VarReferExpression"
 	case VarAssignExpression:
@@ -702,6 +729,8 @@ func (e *Expression) String() string {
 		et = "ConcatAssignExpression"
 	case IncrementExpression:
 		et = "IncrementExpression"
+	case DecrementExpression:
+		et = "DecrementExpression"
 	case FuncCallExpression:
 		et = "FuncCallExpression"
 	case NumberEQExpression:
