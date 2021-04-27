@@ -17,7 +17,7 @@ package main
 %type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE INC
 %token<ident> IDENT
 %left '=' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN CONCAT_ASSIGN
 %left AND OR '!'
@@ -27,6 +27,7 @@ package main
 %left '~' NOT_MATCH
 %right MINUS PLUS
 %right POW
+%left INC
 %left '(' ')'
 %nonassoc THEN
 %nonassoc ELSE
@@ -61,6 +62,7 @@ expr
   | '[' expr ']' MOD_ASSIGN expr { $$ = NewModCellAssignExpression($2, $5) }
   | '[' expr ']' POW_ASSIGN expr { $$ = NewPowCellAssignExpression($2, $5) }
   | '[' expr ']' CONCAT_ASSIGN expr { $$ = NewConcatCellAssignExpression($2, $5) }
+  | '[' expr ']' INC { $$ = NewIncrementCellExpression($2) }
   | IDENT { $$ = NewVarReferExpression($1) }
   | IDENT '=' expr { $$ = NewVarAssignExpression($1, $3) }
   | IDENT ADD_ASSIGN expr { $$ = NewAddAssignExpression($1, $3) }
@@ -70,6 +72,7 @@ expr
   | IDENT MOD_ASSIGN expr { $$ = NewModAssignExpression($1, $3) }
   | IDENT POW_ASSIGN expr { $$ = NewPowAssignExpression($1, $3) }
   | IDENT CONCAT_ASSIGN expr { $$ = NewConcatAssignExpression($1, $3) }
+  | IDENT INC { $$ = NewIncrementExpression($1) }
   | funcCall
   | expr NUMEQ expr { $$ = NewNumberEQExpression($1, $3) }
   | expr NUMNE expr { $$ = NewNumberNEExpression($1, $3) }

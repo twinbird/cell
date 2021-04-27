@@ -60,6 +60,9 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			if l.consumeIf('=') {
 				return ADD_ASSIGN
 			}
+			if l.consumeIf('+') {
+				return INC
+			}
 			return '+'
 		}
 

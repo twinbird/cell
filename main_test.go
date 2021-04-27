@@ -1296,3 +1296,31 @@ func TestContinueStatement(t *testing.T) {
 		t.Fatalf("want cell value '45', but got %s", v)
 	}
 }
+
+func TestIncrementExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestIncrementExpression.xlsx"
+	con.code = `a=0;if(a++)a=100;["A1"]=a;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+}
+
+func TestIncrementCellExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestIncrementCellExpression.xlsx"
+	con.code = `["A1"]=0;if(["A1"]++)["A1"]=100;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+}

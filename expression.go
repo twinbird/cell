@@ -19,6 +19,7 @@ const (
 	ModCellAssignExpression
 	PowCellAssignExpression
 	ConcatCellAssignExpression
+	IncrementCellExpression
 	VarReferExpression
 	VarAssignExpression
 	AddAssignExpression
@@ -28,6 +29,7 @@ const (
 	ModAssignExpression
 	PowAssignExpression
 	ConcatAssignExpression
+	IncrementExpression
 	FuncCallExpression
 	NumberEQExpression
 	NumberNEExpression
@@ -118,6 +120,11 @@ func NewConcatCellAssignExpression(axis *Expression, expr *Expression) *Expressi
 	return e
 }
 
+func NewIncrementCellExpression(axis *Expression) *Expression {
+	e := &Expression{exprType: IncrementCellExpression, left: axis}
+	return e
+}
+
 func NewVarReferExpression(ident string) *Expression {
 	e := &Expression{exprType: VarReferExpression, ident: ident}
 	return e
@@ -160,6 +167,11 @@ func NewPowAssignExpression(ident string, expr *Expression) *Expression {
 
 func NewConcatAssignExpression(ident string, expr *Expression) *Expression {
 	e := &Expression{exprType: ConcatAssignExpression, ident: ident, right: expr}
+	return e
+}
+
+func NewIncrementExpression(ident string) *Expression {
+	e := &Expression{exprType: IncrementExpression, ident: ident}
 	return e
 }
 
@@ -365,6 +377,14 @@ func (e *Expression) eval() Node {
 		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
 
 		return NewStringExpression(v)
+	case IncrementCellExpression:
+		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
+		f, _ := maybeNumber(l)
+		v := f + 1
+
+		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
+
+		return NewNumberExpression(f)
 	case VarReferExpression:
 		return execContext.scope.get(e.ident)
 	case VarAssignExpression:
@@ -413,6 +433,11 @@ func (e *Expression) eval() Node {
 		v := NewStringExpression(l.asString() + r.asString())
 		execContext.scope.set(e.ident, v)
 		return v
+	case IncrementExpression:
+		l := execContext.scope.get(e.ident)
+		v := NewNumberExpression(l.asNumber() + 1)
+		execContext.scope.set(e.ident, v)
+		return l
 	case FuncCallExpression:
 		f, found := execContext.functions[e.ident]
 		if !found {
@@ -655,6 +680,8 @@ func (e *Expression) String() string {
 		et = "PowCellAssignExpression"
 	case ConcatCellAssignExpression:
 		et = "ConcatCellAssignExpression"
+	case IncrementCellExpression:
+		et = "IncrementCellExpression"
 	case VarReferExpression:
 		et = "VarReferExpression"
 	case VarAssignExpression:
@@ -673,6 +700,8 @@ func (e *Expression) String() string {
 		et = "PowAssignExpression"
 	case ConcatAssignExpression:
 		et = "ConcatAssignExpression"
+	case IncrementExpression:
+		et = "IncrementExpression"
 	case FuncCallExpression:
 		et = "FuncCallExpression"
 	case NumberEQExpression:
