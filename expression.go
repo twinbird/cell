@@ -50,6 +50,7 @@ const (
 	LogicalOrExpression
 	LogicalNotExpression
 	MinusExpression
+	PlusExpression
 )
 
 type Expression struct {
@@ -269,6 +270,11 @@ func NewLogicalNotExpression(left *Expression) *Expression {
 
 func NewMinusExpression(left *Expression) *Expression {
 	e := &Expression{exprType: MinusExpression, left: left}
+	return e
+}
+
+func NewPlusExpression(left *Expression) *Expression {
+	e := &Expression{exprType: PlusExpression, left: left}
 	return e
 }
 
@@ -569,6 +575,9 @@ func (e *Expression) eval() Node {
 	case MinusExpression:
 		left := e.left.eval().asNumber()
 		return NewNumberExpression(-left)
+	case PlusExpression:
+		left := e.left.eval().asNumber()
+		return NewNumberExpression(+left)
 	}
 	panic("evaluate unknown type.")
 }
@@ -704,6 +713,8 @@ func (e *Expression) String() string {
 		et = "LogicalNotExpression"
 	case MinusExpression:
 		et = "MinusExpression"
+	case PlusExpression:
+		et = "PlusExpression"
 	}
 	return fmt.Sprintf("[Type: Expression] expr type: %s\n", et)
 }

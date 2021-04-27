@@ -25,7 +25,7 @@ package main
 %left '.' '+' '-'
 %left '/' '*' '%'
 %left '~' NOT_MATCH
-%right MINUS
+%right MINUS PLUS
 %right POW
 %left '(' ')'
 %nonassoc THEN
@@ -93,6 +93,7 @@ expr
   | '!' expr { $$ = NewLogicalNotExpression($2) }
   | '(' expr ')' { $$ = $2 }
   | '-' expr %prec MINUS { $$ = NewMinusExpression($2) }
+  | '+' expr %prec PLUS { $$ = NewPlusExpression($2) }
 
 funcCall
   : IDENT '(' ')' { $$ = NewFuncCallExpression($1, NewEmptyArgList()) }
