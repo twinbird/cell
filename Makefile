@@ -1,8 +1,6 @@
-cell: *.go y.go
-	go build
-
-y.go: parser.y
+cell: *.go parser.y
 	go generate
+	go build
 
 test: cell *_test.go
 	rm -f *.xlsx

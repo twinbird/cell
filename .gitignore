@@ -3,3 +3,4 @@ y.go
 *.output
 *.xlsx
 !test/*.xlsx
+*_string.go

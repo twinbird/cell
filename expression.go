@@ -1,3 +1,4 @@
+//go:generate stringer -type=ExprType
 package main
 
 import (
@@ -6,9 +7,11 @@ import (
 	"strconv"
 )
 
+type ExprType int
+
 // Expression types
 const (
-	NumberExpression = iota
+	NumberExpression ExprType = iota
 	StringExpression
 	CellReferExpression
 	CellAssignExpression
@@ -62,7 +65,7 @@ const (
 )
 
 type Expression struct {
-	exprType int
+	exprType ExprType
 	left     Node
 	right    Node
 	ident    string
@@ -733,104 +736,5 @@ func (e *Expression) nodeType() int {
 }
 
 func (e *Expression) String() string {
-	et := "unknown"
-	switch e.exprType {
-	case NumberExpression:
-		et = "NumberExpression"
-	case StringExpression:
-		et = "StringExpression"
-	case CellReferExpression:
-		et = "CellReferExpression"
-	case CellAssignExpression:
-		et = "CellAssignExpression"
-	case AddCellAssignExpression:
-		et = "AddCellAssignExpression"
-	case SubCellAssignExpression:
-		et = "SubCellAssignExpression"
-	case MulCellAssignExpression:
-		et = "MulCellAssignExpression"
-	case ModCellAssignExpression:
-		et = "ModCellAssignExpression"
-	case PowCellAssignExpression:
-		et = "PowCellAssignExpression"
-	case ConcatCellAssignExpression:
-		et = "ConcatCellAssignExpression"
-	case IncrementCellExpression:
-		et = "IncrementCellExpression"
-	case PreIncrementCellExpression:
-		et = "PreIncrementCellExpression"
-	case DecrementCellExpression:
-		et = "DecrementCellExpression"
-	case PreDecrementCellExpression:
-		et = "PreDecrementCellExpression"
-	case VarReferExpression:
-		et = "VarReferExpression"
-	case VarAssignExpression:
-		et = "VarAssignExpression"
-	case AddAssignExpression:
-		et = "AddAssignExpression"
-	case SubAssignExpression:
-		et = "SubAssignExpression"
-	case MulAssignExpression:
-		et = "MulAssignExpression"
-	case DivAssignExpression:
-		et = "DivAssignExpression"
-	case ModAssignExpression:
-		et = "ModAssignExpression"
-	case PowAssignExpression:
-		et = "PowAssignExpression"
-	case ConcatAssignExpression:
-		et = "ConcatAssignExpression"
-	case IncrementExpression:
-		et = "IncrementExpression"
-	case PreIncrementExpression:
-		et = "PreIncrementExpression"
-	case DecrementExpression:
-		et = "DecrementExpression"
-	case PreDecrementExpression:
-		et = "PreDecrementExpression"
-	case FuncCallExpression:
-		et = "FuncCallExpression"
-	case NumberEQExpression:
-		et = "NumberEQExpression"
-	case NumberNEExpression:
-		et = "NumberNEExpression"
-	case NumberLTExpression:
-		et = "NumberLTExpression"
-	case NumberLEExpression:
-		et = "NumberLEExpression"
-	case NumberGTExpression:
-		et = "NumberGTExpression"
-	case NumberGEExpression:
-		et = "NumberGEExpression"
-	case StringEQExpression:
-		et = "StringEQExpression"
-	case StringNEExpression:
-		et = "StringNEExpression"
-	case StringConcatExpression:
-		et = "StringConcatExpression"
-	case NumberAddExpression:
-		et = "NumberAddExpression"
-	case NumberSubExpression:
-		et = "NumberSubExpression"
-	case NumberMulExpression:
-		et = "NumberMulExpression"
-	case NumberDivExpression:
-		et = "NumberDivExpression"
-	case NumberModuloExpression:
-		et = "NumberModuloExpression"
-	case NumberPowerExpression:
-		et = "NumberPowerExpression"
-	case LogicalAndExpression:
-		et = "LogicalAndExpression"
-	case LogicalOrExpression:
-		et = "LogicalOrExpression"
-	case LogicalNotExpression:
-		et = "LogicalNotExpression"
-	case MinusExpression:
-		et = "MinusExpression"
-	case PlusExpression:
-		et = "PlusExpression"
-	}
-	return fmt.Sprintf("[Type: Expression] expr type: %s\n", et)
+	return fmt.Sprintf("[Type: Expression] expr type: %s\n", e.exprType.String())
 }
