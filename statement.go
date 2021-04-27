@@ -9,6 +9,7 @@ const (
 	IfElseStatement
 	BlockStatement
 	WhileStatement
+	DoWhileStatement
 	BreakStatement
 	ContinueStatement
 )
@@ -51,6 +52,11 @@ func NewWhileStatement(expr *Expression, then *Statement) *Statement {
 	return s
 }
 
+func NewDoWhileStatement(then *Statement, expr *Expression) *Statement {
+	s := &Statement{stmtType: DoWhileStatement, expr: expr, thenStmt: then}
+	return s
+}
+
 func NewBreakStatement() *Statement {
 	s := &Statement{stmtType: BreakStatement}
 	return s
@@ -82,6 +88,23 @@ func (s *Statement) eval() Node {
 	case BlockStatement:
 		return s.block.eval()
 	case WhileStatement:
+		for s.expr.eval().isTruthy() {
+			s.thenStmt.eval()
+			if execContext.doExit {
+				break
+			}
+			if execContext.doBreak {
+				execContext.doBreak = false
+				break
+			}
+			if execContext.doContinue {
+				execContext.doContinue = false
+				continue
+			}
+		}
+		return NewBlankStatement()
+	case DoWhileStatement:
+		s.thenStmt.eval()
 		for s.expr.eval().isTruthy() {
 			s.thenStmt.eval()
 			if execContext.doExit {

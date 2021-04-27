@@ -256,6 +256,10 @@ func (l *Lexer) word(lval *yySymType) int {
 		return WHILE
 	}
 
+	if s == "do" {
+		return DO
+	}
+
 	if s == "break" {
 		return BREAK
 	}

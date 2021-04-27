@@ -1408,3 +1408,23 @@ func TestPreDecrementCellExpression(t *testing.T) {
 		t.Fatalf("want cell value '99', but got %s", v)
 	}
 }
+
+func TestDoWhileStatement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestDoWhileStatement.xlsx"
+	con.code = `do{sum+=i;i+=1;}while(i<10);["A1"]=sum;b=0;do["A2"]=b++;while(0);`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "45" {
+		t.Fatalf("do while statement could not working. want '45', but got %v", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "0" {
+		t.Fatalf("do while statement could not working. want '0', but got %v", v)
+	}
+}
