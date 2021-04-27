@@ -27,8 +27,8 @@ package main
 %left '~' NOT_MATCH
 %right MINUS PLUS
 %right POW
-%right PREINC
 %left INC DEC
+%right PREINC PREDEC
 %left '(' ')'
 %nonassoc THEN
 %nonassoc ELSE
@@ -66,6 +66,7 @@ expr
   | '[' expr ']' INC { $$ = NewIncrementCellExpression($2) }
   | INC '[' expr ']' %prec PREINC { $$ = NewPreIncrementCellExpression($3) }
   | '[' expr ']' DEC { $$ = NewDecrementCellExpression($2) }
+  | DEC '[' expr ']' %prec PREDEC { $$ = NewPreDecrementCellExpression($3) }
   | IDENT { $$ = NewVarReferExpression($1) }
   | IDENT '=' expr { $$ = NewVarAssignExpression($1, $3) }
   | IDENT ADD_ASSIGN expr { $$ = NewAddAssignExpression($1, $3) }
@@ -78,6 +79,7 @@ expr
   | IDENT INC { $$ = NewIncrementExpression($1) }
   | INC IDENT %prec PREINC { $$ = NewPreIncrementExpression($2) }
   | IDENT DEC { $$ = NewDecrementExpression($1) }
+  | DEC IDENT %prec PREDEC { $$ = NewPreDecrementExpression($2) }
   | funcCall
   | expr NUMEQ expr { $$ = NewNumberEQExpression($1, $3) }
   | expr NUMNE expr { $$ = NewNumberNEExpression($1, $3) }

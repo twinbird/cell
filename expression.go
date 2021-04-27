@@ -22,6 +22,7 @@ const (
 	IncrementCellExpression
 	PreIncrementCellExpression
 	DecrementCellExpression
+	PreDecrementCellExpression
 	VarReferExpression
 	VarAssignExpression
 	AddAssignExpression
@@ -34,6 +35,7 @@ const (
 	IncrementExpression
 	PreIncrementExpression
 	DecrementExpression
+	PreDecrementExpression
 	FuncCallExpression
 	NumberEQExpression
 	NumberNEExpression
@@ -139,6 +141,11 @@ func NewDecrementCellExpression(axis *Expression) *Expression {
 	return e
 }
 
+func NewPreDecrementCellExpression(axis *Expression) *Expression {
+	e := &Expression{exprType: PreDecrementCellExpression, left: axis}
+	return e
+}
+
 func NewVarReferExpression(ident string) *Expression {
 	e := &Expression{exprType: VarReferExpression, ident: ident}
 	return e
@@ -196,6 +203,11 @@ func NewPreIncrementExpression(ident string) *Expression {
 
 func NewDecrementExpression(ident string) *Expression {
 	e := &Expression{exprType: DecrementExpression, ident: ident}
+	return e
+}
+
+func NewPreDecrementExpression(ident string) *Expression {
+	e := &Expression{exprType: PreDecrementExpression, ident: ident}
 	return e
 }
 
@@ -425,6 +437,14 @@ func (e *Expression) eval() Node {
 		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
 
 		return NewNumberExpression(f)
+	case PreDecrementCellExpression:
+		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
+		f, _ := maybeNumber(l)
+		v := f - 1
+
+		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
+
+		return NewNumberExpression(v)
 	case VarReferExpression:
 		return execContext.scope.get(e.ident)
 	case VarAssignExpression:
@@ -488,6 +508,11 @@ func (e *Expression) eval() Node {
 		v := NewNumberExpression(l.asNumber() - 1)
 		execContext.scope.set(e.ident, v)
 		return l
+	case PreDecrementExpression:
+		l := execContext.scope.get(e.ident)
+		v := NewNumberExpression(l.asNumber() - 1)
+		execContext.scope.set(e.ident, v)
+		return v
 	case FuncCallExpression:
 		f, found := execContext.functions[e.ident]
 		if !found {
@@ -736,6 +761,8 @@ func (e *Expression) String() string {
 		et = "PreIncrementCellExpression"
 	case DecrementCellExpression:
 		et = "DecrementCellExpression"
+	case PreDecrementCellExpression:
+		et = "PreDecrementCellExpression"
 	case VarReferExpression:
 		et = "VarReferExpression"
 	case VarAssignExpression:
@@ -760,6 +787,8 @@ func (e *Expression) String() string {
 		et = "PreIncrementExpression"
 	case DecrementExpression:
 		et = "DecrementExpression"
+	case PreDecrementExpression:
+		et = "PreDecrementExpression"
 	case FuncCallExpression:
 		et = "FuncCallExpression"
 	case NumberEQExpression:
