@@ -3,8 +3,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"io"
-	"os"
 	"testing"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
@@ -31,25 +29,6 @@ func getCellValue(t *testing.T, filepath string, sheet string, axis string) stri
 		t.Fatalf("on error occured get cell value '%s'.(%v)", axis, err)
 	}
 	return v
-}
-
-func wrapStdio(t *testing.T, f func()) string {
-	r, w, err := os.Pipe()
-	if err != nil {
-		t.Fatal(err)
-	}
-	stdout := os.Stdout
-	os.Stdout = w
-
-	f()
-
-	os.Stdout = stdout
-	w.Close()
-
-	var buf bytes.Buffer
-	io.Copy(&buf, r)
-
-	return buf.String()
 }
 
 func TestSimpleNumberExpression(t *testing.T) {
@@ -1526,5 +1505,23 @@ func TestDefineNoArgFunction(t *testing.T) {
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
 	if v != "42" {
 		t.Fatalf("want cell value '42', but got %s", v)
+	}
+}
+
+func TestDefineWithArgFunction(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestDefineWithArgFunction.xlsx"
+	con.code = `function answer(one, two) {["A1"] = one;["A2"]=two;} answer(1,2);`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "2" {
+		t.Fatalf("want cell value '2', but got %s", v)
 	}
 }

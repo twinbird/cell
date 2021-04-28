@@ -96,6 +96,10 @@ func (f *Function) call(args *ArgList) Node {
 		}
 		return f.builtin(ev...)
 	} else {
+		if len(args.args) != len(f.defineParams.params) {
+			fatalError("invalid as number of arguments for %s", f.defineFuncName)
+		}
+
 		execContext.scope = AppendScope(execContext.scope)
 
 		for i, p := range f.defineParams.params {
