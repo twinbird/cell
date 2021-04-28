@@ -38,6 +38,9 @@ func (s *Scope) get(name string) Node {
 
 	v, ok := s.vars[name]
 	if !ok {
+		if s.parent != nil {
+			return s.parent.get(name)
+		}
 		return NewStringExpression("")
 	}
 	return v

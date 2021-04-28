@@ -1525,3 +1525,21 @@ func TestDefineWithArgFunction(t *testing.T) {
 		t.Fatalf("want cell value '2', but got %s", v)
 	}
 }
+
+func TestFunctionLocalScope(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestFunctionLocalScope.xlsx"
+	con.code = `a=10;b=20;function f(){a=100;["A1"]=a;["A2"]=b;} f();`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "100" {
+		t.Fatalf("want cell value '100', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "20" {
+		t.Fatalf("want cell value '20', but got %s", v)
+	}
+}
