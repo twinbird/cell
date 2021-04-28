@@ -346,9 +346,9 @@ func (e *Expression) eval() Node {
 	case CellAssignExpression:
 		v := e.right.eval()
 
-		_, isnum := maybeNumber(v.asString())
+		f, isnum := maybeNumber(v.asString())
 		if isnum {
-			execContext.spreadsheet.setCellValue(e.left.eval().asString(), v.asNumber())
+			execContext.spreadsheet.setCellValue(e.left.eval().asString(), f)
 		} else {
 			execContext.spreadsheet.setCellValue(e.left.eval().asString(), v.asString())
 		}

@@ -110,6 +110,20 @@ func TestCellAssignToString(t *testing.T) {
 	}
 }
 
+func TestCellAssignNumberString(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestCellAssignNumberString.xlsx"
+	con.code = `["A1"] = "5"`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "5" {
+		t.Fatalf("want cell value '5', but got %s", v)
+	}
+}
+
 func TestCellReferFromString(t *testing.T) {
 	con := NewExecContext()
 	con.frompath = "test/values.xlsx"
