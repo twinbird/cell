@@ -17,6 +17,7 @@ type ExecContext struct {
 	exitCode    int
 	scope       *Scope
 	functions   map[string]*Function
+	funcRet     Node
 	doExit      bool
 	doBreak     bool
 	doContinue  bool

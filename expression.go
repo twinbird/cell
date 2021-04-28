@@ -736,5 +736,12 @@ func (e *Expression) nodeType() int {
 }
 
 func (e *Expression) String() string {
-	return fmt.Sprintf("[Type: Expression] expr type: %s\n", e.exprType.String())
+	v := ""
+	if e.exprType == NumberExpression {
+		v = e.asString()
+	}
+	if e.exprType == StringExpression {
+		v = e.asString()
+	}
+	return fmt.Sprintf("[Type: Expression] expr type: %s [%s]\n", e.exprType.String(), v)
 }

@@ -1514,3 +1514,17 @@ func TestContinueStatementInFor(t *testing.T) {
 		t.Fatalf("want cell value '42', but got %s", v)
 	}
 }
+
+func TestDefineNoArgFunction(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestDefineNoArgFunction.xlsx"
+	con.code = `function answer() {["A1"] = 42;} answer();`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "42" {
+		t.Fatalf("want cell value '42', but got %s", v)
+	}
+}

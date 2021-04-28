@@ -10,14 +10,16 @@ package main
   stmts *Statements
   ident string
   args *ArgList
+  params *ParamList
 }
 %type<stmts>  program stmts
 %type<stmt>   stmt
 %type<expr>   expr funcCall 
 %type<args>   argList
+%type<params> paramList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE INC DEC DO FOR
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE INC DEC DO FOR FUNCTION
 %token<ident> IDENT
 %left '=' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN CONCAT_ASSIGN
 %left AND OR '!'
@@ -52,6 +54,7 @@ stmt
   | FOR '(' expr LF expr LF expr ')' stmt { $$ = NewForStatement($3, $5, $7, $9) }
   | BREAK LF { $$ = NewBreakStatement() }
   | CONTINUE LF { $$ = NewContinueStatement() }
+  | FUNCTION IDENT '(' paramList ')' stmt { $$ = NewFunctionDefineStatement($2, $4, $6) }
 
 expr
   : NUMBER { $$ = NewNumberExpression($1) }
@@ -114,4 +117,9 @@ funcCall
 argList
   : expr { $$ = NewArgList($1) }
   | expr ',' argList { $$ = $3.appendArg($1) }
+
+paramList
+  : { $$ = NewEmptyParamList() }
+  | IDENT { $$ = NewParamList($1) }
+  | IDENT ',' paramList { $$ = $3.appendParam($1) }
 %%

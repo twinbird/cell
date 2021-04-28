@@ -30,22 +30,96 @@ func NewEmptyArgList() *ArgList {
 	return a
 }
 
+type ParamList struct {
+	params []string
+}
+
+func NewParamList(ident string) *ParamList {
+	p := &ParamList{}
+	p.params = make([]string, 1)
+	p.params[0] = ident
+
+	return p
+}
+
+func (params *ParamList) appendParam(ident string) *ParamList {
+	params.params = append(params.params, ident)
+	return params
+}
+
+func NewEmptyParamList() *ParamList {
+	p := &ParamList{}
+	p.params = make([]string, 0)
+
+	return p
+}
+
+const (
+	FunctionTypeBuiltin = iota
+	FunctionTypeDefine
+)
+
 type Function struct {
-	builtin func(args ...Node) Node
+	funcType       int
+	builtin        func(args ...Node) Node
+	defineParams   *ParamList
+	defineStmt     *Statement
+	defineFuncName string
 }
 
 func NewBuiltinFunction(f func(args ...Node) Node) *Function {
 	return &Function{
-		builtin: f,
+		funcType: FunctionTypeBuiltin,
+		builtin:  f,
 	}
 }
 
-func (f *Function) call(args *ArgList) Node {
-	ev := make([]Node, 0)
-	for _, v := range args.args {
-		ev = append(ev, v.eval())
+func defineFunction(name string, params *ParamList, stmt *Statement) {
+	f := &Function{
+		funcType:       FunctionTypeDefine,
+		defineParams:   params,
+		defineStmt:     stmt,
+		defineFuncName: name,
 	}
-	return f.builtin(ev...)
+	_, exist := execContext.functions[name]
+	if exist {
+		fatalError("function '%s' is already defined", name)
+	}
+	execContext.functions[name] = f
+}
+
+func (f *Function) call(args *ArgList) Node {
+	if f.funcType == FunctionTypeBuiltin {
+		ev := make([]Node, 0)
+		for _, v := range args.args {
+			ev = append(ev, v.eval())
+		}
+		return f.builtin(ev...)
+	} else {
+		execContext.scope = AppendScope(execContext.scope)
+
+		for i, p := range f.defineParams.params {
+			if i < len(args.args) {
+				execContext.scope.set(p, args.args[i].eval())
+			} else {
+				execContext.scope.set(p, NewStringExpression(""))
+			}
+		}
+		execContext.funcRet = nil
+		f.defineStmt.eval()
+
+		var ret Node
+		if execContext.funcRet != nil {
+			ret = execContext.funcRet
+			execContext.funcRet = nil
+		} else {
+			ret = NewStringExpression("")
+		}
+
+		execContext.scope = execContext.scope.parent
+
+		return ret
+	}
 }
 
 func builtinFunctions() map[string]*Function {

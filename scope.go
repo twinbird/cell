@@ -6,13 +6,20 @@ import (
 )
 
 type Scope struct {
-	vars map[string]Node
+	vars   map[string]Node
+	parent *Scope
 }
 
 func NewScope() *Scope {
 	s := &Scope{}
 	s.vars = make(map[string]Node)
 	return s
+}
+
+func AppendScope(s *Scope) *Scope {
+	ns := &Scope{parent: s}
+	ns.vars = make(map[string]Node)
+	return ns
 }
 
 func (s *Scope) set(name string, value Node) Node {
