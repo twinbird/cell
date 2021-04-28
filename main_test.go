@@ -1442,3 +1442,31 @@ func TestDoWhileStatement(t *testing.T) {
 		t.Fatalf("do while statement could not working. want '0', but got %v", v)
 	}
 }
+
+func TestBreakStatementInDoWhile(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestBreakStatementInDoWhile.xlsx"
+	con.code = `do{sum+=i;if(i==3)break;i+=1;}while(i<10);["A1"]=sum`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "6" {
+		t.Fatalf("want cell value '6', but got %s", v)
+	}
+}
+
+func TestContinueStatementInDoWhile(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestContinueStatementInDoWhile.xlsx"
+	con.code = `do{sum+=i;i+=1;if(i==3)continue;}while(i<10);["A1"]=sum`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "45" {
+		t.Fatalf("want cell value '45', but got %s", v)
+	}
+}
