@@ -10,6 +10,7 @@ const (
 	BlockStatement
 	WhileStatement
 	DoWhileStatement
+	ForStatement
 	BreakStatement
 	ContinueStatement
 )
@@ -17,6 +18,8 @@ const (
 type Statement struct {
 	stmtType int
 	expr     *Expression
+	init     *Expression
+	inc      *Expression
 	thenStmt *Statement
 	elseStmt *Statement
 	block    *Statements
@@ -54,6 +57,11 @@ func NewWhileStatement(expr *Expression, then *Statement) *Statement {
 
 func NewDoWhileStatement(then *Statement, expr *Expression) *Statement {
 	s := &Statement{stmtType: DoWhileStatement, expr: expr, thenStmt: then}
+	return s
+}
+
+func NewForStatement(init *Expression, cond *Expression, inc *Expression, then *Statement) *Statement {
+	s := &Statement{stmtType: ForStatement, init: init, expr: cond, inc: inc, thenStmt: then}
 	return s
 }
 
@@ -114,6 +122,24 @@ func (s *Statement) eval() Node {
 				execContext.doBreak = false
 				break
 			}
+			if execContext.doContinue {
+				execContext.doContinue = false
+				continue
+			}
+		}
+		return NewBlankStatement()
+	case ForStatement:
+		s.init.eval()
+		for s.expr.eval().isTruthy() {
+			s.thenStmt.eval()
+			if execContext.doExit {
+				break
+			}
+			if execContext.doBreak {
+				execContext.doBreak = false
+				break
+			}
+			s.inc.eval()
 			if execContext.doContinue {
 				execContext.doContinue = false
 				continue

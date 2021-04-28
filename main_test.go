@@ -1300,14 +1300,14 @@ func TestBreakStatement(t *testing.T) {
 func TestContinueStatement(t *testing.T) {
 	con := NewExecContext()
 	con.topath = "TestContinueStatement.xlsx"
-	con.code = `while(i<10){sum+=i;i+=1;if(i==3)continue;}["A1"]=sum`
+	con.code = `while(i<10){i+=1;if(i==3)continue;sum+=i;}["A1"]=sum`
 	run(con)
 	if con.exitCode != 0 {
 		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
-	if v != "45" {
-		t.Fatalf("want cell value '45', but got %s", v)
+	if v != "52" {
+		t.Fatalf("want cell value '52', but got %s", v)
 	}
 }
 
@@ -1460,13 +1460,57 @@ func TestBreakStatementInDoWhile(t *testing.T) {
 func TestContinueStatementInDoWhile(t *testing.T) {
 	con := NewExecContext()
 	con.topath = "TestContinueStatementInDoWhile.xlsx"
-	con.code = `do{sum+=i;i+=1;if(i==3)continue;}while(i<10);["A1"]=sum`
+	con.code = `do{i+=1;if(i==3)continue;sum+=i;}while(i<10);["A1"]=sum`
 	run(con)
 	if con.exitCode != 0 {
 		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "52" {
+		t.Fatalf("want cell value '52', but got %s", v)
+	}
+}
+
+func TestForStatement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestForStatement.xlsx"
+	con.code = `sum=0;for(i=0; i<10; i++) sum+=i; ["A1"]=sum`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
 	if v != "45" {
-		t.Fatalf("want cell value '45', but got %s", v)
+		t.Fatalf("do while statement could not working. want '45', but got %v", v)
+	}
+}
+
+func TestBreakStatementInFor(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestBreakStatementInFor.xlsx"
+	con.code = `for(i=0;i<10;i++){if(i==3)break;sum+=i;}["A1"]=sum;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "3" {
+		t.Fatalf("want cell value '3', but got %s", v)
+	}
+}
+
+func TestContinueStatementInFor(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestContinueStatementInFor.xlsx"
+	con.code = `for(i=0;i<10;i++){if(i==3)continue;sum+=i;}["A1"]=sum;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "42" {
+		t.Fatalf("want cell value '42', but got %s", v)
 	}
 }

@@ -17,7 +17,7 @@ package main
 %type<args>   argList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE INC DEC DO
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE INC DEC DO FOR
 %token<ident> IDENT
 %left '=' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN CONCAT_ASSIGN
 %left AND OR '!'
@@ -49,6 +49,7 @@ stmt
   | '{' stmts '}' { $$ = NewBlockStatement($2) }
   | WHILE '(' expr ')' stmt { $$ = NewWhileStatement($3, $5) }
   | DO stmt WHILE '(' expr ')' LF { $$ = NewDoWhileStatement($2, $5) }
+  | FOR '(' expr LF expr LF expr ')' stmt { $$ = NewForStatement($3, $5, $7, $9) }
   | BREAK LF { $$ = NewBreakStatement() }
   | CONTINUE LF { $$ = NewContinueStatement() }
 

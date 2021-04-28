@@ -260,6 +260,10 @@ func (l *Lexer) word(lval *yySymType) int {
 		return DO
 	}
 
+	if s == "for" {
+		return FOR
+	}
+
 	if s == "break" {
 		return BREAK
 	}
