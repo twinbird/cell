@@ -21,6 +21,7 @@ type ExecContext struct {
 	doExit      bool
 	doBreak     bool
 	doContinue  bool
+	doReturn    bool
 	in          *bufio.Reader
 	out         io.Writer
 	errout      io.Writer

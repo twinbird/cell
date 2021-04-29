@@ -276,6 +276,10 @@ func (l *Lexer) word(lval *yySymType) int {
 		return FUNCTION
 	}
 
+	if s == "return" {
+		return RETURN
+	}
+
 	lval.ident = s
 	return IDENT
 }

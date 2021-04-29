@@ -1543,3 +1543,53 @@ func TestFunctionLocalScope(t *testing.T) {
 		t.Fatalf("want cell value '20', but got %s", v)
 	}
 }
+
+func TestReturnStatement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestReturnStatement.xlsx"
+	con.code = `function f(){return 100;["A2"] = 20;} ["A1"] = f();`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "100" {
+		t.Fatalf("want cell value '100', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "" {
+		t.Fatalf("want cell value '', but got %s", v)
+	}
+}
+
+func TestNestedReturnStatement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestNestedReturnStatement.xlsx"
+	con.code = `function f1(){return 100;["A2"] = 20;} function f2(){ return f1() + 200; } ["A1"]=f2();`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "300" {
+		t.Fatalf("want cell value '300', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "" {
+		t.Fatalf("want cell value '', but got %s", v)
+	}
+}
+
+func TestRecursiveFunction(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestRecursiveFunction.xlsx"
+	con.code = `function fib(n) {if(n == 0 || n == 1) { return 1;} else { return fib(n-1)+fib(n-2);}} ["A1"]=fib(7);`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "21" {
+		t.Fatalf("want cell value '21', but got %s", v)
+	}
+}

@@ -19,7 +19,7 @@ package main
 %type<params> paramList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE INC DEC DO FOR FUNCTION
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE INC DEC DO FOR FUNCTION RETURN
 %token<ident> IDENT
 %left '=' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN CONCAT_ASSIGN
 %left AND OR '!'
@@ -55,6 +55,8 @@ stmt
   | BREAK LF { $$ = NewBreakStatement() }
   | CONTINUE LF { $$ = NewContinueStatement() }
   | FUNCTION IDENT '(' paramList ')' stmt { $$ = NewFunctionDefineStatement($2, $4, $6) }
+  | RETURN LF { $$ = NewReturnStatement(NewStringExpression("")) }
+  | RETURN expr LF { $$ = NewReturnStatement($2) }
 
 expr
   : NUMBER { $$ = NewNumberExpression($1) }

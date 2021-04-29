@@ -27,6 +27,9 @@ func (stmts *Statements) eval() Node {
 		if execContext.doExit {
 			break
 		}
+		if execContext.doReturn {
+			break
+		}
 		if execContext.doBreak {
 			break
 		}

@@ -110,11 +110,13 @@ func (f *Function) call(args *ArgList) Node {
 			}
 		}
 		execContext.funcRet = nil
+		execContext.doReturn = false
 		f.defineStmt.eval()
 
 		var ret Node
-		if execContext.funcRet != nil {
+		if execContext.doReturn {
 			ret = execContext.funcRet
+			execContext.doReturn = false
 			execContext.funcRet = nil
 		} else {
 			ret = NewStringExpression("")

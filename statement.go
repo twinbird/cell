@@ -14,6 +14,7 @@ const (
 	BreakStatement
 	ContinueStatement
 	FunctionStatement
+	ReturnStatement
 )
 
 type Statement struct {
@@ -80,6 +81,11 @@ func NewContinueStatement() *Statement {
 
 func NewFunctionDefineStatement(name string, params *ParamList, then *Statement) *Statement {
 	s := &Statement{stmtType: FunctionStatement, funcName: name, params: params, thenStmt: then}
+	return s
+}
+
+func NewReturnStatement(expr *Expression) *Statement {
+	s := &Statement{stmtType: ReturnStatement, expr: expr}
 	return s
 }
 
@@ -162,6 +168,10 @@ func (s *Statement) eval() Node {
 		return NewBlankStatement()
 	case FunctionStatement:
 		defineFunction(s.funcName, s.params, s.thenStmt)
+		return NewBlankStatement()
+	case ReturnStatement:
+		execContext.funcRet = s.expr.eval()
+		execContext.doReturn = true
 		return NewBlankStatement()
 	}
 	panic("evaluate unknown type.")
