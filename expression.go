@@ -698,6 +698,10 @@ func (e *Expression) asNumber() float64 {
 		return e.number
 	}
 	if e.exprType == StringExpression {
+		f, ok := maybeNumber(e.str)
+		if ok {
+			return f
+		}
 		return 0
 	}
 	return e.asNumber()

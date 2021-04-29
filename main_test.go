@@ -1593,3 +1593,31 @@ func TestRecursiveFunction(t *testing.T) {
 		t.Fatalf("want cell value '21', but got %s", v)
 	}
 }
+
+func TestEvalStringAsNumber(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestEvalStringAsNumber.xlsx"
+	con.code = `["A1"] = "1" == 1;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+}
+
+func TestEvalNumberAsString(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestEvalNumberAsString.xlsx"
+	con.code = `["A1"] = "1" eq 1;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+}
