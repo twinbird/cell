@@ -1758,3 +1758,25 @@ func TestLastColSpecialVar(t *testing.T) {
 		t.Fatalf("LR want '%s', but got '%s'", "5", v)
 	}
 }
+
+func TestStringIncrement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestStringIncrement.xlsx"
+	con.code = `col="z";b=col++;["A1"]=col;["A2"]=b;col="a1";col++;["A3"]=col;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "AA" {
+		t.Fatalf("LR want '%s', but got '%s'", "AA", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "z" {
+		t.Fatalf("LR want '%s', but got '%s'", "z", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A3")
+	if v != "1" {
+		t.Fatalf("LR want '%s', but got '%s'", "1", v)
+	}
+}

@@ -504,6 +504,11 @@ func (e *Expression) eval() Node {
 			return l
 		} else {
 			l := execContext.scope.get(e.ident)
+			if a, err := incrementColumnNumber(l.asString()); err == nil {
+				v := NewStringExpression(a)
+				execContext.scope.set(e.ident, v)
+				return l
+			}
 			v := NewNumberExpression(l.asNumber() + 1)
 			execContext.scope.set(e.ident, v)
 			return l
