@@ -198,3 +198,29 @@ func (s *Spreadsheet) getRowsCount() int {
 	}
 	return len(rows)
 }
+
+func columnNameToNumber(name string) (int, error) {
+	return excelize.ColumnNameToNumber(name)
+}
+
+func columnNumberToName(num int) (string, error) {
+	return excelize.ColumnNumberToName(num)
+}
+
+func incrementColumnNumber(name string) (string, error) {
+	n, err := columnNameToNumber(name)
+	if err != nil {
+		return "", err
+	}
+	n++
+	return columnNumberToName(n)
+}
+
+func decrementColumnNumber(name string) (string, error) {
+	n, err := columnNameToNumber(name)
+	if err != nil {
+		return "", err
+	}
+	n--
+	return columnNumberToName(n)
+}

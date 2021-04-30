@@ -306,3 +306,61 @@ func TestGetAlphaColsCount(t *testing.T) {
 		t.Fatalf("cols count want %s, but got %s", "E", v)
 	}
 }
+
+func TestIncrementColumnNumber(t *testing.T) {
+	c := "A"
+	v, err := incrementColumnNumber(c)
+	if err != nil {
+		t.Fatalf("error '%v' occured at 'A' increment", err)
+	}
+	if v != "B" {
+		t.Fatalf("cols count want %s, but got %s", "B", v)
+	}
+
+	c = "Z"
+	v, err = incrementColumnNumber(c)
+	if err != nil {
+		t.Fatalf("error '%v' occured at 'Z' increment", err)
+	}
+	if v != "AA" {
+		t.Fatalf("cols count want %s, but got %s", "AA", v)
+	}
+
+	c = "A1"
+	v, err = incrementColumnNumber(c)
+	if err == nil {
+		t.Fatalf("converted 'A1' but not error occured.")
+	}
+}
+
+func TestDecrementColumnNumber(t *testing.T) {
+	c := "B"
+	v, err := decrementColumnNumber(c)
+	if err != nil {
+		t.Fatalf("error '%v' occured at 'B' decrement", err)
+	}
+	if v != "A" {
+		t.Fatalf("cols count want %s, but got %s", "A", v)
+	}
+
+	c = "AA"
+	v, err = decrementColumnNumber(c)
+	if err != nil {
+		t.Fatalf("error '%v' occured at 'AA' decrement", err)
+	}
+	if v != "Z" {
+		t.Fatalf("cols count want %s, but got %s", "Z", v)
+	}
+
+	c = "A1"
+	v, err = decrementColumnNumber(c)
+	if err == nil {
+		t.Fatalf("converted 'A1' but not error occured.")
+	}
+
+	c = "A"
+	v, err = decrementColumnNumber(c)
+	if err == nil {
+		t.Fatalf("converted 'A' but not error occured.")
+	}
+}
