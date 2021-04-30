@@ -7,6 +7,12 @@ test: cell *_test.go
 	go test
 	./test.sh
 
+.PHONY: install-dev-tools
+install-dev-tools:
+	go get golang.org/x/tools/cmd/stringer
+	go install golang.org/x/tools/cmd/goyacc
+
+.PHONY: clean
 clean:
 	rm -f *.xlsx
 	rm -f cell
