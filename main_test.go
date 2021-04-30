@@ -1722,3 +1722,21 @@ func TestResetInputSpecialVars(t *testing.T) {
 		t.Fatalf("A6 is '%s'. $3 should reset.", actual)
 	}
 }
+
+func TestLastRowSpecialVar(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestLastRowSpecialVar.xlsx"
+	con.code = `["A1"]=LR;["A20"] = "a";["A2"]=LR;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "0" {
+		t.Fatalf("LR want '%s', but got '%s'", "0", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "20" {
+		t.Fatalf("LR want '%s', but got '%s'", "20", v)
+	}
+}

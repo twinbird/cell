@@ -51,6 +51,8 @@ func (s *Scope) isSpecialVar(name string) bool {
 	switch name {
 	case "@":
 		return true
+	case "LR":
+		return true
 	}
 	return false
 }
@@ -60,6 +62,10 @@ func (s *Scope) getSpecialVar(name string) Node {
 	case "@":
 		s := execContext.spreadsheet.getActiveSheetName()
 		return NewStringExpression(s)
+	case "LR":
+		// return active sheet Last Row index(start by 1)
+		n := execContext.spreadsheet.getRowsCount()
+		return NewNumberExpression(float64(n))
 	}
 	panic("unknown special var referenced")
 }
@@ -75,6 +81,8 @@ func (s *Scope) setSpecialVar(name string, value Node) Node {
 			}
 		}
 		return NewStringExpression(s)
+	case "LR":
+		fatalError("can not assign special var 'LR'")
 	}
 	panic("assign to unknown special var")
 }
