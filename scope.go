@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"regexp"
 	"strconv"
 )
@@ -84,9 +85,22 @@ func (s *Scope) setDollarSpecialVars(input string) {
 	a := reg.Split(input, -1)
 	execContext.scope.set("$0", NewStringExpression(input))
 
+	if len(a) > math.MaxUint16 {
+		fatalError("'%s' has too many fields", input)
+	}
+
+	s.resetDollarSpecialVars()
+	execContext.ndollars = uint16(len(a))
 	for i, v := range a {
 		idx := strconv.Itoa(i + 1)
 		execContext.scope.set("$"+idx, NewStringExpression(v))
+	}
+}
+
+func (s *Scope) resetDollarSpecialVars() {
+	for i := 0; i < int(execContext.ndollars); i++ {
+		idx := strconv.Itoa(i + 1)
+		execContext.scope.set("$"+idx, NewStringExpression(""))
 	}
 }
 

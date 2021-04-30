@@ -1677,3 +1677,48 @@ func TestPreDecrementExpressionForAtmark(t *testing.T) {
 		t.Fatalf("want cell value 'add1', but got %s", v)
 	}
 }
+
+func TestResetInputSpecialVars(t *testing.T) {
+	expect := "aa bb cc\ndd ee"
+	in := bufio.NewReader(bytes.NewBufferString(expect))
+
+	con := NewExecContext()
+	con.topath = "TestResetInputSpecialVars.xlsx"
+	con.in = in
+	con.code = `gets();["A1"]=$1;["A2"]=$2;["A3"]=$3;gets();["A4"]=$1;["A5"]=$2;["A6"]=$3;`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	actual := getCellValue(t, con.topath, "Sheet1", "A1")
+	if actual != "aa" {
+		t.Fatalf("A1 value wrong. want '%s', but got '%s'", "aa", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A2")
+	if actual != "bb" {
+		t.Fatalf("A2 value wrong. want '%s', but got '%s'", "bb", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A3")
+	if actual != "cc" {
+		t.Fatalf("A3 value wrong. want '%s', but got '%s'", "cc", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A4")
+	if actual != "dd" {
+		t.Fatalf("A4 value wrong. want '%s', but got '%s'", "dd", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A5")
+	if actual != "ee" {
+		t.Fatalf("A5 value wrong. want '%s', but got '%s'", "ee", actual)
+	}
+
+	actual = getCellValue(t, con.topath, "Sheet1", "A6")
+	if actual != "" {
+		t.Fatalf("A6 is '%s'. $3 should reset.", actual)
+	}
+}

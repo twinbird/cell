@@ -16,6 +16,7 @@ type ExecContext struct {
 	spreadsheet *Spreadsheet
 	exitCode    int
 	scope       *Scope
+	ndollars    uint16
 	functions   map[string]*Function
 	funcRet     Node
 	doExit      bool
