@@ -273,3 +273,36 @@ func TestSetTailSheet(t *testing.T) {
 		t.Fatalf("setTailSheet() could not changed active sheet name. want '%s', but '%s'", "baz", s)
 	}
 }
+
+func TestGetColsCount(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+	sheet.setCellValue("D10", "20")
+	sheet.setCellValue("E11", "21")
+
+	v := sheet.getColsCount()
+	if v != 5 {
+		t.Fatalf("cols count want %d, but got %d", 5, v)
+	}
+}
+
+func TestGetRowsCount(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+	sheet.setCellValue("D10", "20")
+	sheet.setCellValue("E11", "21")
+
+	v := sheet.getRowsCount()
+	if v != 11 {
+		t.Fatalf("cols count want %d, but got %d", 11, v)
+	}
+}
+
+func TestGetAlphaColsCount(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+	sheet.setCellValue("D10", "20")
+	sheet.setCellValue("E11", "21")
+
+	v := sheet.getAlphaColsCount()
+	if v != "E" {
+		t.Fatalf("cols count want %s, but got %s", "E", v)
+	}
+}

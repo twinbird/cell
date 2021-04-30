@@ -165,3 +165,36 @@ func (s *Spreadsheet) setTailSheet() string {
 	s.activeSheet = name
 	return name
 }
+
+func (s *Spreadsheet) getColsCount() int {
+	current := s.file.GetSheetIndex(s.activeSheet)
+	if current < 0 {
+		fatalError("current worksheet not found in getColsCount()")
+	}
+	cols, err := s.file.GetCols(s.activeSheet)
+	if err != nil {
+		fatalError("cols count error. %v", err)
+	}
+	return len(cols)
+}
+
+func (s *Spreadsheet) getAlphaColsCount() string {
+	c := s.getColsCount()
+	name, err := excelize.ColumnNumberToName(c)
+	if err != nil {
+		return ""
+	}
+	return name
+}
+
+func (s *Spreadsheet) getRowsCount() int {
+	current := s.file.GetSheetIndex(s.activeSheet)
+	if current < 0 {
+		fatalError("current worksheet not found in getRowsCount()")
+	}
+	rows, err := s.file.GetRows(s.activeSheet)
+	if err != nil {
+		fatalError("rows count error. %v", err)
+	}
+	return len(rows)
+}
