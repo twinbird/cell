@@ -1621,3 +1621,59 @@ func TestEvalNumberAsString(t *testing.T) {
 		t.Fatalf("want cell value '1', but got %s", v)
 	}
 }
+
+func TestIncrementExpressionForAtmark(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestIncrementExpressionForAtmark.xlsx"
+	con.code = `@="add1";@="add2";@="Sheet1";["A1"]=@++;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "add1", "A1")
+	if v != "Sheet1" {
+		t.Fatalf("want cell value 'Sheet1', but got %s", v)
+	}
+}
+
+func TestPreIncrementExpressionForAtmark(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestPreIncrementExpressionForAtmark.xlsx"
+	con.code = `@="add1";@="add2";@="Sheet1";["A1"]=++@;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "add1", "A1")
+	if v != "add1" {
+		t.Fatalf("want cell value 'add1', but got %s", v)
+	}
+}
+
+func TestDecrementExpressionForAtmark(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestDecrementExpressionForAtmark.xlsx"
+	con.code = `@="add1";@="add2";["A1"]=@--;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "add1", "A1")
+	if v != "add2" {
+		t.Fatalf("want cell value 'add2', but got %s", v)
+	}
+}
+
+func TestPreDecrementExpressionForAtmark(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestPreDecrementExpressionForAtmark.xlsx"
+	con.code = `@="add1";@="add2";["A1"]=--@;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "add1", "A1")
+	if v != "add1" {
+		t.Fatalf("want cell value 'add1', but got %s", v)
+	}
+}

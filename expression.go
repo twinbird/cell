@@ -497,25 +497,53 @@ func (e *Expression) eval() Node {
 		execContext.scope.set(e.ident, v)
 		return v
 	case IncrementExpression:
-		l := execContext.scope.get(e.ident)
-		v := NewNumberExpression(l.asNumber() + 1)
-		execContext.scope.set(e.ident, v)
-		return l
+		if e.ident == "@" {
+			l := execContext.scope.get(e.ident)
+			s := execContext.spreadsheet.setNextSheet()
+			execContext.scope.set(e.ident, NewStringExpression(s))
+			return l
+		} else {
+			l := execContext.scope.get(e.ident)
+			v := NewNumberExpression(l.asNumber() + 1)
+			execContext.scope.set(e.ident, v)
+			return l
+		}
 	case PreIncrementExpression:
-		l := execContext.scope.get(e.ident)
-		v := NewNumberExpression(l.asNumber() + 1)
-		execContext.scope.set(e.ident, v)
-		return v
+		if e.ident == "@" {
+			s := execContext.spreadsheet.setNextSheet()
+			v := NewStringExpression(s)
+			execContext.scope.set(e.ident, v)
+			return v
+		} else {
+			l := execContext.scope.get(e.ident)
+			v := NewNumberExpression(l.asNumber() + 1)
+			execContext.scope.set(e.ident, v)
+			return v
+		}
 	case DecrementExpression:
-		l := execContext.scope.get(e.ident)
-		v := NewNumberExpression(l.asNumber() - 1)
-		execContext.scope.set(e.ident, v)
-		return l
+		if e.ident == "@" {
+			l := execContext.scope.get(e.ident)
+			v := execContext.spreadsheet.setPrevSheet()
+			execContext.scope.set(e.ident, NewStringExpression(v))
+			return l
+		} else {
+			l := execContext.scope.get(e.ident)
+			v := NewNumberExpression(l.asNumber() - 1)
+			execContext.scope.set(e.ident, v)
+			return l
+		}
 	case PreDecrementExpression:
-		l := execContext.scope.get(e.ident)
-		v := NewNumberExpression(l.asNumber() - 1)
-		execContext.scope.set(e.ident, v)
-		return v
+		if e.ident == "@" {
+			s := execContext.spreadsheet.setPrevSheet()
+			v := NewStringExpression(s)
+			execContext.scope.set(e.ident, v)
+			return v
+		} else {
+			l := execContext.scope.get(e.ident)
+			v := NewNumberExpression(l.asNumber() - 1)
+			execContext.scope.set(e.ident, v)
+			return v
+		}
 	case FuncCallExpression:
 		f, found := execContext.functions[e.ident]
 		if !found {
