@@ -102,3 +102,66 @@ func (s *Spreadsheet) addSheet(name string) error {
 	s.file.NewSheet(name)
 	return s.setActiveSheetByName(name)
 }
+
+func (s *Spreadsheet) setNextSheet() string {
+	list := s.file.GetSheetList()
+	current := s.file.GetSheetIndex(s.activeSheet)
+	if current < 0 {
+		fatalError("current worksheet not found in setNextSheet()")
+	}
+	idx := current + 1
+
+	if idx < 0 || len(list) <= idx {
+		return ""
+	}
+
+	s.file.SetActiveSheet(idx)
+	name := s.file.GetSheetName(idx)
+	s.activeSheet = name
+	return name
+}
+
+func (s *Spreadsheet) setPrevSheet() string {
+	list := s.file.GetSheetList()
+	current := s.file.GetSheetIndex(s.activeSheet)
+	if current < 0 {
+		fatalError("current worksheet not found in setPrevSheet()")
+	}
+	idx := current - 1
+
+	if idx < 0 || len(list) <= idx {
+		return ""
+	}
+
+	s.file.SetActiveSheet(idx)
+	name := s.file.GetSheetName(idx)
+	s.activeSheet = name
+	return name
+}
+
+func (s *Spreadsheet) setHeadSheet() string {
+	current := s.file.GetSheetIndex(s.activeSheet)
+	if current < 0 {
+		fatalError("current worksheet not found in setPrevSheet()")
+	}
+	idx := 0
+
+	s.file.SetActiveSheet(idx)
+	name := s.file.GetSheetName(idx)
+	s.activeSheet = name
+	return name
+}
+
+func (s *Spreadsheet) setTailSheet() string {
+	list := s.file.GetSheetList()
+	current := s.file.GetSheetIndex(s.activeSheet)
+	if current < 0 {
+		fatalError("current worksheet not found in setPrevSheet()")
+	}
+	idx := len(list) - 1
+
+	s.file.SetActiveSheet(idx)
+	name := s.file.GetSheetName(idx)
+	s.activeSheet = name
+	return name
+}

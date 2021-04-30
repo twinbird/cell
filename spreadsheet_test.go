@@ -149,3 +149,127 @@ func TestAddSheet(t *testing.T) {
 		t.Fatalf("addsheet() called, but no sheet has been added")
 	}
 }
+
+func TestSetNextSheet(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+	sheet.addSheet("foo")
+	sheet.addSheet("bar")
+	sheet.addSheet("baz")
+
+	sheet.setActiveSheetByName("Sheet1")
+	n := sheet.setNextSheet()
+	if n != "foo" {
+		t.Fatalf("setNextSheet() return '%s', but want '%s'", n, "foo")
+	}
+	s := sheet.getActiveSheetName()
+	if s != "foo" {
+		t.Fatalf("setNextSheet() could not change sheet. want '%s', but '%s'", "foo", s)
+	}
+
+	n = sheet.setNextSheet()
+	if n != "bar" {
+		t.Fatalf("setNextSheet() return '%s', but want '%s'", n, "bar")
+	}
+	s = sheet.getActiveSheetName()
+	if s != "bar" {
+		t.Fatalf("setNextSheet() could not change sheet. want '%s', but '%s'", "bar", s)
+	}
+
+	n = sheet.setNextSheet()
+	if n != "baz" {
+		t.Fatalf("setNextSheet() return '%s', but want '%s'", n, "baz")
+	}
+	s = sheet.getActiveSheetName()
+	if s != "baz" {
+		t.Fatalf("setNextSheet() could not change sheet. want '%s', but '%s'", "baz", s)
+	}
+
+	n = sheet.setNextSheet()
+	if n != "" {
+		t.Fatalf("setNextSheet() return '%s', but want '%s'", n, "")
+	}
+	s = sheet.getActiveSheetName()
+	if s != "baz" {
+		t.Fatalf("setNextSheet() changed sheet on last sheet. want '%s', but '%s'", "baz", s)
+	}
+}
+
+func TestSetPrevSheet(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+	sheet.addSheet("foo")
+	sheet.addSheet("bar")
+	sheet.addSheet("baz")
+
+	sheet.setActiveSheetByName("baz")
+	n := sheet.setPrevSheet()
+	if n != "bar" {
+		t.Fatalf("setPrevSheet() return '%s', but want '%s'", n, "bar")
+	}
+	s := sheet.getActiveSheetName()
+	if s != "bar" {
+		t.Fatalf("setPrevSheet() could not change sheet. want '%s', but '%s'", "bar", s)
+	}
+
+	n = sheet.setPrevSheet()
+	if n != "foo" {
+		t.Fatalf("setPrevSheet() return '%s', but want '%s'", n, "foo")
+	}
+	s = sheet.getActiveSheetName()
+	if s != "foo" {
+		t.Fatalf("setPrevSheet() could not change sheet. want '%s', but '%s'", "foo", s)
+	}
+
+	n = sheet.setPrevSheet()
+	if n != "Sheet1" {
+		t.Fatalf("setPrevSheet() return '%s', but want '%s'", n, "Sheet1")
+	}
+	s = sheet.getActiveSheetName()
+	if s != "Sheet1" {
+		t.Fatalf("setPrevSheet() could not change sheet. want '%s', but '%s'", "Sheet1", s)
+	}
+
+	n = sheet.setPrevSheet()
+	if n != "" {
+		t.Fatalf("setPrevSheet() return '%s', but want '%s'", n, "")
+	}
+	s = sheet.getActiveSheetName()
+	if s != "Sheet1" {
+		t.Fatalf("setPrevSheet() changed sheet on last sheet. want '%s', but '%s'", "Sheet1", s)
+	}
+}
+
+func TestSetHeadSheet(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+	sheet.addSheet("foo")
+	sheet.addSheet("bar")
+	sheet.addSheet("baz")
+
+	sheet.setActiveSheetByName("bar")
+
+	n := sheet.setHeadSheet()
+	if n != "Sheet1" {
+		t.Fatalf("setHeadSheet() could not changed active sheet. want '%s', but '%s'", "Sheet1", n)
+	}
+	s := sheet.getActiveSheetName()
+	if s != "Sheet1" {
+		t.Fatalf("setHeadSheet() could not changed active sheet name. want '%s', but '%s'", "Sheet1", s)
+	}
+}
+
+func TestSetTailSheet(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+	sheet.addSheet("foo")
+	sheet.addSheet("bar")
+	sheet.addSheet("baz")
+
+	sheet.setActiveSheetByName("bar")
+
+	n := sheet.setTailSheet()
+	if n != "baz" {
+		t.Fatalf("setTailSheet() could not changed active sheet. want '%s', but '%s'", "baz", n)
+	}
+	s := sheet.getActiveSheetName()
+	if s != "baz" {
+		t.Fatalf("setTailSheet() could not changed active sheet name. want '%s', but '%s'", "baz", s)
+	}
+}
