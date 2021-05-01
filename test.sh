@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 ./cell 'exit(1)' -to 'thisFileIsCreated.xlsx'
 if [[ $? -ne 1 ]]; then
