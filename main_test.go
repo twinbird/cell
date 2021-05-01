@@ -1803,3 +1803,46 @@ func TestStringPreIncrement(t *testing.T) {
 	}
 }
 
+func TestStringDecrement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestStringDecrement.xlsx"
+	con.code = `col="aa";b=col--;["A1"]=col;["A2"]=b;col="a1";col--;["A3"]=col;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "Z" {
+		t.Fatalf("LR want '%s', but got '%s'", "Z", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "aa" {
+		t.Fatalf("LR want '%s', but got '%s'", "aa", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A3")
+	if v != "-1" {
+		t.Fatalf("LR want '%s', but got '%s'", "-1", v)
+	}
+}
+
+func TestStringPreDecrement(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestStringPreDecrement.xlsx"
+	con.code = `col="aa";b=--col;["A1"]=col;["A2"]=b;col="a1";--col;["A3"]=col;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "Z" {
+		t.Fatalf("LR want '%s', but got '%s'", "Z", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "Z" {
+		t.Fatalf("LR want '%s', but got '%s'", "Z", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A3")
+	if v != "-1" {
+		t.Fatalf("LR want '%s', but got '%s'", "-1", v)
+	}
+}

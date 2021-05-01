@@ -538,6 +538,11 @@ func (e *Expression) eval() Node {
 			return l
 		} else {
 			l := execContext.scope.get(e.ident)
+			if a, err := decrementColumnNumber(l.asString()); err == nil {
+				v := NewStringExpression(a)
+				execContext.scope.set(e.ident, v)
+				return l
+			}
 			v := NewNumberExpression(l.asNumber() - 1)
 			execContext.scope.set(e.ident, v)
 			return l
@@ -550,6 +555,11 @@ func (e *Expression) eval() Node {
 			return v
 		} else {
 			l := execContext.scope.get(e.ident)
+			if a, err := decrementColumnNumber(l.asString()); err == nil {
+				v := NewStringExpression(a)
+				execContext.scope.set(e.ident, v)
+				return v
+			}
 			v := NewNumberExpression(l.asNumber() - 1)
 			execContext.scope.set(e.ident, v)
 			return v
