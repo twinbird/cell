@@ -1912,3 +1912,23 @@ func TestRSSpecialVar(t *testing.T) {
 		t.Fatalf("want stdout '1 2 3\n4 5 6\n', but got '%s'", out)
 	}
 }
+
+func TestORSSpecialVar(t *testing.T) {
+	in := bufio.NewReader(bytes.NewBufferString("1 2 3\n4 5 6"))
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.in = in
+	con.out = out
+
+	con.code = `ORS="\t";while(gets())puts();`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "1 2 3\t4 5 6\t" {
+		t.Fatalf("want stdout '1 2 3\t4 5 6\t', but got '%s'", out)
+	}
+}

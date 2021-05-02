@@ -173,10 +173,12 @@ func builtinGets(args ...Node) Node {
 // puts(string)
 // Print string and new line to stdout.
 func builtinPuts(args ...Node) Node {
+	ors := execContext.scope.get("ORS").asString()
+
 	if len(args) == 0 {
 		v := execContext.scope.get("$0")
 		s := v.asString()
-		fmt.Fprintf(execContext.out, "%s\n", s)
+		fmt.Fprintf(execContext.out, "%s%s", s, ors)
 		return nil
 	}
 	ofs := execContext.scope.get("OFS").asString()
@@ -185,6 +187,6 @@ func builtinPuts(args ...Node) Node {
 		s = ofs + s
 		s = args[i].asString() + s
 	}
-	fmt.Fprintf(execContext.out, "%s\n", s)
+	fmt.Fprintf(execContext.out, "%s%s", s, ors)
 	return nil
 }
