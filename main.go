@@ -39,6 +39,7 @@ func NewExecContext() *ExecContext {
 	con.errout = os.Stderr
 	con.scope.set("FS", NewStringExpression(" "))
 	con.scope.set("OFS", NewStringExpression(" "))
+	con.scope.set("RS", NewStringExpression("\n"))
 
 	return con
 }

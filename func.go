@@ -159,11 +159,13 @@ func builtinAbort(args ...Node) Node {
 // gets(void) string
 // Get character line from stdin.
 func builtinGets(args ...Node) Node {
-	s, err := execContext.in.ReadString('\n')
+	rs := execContext.scope.get("RS").asString()
+
+	s, err := execContext.in.ReadString(rs[0])
 	if err != io.EOF && err != nil {
 		fatalError("builtin function 'gets' raised error '%v'", err)
 	}
-	s = strings.TrimRight(s, "\r\n")
+	s = strings.TrimRight(s, rs)
 	execContext.scope.setDollarSpecialVars(s)
 	return NewStringExpression(s)
 }
