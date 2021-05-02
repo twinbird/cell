@@ -418,14 +418,24 @@ func (e *Expression) eval() Node {
 		return NewStringExpression(v)
 	case IncrementCellExpression:
 		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
+
+		if a, err := incrementColumnNumber(l); err == nil {
+			execContext.spreadsheet.setCellValue(e.left.eval().asString(), a)
+			return NewStringExpression(l)
+		}
+
 		f, _ := maybeNumber(l)
 		v := f + 1
-
 		execContext.spreadsheet.setCellValue(e.left.eval().asString(), v)
-
 		return NewNumberExpression(f)
 	case PreIncrementCellExpression:
 		l := execContext.spreadsheet.getCellValue(e.left.eval().asString())
+
+		if a, err := incrementColumnNumber(l); err == nil {
+			execContext.spreadsheet.setCellValue(e.left.eval().asString(), a)
+			return NewStringExpression(a)
+		}
+
 		f, _ := maybeNumber(l)
 		v := f + 1
 
