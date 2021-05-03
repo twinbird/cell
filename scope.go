@@ -111,6 +111,7 @@ func (s *Scope) setDollarSpecialVars(input string) {
 		idx := strconv.Itoa(i + 1)
 		execContext.scope.set("$"+idx, NewStringExpression(v))
 	}
+	execContext.scope.set("NF", NewNumberExpression(float64(len(a))))
 }
 
 func (s *Scope) resetDollarSpecialVars() {
