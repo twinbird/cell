@@ -1759,6 +1759,28 @@ func TestLastColSpecialVar(t *testing.T) {
 	}
 }
 
+func TestLastColCharSpecialVar(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestLastColCharSpecialVar.xlsx"
+	con.code = `["A1"]=LCC;["b2"]=LCC;["c3"]=LCC;`
+	run(con)
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "" {
+		t.Fatalf("LCC want '%s', but got '%s'", "", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "B2")
+	if v != "A" {
+		t.Fatalf("LCC want '%s', but got '%s'", "A", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "C3")
+	if v != "B" {
+		t.Fatalf("LCC want '%s', but got '%s'", "B", v)
+	}
+}
+
 func TestStringIncrement(t *testing.T) {
 	con := NewExecContext()
 	con.topath = "TestStringIncrement.xlsx"

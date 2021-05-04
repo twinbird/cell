@@ -55,6 +55,8 @@ func (s *Scope) isSpecialVar(name string) bool {
 		return true
 	case "LC":
 		return true
+	case "LCC":
+		return true
 	}
 	return false
 }
@@ -72,6 +74,14 @@ func (s *Scope) getSpecialVar(name string) Node {
 		// return active sheet Last Column index(start by 1)
 		n := execContext.spreadsheet.getColsCount()
 		return NewNumberExpression(float64(n))
+	case "LCC":
+		// return active sheet Last Column index char(start by A)
+		n := execContext.spreadsheet.getColsCount()
+		c, err := columnNumberToName(n)
+		if err != nil {
+			return NewStringExpression("")
+		}
+		return NewStringExpression(c)
 	}
 	panic("unknown special var referenced")
 }
