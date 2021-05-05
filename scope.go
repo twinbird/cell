@@ -28,6 +28,10 @@ func (s *Scope) set(name string, value Node) Node {
 		return s.setSpecialVar(name, value)
 	}
 
+	return s.setVar(name, value)
+}
+
+func (s *Scope) setVar(name string, value Node) Node {
 	s.vars[name] = value
 	return value
 }
@@ -37,6 +41,10 @@ func (s *Scope) get(name string) Node {
 		return s.getSpecialVar(name)
 	}
 
+	return s.getVar(name)
+}
+
+func (s *Scope) getVar(name string) Node {
 	v, ok := s.vars[name]
 	if !ok {
 		if s.parent != nil {
@@ -56,6 +64,19 @@ func (s *Scope) isSpecialVar(name string) bool {
 	case "LC":
 		return true
 	case "LCC":
+		return true
+	case "NF":
+		return true
+	case "FS":
+		return true
+	case "OFS":
+		return true
+	case "RS":
+		return true
+	case "ORS":
+		return true
+	}
+	if name[0] == '$' {
 		return true
 	}
 	return false
@@ -82,6 +103,11 @@ func (s *Scope) getSpecialVar(name string) Node {
 			return NewStringExpression("")
 		}
 		return NewStringExpression(c)
+	default:
+		if s.parent != nil {
+			return s.parent.get(name)
+		}
+		return s.getVar(name)
 	}
 	panic("unknown special var referenced")
 }
@@ -98,9 +124,18 @@ func (s *Scope) setSpecialVar(name string, value Node) Node {
 		}
 		return NewStringExpression(s)
 	case "LR":
-		fatalError("can not assign special var 'LR'")
+		fallthrough
 	case "LC":
-		fatalError("can not assign special var 'LC'")
+		fallthrough
+	case "LCC":
+		fatalError("special vars 'LR, LC, LCC' are readonly")
+	default:
+		if s.parent != nil {
+			s.parent.set(name, value)
+		} else {
+			s.setVar(name, value)
+		}
+		return value
 	}
 	panic("assign to unknown special var")
 }

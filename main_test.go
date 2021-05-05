@@ -1974,3 +1974,41 @@ func TestNFSpecialVar(t *testing.T) {
 		t.Fatalf("want stdout '3\n2\n', but got '%s'", out)
 	}
 }
+
+func TestNFSpecialVarScope(t *testing.T) {
+	in := bufio.NewReader(bytes.NewBufferString("1 2 3"))
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.in = in
+	con.out = out
+
+	con.code = `function f(){gets();puts(NF);NF=1;} f(); puts(NF);`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "3\n1\n" {
+		t.Fatalf("want stdout '3\n1\n', but got '%s'", out)
+	}
+}
+
+func TestSpecialVarsScope(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `function f(){FS=1;OFS="  ";RS=3;ORS="\t";} f(); puts(FS,OFS,RS,ORS);`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "1      3  \t\t" {
+		t.Fatalf("want stdout '1      3  \t\t', but got '%s'", out)
+	}
+}
