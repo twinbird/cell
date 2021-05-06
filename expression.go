@@ -51,6 +51,8 @@ const (
 	StringConcatExpression
 	ColNumberLTExpression
 	ColNumberLEExpression
+	ColNumberGTExpression
+	ColNumberGEExpression
 	NumberAddExpression
 	NumberSubExpression
 	NumberMulExpression
@@ -273,6 +275,16 @@ func NewColNumberLTExpression(left *Expression, right *Expression) *Expression {
 
 func NewColNumberLEExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: ColNumberLEExpression, left: left, right: right}
+	return e
+}
+
+func NewColNumberGTExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: ColNumberGTExpression, left: left, right: right}
+	return e
+}
+
+func NewColNumberGEExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: ColNumberGEExpression, left: left, right: right}
 	return e
 }
 
@@ -701,6 +713,42 @@ func (e *Expression) eval() Node {
 		}
 
 		if lv <= rv {
+			return NewNumberExpression(1)
+		} else {
+			return NewNumberExpression(0)
+		}
+	case ColNumberGTExpression:
+		left := e.left.eval().asString()
+		right := e.right.eval().asString()
+
+		lv, err := columnNameToNumber(left)
+		if err != nil {
+			return NewNumberExpression(0)
+		}
+		rv, err := columnNameToNumber(right)
+		if err != nil {
+			return NewNumberExpression(0)
+		}
+
+		if lv > rv {
+			return NewNumberExpression(1)
+		} else {
+			return NewNumberExpression(0)
+		}
+	case ColNumberGEExpression:
+		left := e.left.eval().asString()
+		right := e.right.eval().asString()
+
+		lv, err := columnNameToNumber(left)
+		if err != nil {
+			return NewNumberExpression(0)
+		}
+		rv, err := columnNameToNumber(right)
+		if err != nil {
+			return NewNumberExpression(0)
+		}
+
+		if lv >= rv {
 			return NewNumberExpression(1)
 		} else {
 			return NewNumberExpression(0)

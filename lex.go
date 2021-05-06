@@ -259,6 +259,13 @@ func (l *Lexer) word(lval *yySymType) int {
 		return COLLE
 	}
 
+	if s == "gt" {
+		return COLGT
+	}
+	if s == "ge" {
+		return COLGE
+	}
+
 	if s == "while" {
 		return WHILE
 	}

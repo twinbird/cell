@@ -19,11 +19,11 @@ package main
 %type<params> paramList
 %token<num>   NUMBER 
 %token<str>   STRING
-%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE COLLT COLLE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE INC DEC DO FOR FUNCTION RETURN
+%token<token> LF '[' ']' '(' ')' ',' '=' NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE COLLT COLLE COLGT COLGE '.' '+' '-' '/' '*' '%' POW AND OR '!' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN '~' NOT_MATCH IF ELSE '{' '}' WHILE CONCAT_ASSIGN BREAK CONTINUE INC DEC DO FOR FUNCTION RETURN
 %token<ident> IDENT
 %left '=' ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN POW_ASSIGN CONCAT_ASSIGN
 %left AND OR '!'
-%left NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE COLLT COLLE
+%left NUMEQ NUMNE '<' NUMLE '>' NUMGE STREQ STRNE COLLT COLLE COLGT COLGE
 %left '.' '+' '-'
 %left '/' '*' '%'
 %left '~' NOT_MATCH
@@ -98,6 +98,8 @@ expr
   | expr STRNE expr { $$ = NewStringNEExpression($1, $3) }
   | expr COLLT expr { $$ = NewColNumberLTExpression($1, $3) }
   | expr COLLE expr { $$ = NewColNumberLEExpression($1, $3) }
+  | expr COLGT expr { $$ = NewColNumberGTExpression($1, $3) }
+  | expr COLGE expr { $$ = NewColNumberGEExpression($1, $3) }
   | expr '.' expr { $$ = NewStringConcatExpression($1, $3) }
   | expr '+' expr { $$ = NewNumberAddExpression($1, $3) }
   | expr '-' expr { $$ = NewNumberSubExpression($1, $3) }

@@ -2060,3 +2060,51 @@ func TestColNumberLEExpression(t *testing.T) {
 		t.Fatalf("want cell value '0', but got %s", v)
 	}
 }
+
+func TestColNumberGTExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestColNumberGTExpression.xlsx"
+	con.code = `["A1"] = "AA" gt "AA";["A2"] = "AA" gt "Z";["A3"] = "あ" gt "AA";`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "0" {
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A3")
+	if v != "0" {
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+}
+
+func TestColNumberGEExpression(t *testing.T) {
+	con := NewExecContext()
+	con.topath = "TestColNumberGEExpression.xlsx"
+	con.code = `["A1"] = "AA" ge "AA";["A2"] = "AA" ge "Z";["A3"] = "あ" ge "AA";`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d', but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	v := getCellValue(t, con.topath, "Sheet1", "A1")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A2")
+	if v != "1" {
+		t.Fatalf("want cell value '1', but got %s", v)
+	}
+	v = getCellValue(t, con.topath, "Sheet1", "A3")
+	if v != "0" {
+		t.Fatalf("want cell value '0', but got %s", v)
+	}
+}
