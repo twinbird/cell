@@ -10,6 +10,8 @@ import (
 	"os"
 )
 
+const CELL_VERSION = "0.0.1"
+
 type ExecContext struct {
 	code        string
 	topath      string
@@ -50,11 +52,17 @@ func main() {
 	con := NewExecContext()
 
 	var pgpath string
+	var showVer bool
 	flag.StringVar(&con.topath, "to", "", "output spreadsheet filepath")
 	flag.StringVar(&con.frompath, "from", "", "input spreadsheet filepath")
 	flag.StringVar(&pgpath, "f", "", "program filepath")
+	flag.BoolVar(&showVer, "V", false, "show version")
 
 	flag.Parse()
+
+	if showVer {
+		showVersion()
+	}
 
 	args := flag.Args()
 	if len(args) < 1 && pgpath == "" {
@@ -70,6 +78,11 @@ func main() {
 
 	run(con)
 	os.Exit(con.exitCode)
+}
+
+func showVersion() {
+	fmt.Printf("Cell %s\n", CELL_VERSION)
+	os.Exit(0)
 }
 
 func readProg(filename string) string {
