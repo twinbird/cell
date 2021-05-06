@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-./cell 'exit(1)' -to 'thisFileIsCreated.xlsx'
+./cell -to 'thisFileIsCreated.xlsx' 'exit(1)'
 if [[ $? -ne 1 ]]; then
   echo "exit status is wrong. want 1, but got $?"
   exit 1
@@ -10,7 +10,7 @@ if [[ ! -e 'thisFileIsCreated.xlsx' ]]; then
   exit 1
 fi
 
-./cell 'abort(2)' -to 'thisFileIsNotCreated.xlsx'
+./cell -to 'thisFileIsNotCreated.xlsx' 'abort(2)'
 if [[ $? -ne 2 ]]; then
   echo "exit status is wrong. want 2, but got $?"
   exit 1

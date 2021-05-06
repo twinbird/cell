@@ -48,13 +48,18 @@ func NewExecContext() *ExecContext {
 func main() {
 	con := NewExecContext()
 
-	f := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	f.StringVar(&con.topath, "to", "", "output spreadsheet filepath")
-	f.StringVar(&con.frompath, "from", "", "input spreadsheet filepath")
+	flag.StringVar(&con.topath, "to", "", "output spreadsheet filepath")
+	flag.StringVar(&con.frompath, "from", "", "input spreadsheet filepath")
 
-	f.Parse(os.Args[2:])
+	flag.Parse()
 
-	con.code = os.Args[1]
+	args := flag.Args()
+	if len(args) < 1 {
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	con.code = args[0]
 
 	run(con)
 	os.Exit(con.exitCode)
