@@ -18,3 +18,9 @@ fi
 if [[ -e 'thisFileIsNotCreated.xlsx' ]]; then
   echo 'the file specified by 'to' option exists even through program aborted by abort().'
 fi
+
+./cell -f test/prog.cell
+if [[ $? -ne 4 ]]; then
+  echo "-f option could not working"
+  exit 1
+fi

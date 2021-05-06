@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 )
 
@@ -48,21 +49,45 @@ func NewExecContext() *ExecContext {
 func main() {
 	con := NewExecContext()
 
+	var pgpath string
 	flag.StringVar(&con.topath, "to", "", "output spreadsheet filepath")
 	flag.StringVar(&con.frompath, "from", "", "input spreadsheet filepath")
+	flag.StringVar(&pgpath, "f", "", "program filepath")
 
 	flag.Parse()
 
 	args := flag.Args()
-	if len(args) < 1 {
+	if len(args) < 1 && pgpath == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
 
-	con.code = args[0]
+	if pgpath != "" {
+		con.code = readProg(pgpath)
+	} else {
+		con.code = args[0]
+	}
 
 	run(con)
 	os.Exit(con.exitCode)
+}
+
+func readProg(filename string) string {
+	if !fileExist(filename) {
+		fatalError("program file '%s' is not found", filename)
+	}
+
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fatalError("on error occured reading file '%s'", filename)
+	}
+
+	return string(bytes)
+}
+
+func fileExist(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil
 }
 
 func beforeRun() {
@@ -110,7 +135,7 @@ func execScript() int {
 
 func fatalError(format string, a ...interface{}) {
 	if len(a) > 0 {
-		fmt.Fprintf(os.Stderr, "ERROR: "+format+"\n", a)
+		fmt.Fprintf(os.Stderr, "ERROR: "+format+"\n", a...)
 	} else {
 		fmt.Fprintf(os.Stderr, "ERROR: "+format+"\n")
 	}
