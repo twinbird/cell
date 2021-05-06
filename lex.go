@@ -255,6 +255,9 @@ func (l *Lexer) word(lval *yySymType) int {
 	if s == "lt" {
 		return COLLT
 	}
+	if s == "le" {
+		return COLLE
+	}
 
 	if s == "while" {
 		return WHILE
