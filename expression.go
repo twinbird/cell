@@ -49,6 +49,7 @@ const (
 	StringEQExpression
 	StringNEExpression
 	StringConcatExpression
+	ColNumberLTExpression
 	NumberAddExpression
 	NumberSubExpression
 	NumberMulExpression
@@ -261,6 +262,11 @@ func NewStringNEExpression(left *Expression, right *Expression) *Expression {
 
 func NewStringConcatExpression(left *Expression, right *Expression) *Expression {
 	e := &Expression{exprType: StringConcatExpression, left: left, right: right}
+	return e
+}
+
+func NewColNumberLTExpression(left *Expression, right *Expression) *Expression {
+	e := &Expression{exprType: ColNumberLTExpression, left: left, right: right}
 	return e
 }
 
@@ -657,6 +663,24 @@ func (e *Expression) eval() Node {
 		right := e.right.eval().asString()
 
 		return NewStringExpression(left + right)
+	case ColNumberLTExpression:
+		left := e.left.eval().asString()
+		right := e.right.eval().asString()
+
+		lv, err := columnNameToNumber(left)
+		if err != nil {
+			return NewNumberExpression(0)
+		}
+		rv, err := columnNameToNumber(right)
+		if err != nil {
+			return NewNumberExpression(0)
+		}
+
+		if lv < rv {
+			return NewNumberExpression(1)
+		} else {
+			return NewNumberExpression(0)
+		}
 	case NumberAddExpression:
 		left := e.left.eval().asNumber()
 		right := e.right.eval().asNumber()
