@@ -24,3 +24,9 @@ if [[ $? -ne 4 ]]; then
   echo "-f option could not working"
   exit 1
 fi
+
+./cell 'gets();ret+=$1;gets();ret+=$1;exit(ret);' test/data1.txt test/data2.txt
+if [[ $? -ne 6 ]]; then
+  echo 'file args could not working'
+  exit 1
+fi

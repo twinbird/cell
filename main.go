@@ -76,8 +76,26 @@ func main() {
 		con.code = args[0]
 	}
 
+	if 1 < len(args) {
+		switchStdin(con, args[1:])
+	}
+
 	run(con)
 	os.Exit(con.exitCode)
+}
+
+func switchStdin(con *ExecContext, files []string) {
+	rary := make([]io.Reader, len(files))
+
+	for i := 0; i < len(files); i++ {
+		f, err := os.Open(files[i])
+		if err != nil {
+			fatalError("could not open file '%s'", f)
+		}
+
+		rary[i] = f
+	}
+	con.in = bufio.NewReader(io.MultiReader(rary...))
 }
 
 func showVersion() {
