@@ -364,3 +364,29 @@ func TestDecrementColumnNumber(t *testing.T) {
 		t.Fatalf("converted 'A' but not error occured.")
 	}
 }
+
+func TestExistSheetName(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+
+	v := sheet.existSheetName("Sheet1")
+	if v != true {
+		t.Fatalf("want true but got %v", v)
+	}
+	v = sheet.existSheetName("Sheet2")
+	if v != false {
+		t.Fatalf("want false but got %v", v)
+	}
+}
+
+func TestSetSheetName(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+
+	v := sheet.setSheetName("Sheet1", "Sheet2")
+	if v != "Sheet2" {
+		t.Fatalf("want 'Sheet2' but got %v", v)
+	}
+	v = sheet.setSheetName("Sheet1", "Sheet2")
+	if v != "" {
+		t.Fatalf("want '' but got %v", v)
+	}
+}

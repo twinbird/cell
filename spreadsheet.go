@@ -224,3 +224,25 @@ func decrementColumnNumber(name string) (string, error) {
 	n--
 	return columnNumberToName(n)
 }
+
+func (s *Spreadsheet) existSheetName(name string) bool {
+	idx := s.file.GetSheetIndex(name)
+	if idx < 0 {
+		return false
+	}
+	return true
+}
+
+func (s *Spreadsheet) setSheetName(oldName string, newName string) string {
+	if !s.existSheetName(oldName) {
+		return ""
+	}
+
+	// already exists new name sheet
+	if s.existSheetName(newName) {
+		return ""
+	}
+
+	s.file.SetSheetName(oldName, newName)
+	return newName
+}

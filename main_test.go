@@ -2128,3 +2128,39 @@ func TestHeadAndTailFunc(t *testing.T) {
 		t.Fatalf("want stdout 'Sheet1\nsheet2\n', but got '%s'", out)
 	}
 }
+
+func TestExistFunc(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `puts(exist("Sheet1"));puts(exist("sheet2"));`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "1\n0\n" {
+		t.Fatalf("want stdout '1\n0\n', but got '%s'", out)
+	}
+}
+
+func TestRenameFunc(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `puts(rename("Sheet1", "Sheet2"));puts(@);`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "Sheet2\nSheet2\n" {
+		t.Fatalf("want stdout 'Sheet2\nSheet2\n', but got '%s'", out)
+	}
+}

@@ -130,12 +130,14 @@ func (f *Function) call(args *ArgList) Node {
 
 func builtinFunctions() map[string]*Function {
 	f := map[string]*Function{
-		"exit":  NewBuiltinFunction(builtinExit),
-		"abort": NewBuiltinFunction(builtinAbort),
-		"gets":  NewBuiltinFunction(builtinGets),
-		"puts":  NewBuiltinFunction(builtinPuts),
-		"head":  NewBuiltinFunction(builtinHead),
-		"tail":  NewBuiltinFunction(builtinTail),
+		"exit":   NewBuiltinFunction(builtinExit),
+		"abort":  NewBuiltinFunction(builtinAbort),
+		"gets":   NewBuiltinFunction(builtinGets),
+		"puts":   NewBuiltinFunction(builtinPuts),
+		"head":   NewBuiltinFunction(builtinHead),
+		"tail":   NewBuiltinFunction(builtinTail),
+		"rename": NewBuiltinFunction(builtinRename),
+		"exist":  NewBuiltinFunction(builtinExist),
 	}
 
 	return f
@@ -209,5 +211,39 @@ func builtinHead(args ...Node) Node {
 func builtinTail(args ...Node) Node {
 	execContext.spreadsheet.setTailSheet()
 	s := execContext.spreadsheet.getActiveSheetName()
+	return NewStringExpression(s)
+}
+
+// exist(name) number
+// return if exists 'name' sheet 1, else 0
+func builtinExist(args ...Node) Node {
+	if len(args) != 1 {
+		fatalError("exist() must pass 1 args")
+	}
+	b := execContext.spreadsheet.existSheetName(args[0].asString())
+	if b {
+		return NewNumberExpression(1)
+	}
+	return NewNumberExpression(0)
+}
+
+// rename(old, new)
+// rename sheet name
+// return the changed name if successful
+func builtinRename(args ...Node) Node {
+	if len(args) != 2 {
+		fatalError("rename() must pass two args")
+	}
+	o := args[1].asString()
+	n := args[0].asString()
+
+	if !execContext.spreadsheet.existSheetName(o) {
+		fatalError("rename(): sheet '%s' not exist", o)
+	}
+	if execContext.spreadsheet.existSheetName(n) {
+		fatalError("rename(): sheet '%s' already exist", n)
+	}
+	s := execContext.spreadsheet.setSheetName(o, n)
+
 	return NewStringExpression(s)
 }
