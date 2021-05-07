@@ -2164,3 +2164,39 @@ func TestRenameFunc(t *testing.T) {
 		t.Fatalf("want stdout 'Sheet2\nSheet2\n', but got '%s'", out)
 	}
 }
+
+func TestCountSheetFunc(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `puts(count());@="sheet2";puts(count());`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "1\n2\n" {
+		t.Fatalf("want stdout '1\n2\n', but got '%s'", out)
+	}
+}
+
+func TestDeleteSheetFunc(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `@="Sheet2";delete("Sheet1");puts(count());`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "1\n" {
+		t.Fatalf("want stdout '1\n', but got '%s'", out)
+	}
+}

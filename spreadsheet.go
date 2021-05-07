@@ -246,3 +246,18 @@ func (s *Spreadsheet) setSheetName(oldName string, newName string) string {
 	s.file.SetSheetName(oldName, newName)
 	return newName
 }
+
+func (s *Spreadsheet) countSheet() int {
+	return len(s.file.GetSheetList())
+}
+
+func (s *Spreadsheet) deleteSheet(name string) bool {
+	if !s.existSheetName(name) {
+		return false
+	}
+	if s.countSheet() <= 1 {
+		return false
+	}
+	s.file.DeleteSheet(name)
+	return true
+}

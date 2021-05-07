@@ -138,6 +138,8 @@ func builtinFunctions() map[string]*Function {
 		"tail":   NewBuiltinFunction(builtinTail),
 		"rename": NewBuiltinFunction(builtinRename),
 		"exist":  NewBuiltinFunction(builtinExist),
+		"count":  NewBuiltinFunction(builtinCount),
+		"delete": NewBuiltinFunction(builtinDelete),
 	}
 
 	return f
@@ -252,4 +254,31 @@ func builtinRename(args ...Node) Node {
 	s := execContext.spreadsheet.setSheetName(o, n)
 
 	return NewStringExpression(s)
+}
+
+// count() number
+// count sheets
+func builtinCount(args ...Node) Node {
+	n := execContext.spreadsheet.countSheet()
+	return NewNumberExpression(float64(n))
+}
+
+// delete(string)
+// delete specify sheet
+func builtinDelete(args ...Node) Node {
+	if len(args) != 1 {
+		fatalError("delete() must pass one arg")
+	}
+	s := args[0].asString()
+
+	if !execContext.spreadsheet.existSheetName(s) {
+		fatalError("delete(): sheet '%s' not exist", s)
+	}
+	if execContext.spreadsheet.countSheet() <= 1 {
+		fatalError("delete(): could not delete last sheet")
+	}
+
+	execContext.spreadsheet.deleteSheet(s)
+
+	return NewStringExpression("")
 }

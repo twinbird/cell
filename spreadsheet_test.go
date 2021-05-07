@@ -390,3 +390,40 @@ func TestSetSheetName(t *testing.T) {
 		t.Fatalf("want '' but got %v", v)
 	}
 }
+
+func TestCountSheet(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+
+	v := sheet.countSheet()
+	if v != 1 {
+		t.Fatalf("countSheet() want 1 but got %d", v)
+	}
+
+	sheet.addSheet("Sheet2")
+
+	v = sheet.countSheet()
+	if v != 2 {
+		t.Fatalf("countSheet() want 2 but got %d", v)
+	}
+}
+
+func TestDeleteSheet(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+
+	v := sheet.deleteSheet("Sheet1")
+	if v != false {
+		t.Fatalf("deleteSheet() return true on delete last sheet")
+	}
+
+	sheet.addSheet("Sheet2")
+
+	v = sheet.deleteSheet("Sheet1")
+	if v != true {
+		t.Fatalf("deleteSheet() could not delete sheet")
+	}
+
+	n := sheet.countSheet()
+	if n != 1 {
+		t.Fatalf("deleteSheet() could not delete sheet")
+	}
+}
