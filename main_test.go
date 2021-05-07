@@ -2108,3 +2108,23 @@ func TestColNumberGEExpression(t *testing.T) {
 		t.Fatalf("want cell value '0', but got %s", v)
 	}
 }
+
+func TestHeadAndTailFunc(t *testing.T) {
+	in := bufio.NewReader(bytes.NewBufferString("1 2 3"))
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.in = in
+	con.out = out
+
+	con.code = `@="sheet2";puts(head());puts(tail());`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "Sheet1\nsheet2\n" {
+		t.Fatalf("want stdout 'Sheet1\nsheet2\n', but got '%s'", out)
+	}
+}

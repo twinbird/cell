@@ -134,12 +134,14 @@ func builtinFunctions() map[string]*Function {
 		"abort": NewBuiltinFunction(builtinAbort),
 		"gets":  NewBuiltinFunction(builtinGets),
 		"puts":  NewBuiltinFunction(builtinPuts),
+		"head":  NewBuiltinFunction(builtinHead),
+		"tail":  NewBuiltinFunction(builtinTail),
 	}
 
 	return f
 }
 
-// exit(number) void
+// exit(number) noreturn
 // Exit program.If "to" option specified, 'cell' will save editing spreadsheet.
 func builtinExit(args ...Node) Node {
 	exitCode := args[0]
@@ -148,7 +150,7 @@ func builtinExit(args ...Node) Node {
 	return nil
 }
 
-// abort(number)
+// abort(number) noreturn
 // Exit program immediately
 func builtinAbort(args ...Node) Node {
 	exitCode := args[0]
@@ -170,8 +172,9 @@ func builtinGets(args ...Node) Node {
 	return NewStringExpression(s)
 }
 
-// puts(string)
+// puts(string) string
 // Print string and new line to stdout.
+// And return puts string(No include ORS).
 func builtinPuts(args ...Node) Node {
 	ors := execContext.scope.get("ORS").asString()
 
@@ -179,7 +182,7 @@ func builtinPuts(args ...Node) Node {
 		v := execContext.scope.get("$0")
 		s := v.asString()
 		fmt.Fprintf(execContext.out, "%s%s", s, ors)
-		return nil
+		return NewStringExpression(s)
 	}
 	ofs := execContext.scope.get("OFS").asString()
 	s := args[0].asString()
@@ -188,5 +191,23 @@ func builtinPuts(args ...Node) Node {
 		s = args[i].asString() + s
 	}
 	fmt.Fprintf(execContext.out, "%s%s", s, ors)
-	return nil
+	return NewStringExpression(s)
+}
+
+// head() string
+// Set the active sheet to the first sheet
+// And return active sheet name
+func builtinHead(args ...Node) Node {
+	execContext.spreadsheet.setHeadSheet()
+	s := execContext.spreadsheet.getActiveSheetName()
+	return NewStringExpression(s)
+}
+
+// tail() string
+// Set the active sheet to the last sheet
+// And return active sheet name
+func builtinTail(args ...Node) Node {
+	execContext.spreadsheet.setTailSheet()
+	s := execContext.spreadsheet.getActiveSheetName()
+	return NewStringExpression(s)
 }
