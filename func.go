@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
 )
 
 type ArgList struct {
@@ -141,6 +143,8 @@ func builtinFunctions() map[string]*Function {
 		"count":  NewBuiltinFunction(builtinCount),
 		"delete": NewBuiltinFunction(builtinDelete),
 		"copy":   NewBuiltinFunction(builtinCopy),
+		"srand":  NewBuiltinFunction(builtinSrand),
+		"rand":   NewBuiltinFunction(builtinRand),
 	}
 
 	return f
@@ -303,4 +307,22 @@ func builtinCopy(args ...Node) Node {
 	execContext.spreadsheet.copySheet(from, to)
 
 	return NewStringExpression(to)
+}
+
+// srand([expr])
+// Use expr as the new seed for the random number generator.  If no expr is provided, use the current time.
+func builtinSrand(args ...Node) Node {
+	n := time.Now().UnixNano()
+	if len(args) > 0 {
+		n = int64(args[0].asNumber())
+	}
+	rand.Seed(n)
+	return NewStringExpression("")
+}
+
+// rand() number
+// Return a random number N, between zero and one, such that 0 <= N <= 1.
+func builtinRand(args ...Node) Node {
+	f := rand.Float64()
+	return NewNumberExpression(f)
 }

@@ -2218,3 +2218,17 @@ func TestCopySheetFunc(t *testing.T) {
 		t.Fatalf("want stdout 'test Sheet2\n', but got '%s'", out)
 	}
 }
+
+func TestSrandAndRandFunc(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `srand();puts(rand(), rand());srand(2.0);puts(rand())`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+}
