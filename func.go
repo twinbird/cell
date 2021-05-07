@@ -146,6 +146,9 @@ func builtinFunctions() map[string]*Function {
 // exit(number) noreturn
 // Exit program.If "to" option specified, 'cell' will save editing spreadsheet.
 func builtinExit(args ...Node) Node {
+	if len(args) != 1 {
+		fatalError("exit() must pass one args")
+	}
 	exitCode := args[0]
 	execContext.exitCode = int(exitCode.asNumber())
 	execContext.doExit = true
@@ -155,6 +158,9 @@ func builtinExit(args ...Node) Node {
 // abort(number) noreturn
 // Exit program immediately
 func builtinAbort(args ...Node) Node {
+	if len(args) != 1 {
+		fatalError("abort() must pass one args")
+	}
 	exitCode := args[0]
 	os.Exit(int(exitCode.asNumber()))
 	return nil
