@@ -261,3 +261,20 @@ func (s *Spreadsheet) deleteSheet(name string) bool {
 	s.file.DeleteSheet(name)
 	return true
 }
+
+func (s *Spreadsheet) copySheet(from string, to string) bool {
+	if !s.existSheetName(from) {
+		return false
+	}
+
+	if s.existSheetName(to) {
+		return false
+	}
+
+	fromidx := s.file.GetSheetIndex(from)
+	toidx := s.file.NewSheet(to)
+	if err := s.file.CopySheet(fromidx, toidx); err != nil {
+		return false
+	}
+	return true
+}

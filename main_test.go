@@ -2200,3 +2200,21 @@ func TestDeleteSheetFunc(t *testing.T) {
 		t.Fatalf("want stdout '1\n', but got '%s'", out)
 	}
 }
+
+func TestCopySheetFunc(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `["A1"]="test";@=copy("Sheet1", "Sheet2");puts(["A1"], @)`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "test Sheet2\n" {
+		t.Fatalf("want stdout 'test Sheet2\n', but got '%s'", out)
+	}
+}

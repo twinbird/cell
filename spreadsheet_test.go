@@ -427,3 +427,29 @@ func TestDeleteSheet(t *testing.T) {
 		t.Fatalf("deleteSheet() could not delete sheet")
 	}
 }
+
+func TestCopySheet(t *testing.T) {
+	sheet, _ := NewSpreadsheet("", "")
+
+	v := sheet.copySheet("Sheet1", "Sheet1")
+	if v != false {
+		t.Fatalf("copySheet() return true on duplicate sheet")
+	}
+
+	sheet.setCellValue("A1", "Hello")
+	v = sheet.copySheet("Sheet1", "Sheet2")
+	if v != true {
+		t.Fatalf("copySheet() could not copy sheet")
+	}
+
+	n := sheet.countSheet()
+	if n != 2 {
+		t.Fatalf("copySheet() could not copy sheet")
+	}
+
+	sheet.setActiveSheetByName("Sheet2")
+	s := sheet.getCellValue("A1")
+	if s != "Hello" {
+		t.Fatalf("copySheet() could not copy value in sheet")
+	}
+}

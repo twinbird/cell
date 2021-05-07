@@ -140,6 +140,7 @@ func builtinFunctions() map[string]*Function {
 		"exist":  NewBuiltinFunction(builtinExist),
 		"count":  NewBuiltinFunction(builtinCount),
 		"delete": NewBuiltinFunction(builtinDelete),
+		"copy":   NewBuiltinFunction(builtinCopy),
 	}
 
 	return f
@@ -281,4 +282,25 @@ func builtinDelete(args ...Node) Node {
 	execContext.spreadsheet.deleteSheet(s)
 
 	return NewStringExpression("")
+}
+
+// copy(string[from], string[to]) string[to]
+// copy from [from] sheet to [to] sheet
+func builtinCopy(args ...Node) Node {
+	if len(args) != 2 {
+		fatalError("copy() must pass two args")
+	}
+	from := args[1].asString()
+	to := args[0].asString()
+
+	if !execContext.spreadsheet.existSheetName(from) {
+		fatalError("copy(): sheet '%s' not exist", from)
+	}
+	if execContext.spreadsheet.existSheetName(to) {
+		fatalError("copy(): sheet '%s' already exist", to)
+	}
+
+	execContext.spreadsheet.copySheet(from, to)
+
+	return NewStringExpression(to)
 }
