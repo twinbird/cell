@@ -2232,3 +2232,57 @@ func TestSrandAndRandFunc(t *testing.T) {
 		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
 	}
 }
+
+func TestCeilFunc(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `puts(ceil(1.49))`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "2\n" {
+		t.Fatalf("want stdout '2\n', but got '%s'", out)
+	}
+}
+
+func TestFloorFunc(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `puts(floor(1.49))`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "1\n" {
+		t.Fatalf("want stdout '1\n', but got '%s'", out)
+	}
+}
+
+func TestRoundFunc(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `puts(round(1.49));puts(round(1.51));`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "1\n2\n" {
+		t.Fatalf("want stdout '1\n2\n', but got '%s'", out)
+	}
+}

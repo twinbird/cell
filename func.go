@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"math"
 	"math/rand"
 	"os"
 	"strings"
@@ -145,6 +146,9 @@ func builtinFunctions() map[string]*Function {
 		"copy":   NewBuiltinFunction(builtinCopy),
 		"srand":  NewBuiltinFunction(builtinSrand),
 		"rand":   NewBuiltinFunction(builtinRand),
+		"floor":  NewBuiltinFunction(builtinFloor),
+		"ceil":   NewBuiltinFunction(builtinCeil),
+		"round":  NewBuiltinFunction(builtinRound),
 	}
 
 	return f
@@ -325,4 +329,34 @@ func builtinSrand(args ...Node) Node {
 func builtinRand(args ...Node) Node {
 	f := rand.Float64()
 	return NewNumberExpression(f)
+}
+
+// floor(number) number
+func builtinFloor(args ...Node) Node {
+	if len(args) != 1 {
+		fatalError("floor() must pass one args")
+	}
+	f := args[0].asNumber()
+	v := math.Floor(f)
+	return NewNumberExpression(v)
+}
+
+// ceil(number) number
+func builtinCeil(args ...Node) Node {
+	if len(args) != 1 {
+		fatalError("ceil() must pass one args")
+	}
+	f := args[0].asNumber()
+	v := math.Ceil(f)
+	return NewNumberExpression(v)
+}
+
+// round(number) number
+func builtinRound(args ...Node) Node {
+	if len(args) != 1 {
+		fatalError("round() must pass one args")
+	}
+	f := args[0].asNumber()
+	v := math.Round(f)
+	return NewNumberExpression(v)
 }
