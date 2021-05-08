@@ -158,7 +158,7 @@ func builtinFunctions() map[string]*Function {
 // Exit program.If "to" option specified, 'cell' will save editing spreadsheet.
 func builtinExit(args ...Node) Node {
 	if len(args) != 1 {
-		fatalError("exit() must pass one args")
+		fatalError("invalid as number of arguments for exit()")
 	}
 	exitCode := args[0]
 	execContext.exitCode = int(exitCode.asNumber())
@@ -170,7 +170,7 @@ func builtinExit(args ...Node) Node {
 // Exit program immediately
 func builtinAbort(args ...Node) Node {
 	if len(args) != 1 {
-		fatalError("abort() must pass one args")
+		fatalError("invalid as number of arguments for abort()")
 	}
 	exitCode := args[0]
 	os.Exit(int(exitCode.asNumber()))
@@ -180,6 +180,9 @@ func builtinAbort(args ...Node) Node {
 // gets(void) string
 // Get character line from stdin.
 func builtinGets(args ...Node) Node {
+	if len(args) != 0 {
+		fatalError("invalid as number of arguments for gets()")
+	}
 	rs := execContext.scope.get("RS").asString()
 
 	s, err := execContext.in.ReadString(rs[0])
@@ -217,6 +220,9 @@ func builtinPuts(args ...Node) Node {
 // Set the active sheet to the first sheet
 // And return active sheet name
 func builtinHead(args ...Node) Node {
+	if len(args) != 0 {
+		fatalError("invalid as number of arguments for head()")
+	}
 	execContext.spreadsheet.setHeadSheet()
 	s := execContext.spreadsheet.getActiveSheetName()
 	return NewStringExpression(s)
@@ -226,6 +232,9 @@ func builtinHead(args ...Node) Node {
 // Set the active sheet to the last sheet
 // And return active sheet name
 func builtinTail(args ...Node) Node {
+	if len(args) != 0 {
+		fatalError("invalid as number of arguments for tail()")
+	}
 	execContext.spreadsheet.setTailSheet()
 	s := execContext.spreadsheet.getActiveSheetName()
 	return NewStringExpression(s)
@@ -235,7 +244,7 @@ func builtinTail(args ...Node) Node {
 // return if exists 'name' sheet 1, else 0
 func builtinExist(args ...Node) Node {
 	if len(args) != 1 {
-		fatalError("exist() must pass 1 args")
+		fatalError("invalid as number of arguments for exist()")
 	}
 	b := execContext.spreadsheet.existSheetName(args[0].asString())
 	if b {
@@ -249,7 +258,7 @@ func builtinExist(args ...Node) Node {
 // return the changed name if successful
 func builtinRename(args ...Node) Node {
 	if len(args) != 2 {
-		fatalError("rename() must pass two args")
+		fatalError("invalid as number of arguments for rename()")
 	}
 	o := args[1].asString()
 	n := args[0].asString()
@@ -268,6 +277,9 @@ func builtinRename(args ...Node) Node {
 // count() number
 // count sheets
 func builtinCount(args ...Node) Node {
+	if len(args) != 0 {
+		fatalError("invalid as number of arguments for count()")
+	}
 	n := execContext.spreadsheet.countSheet()
 	return NewNumberExpression(float64(n))
 }
@@ -276,7 +288,7 @@ func builtinCount(args ...Node) Node {
 // delete specify sheet
 func builtinDelete(args ...Node) Node {
 	if len(args) != 1 {
-		fatalError("delete() must pass one arg")
+		fatalError("invalid as number of arguments for delete()")
 	}
 	s := args[0].asString()
 
@@ -296,7 +308,7 @@ func builtinDelete(args ...Node) Node {
 // copy from [from] sheet to [to] sheet
 func builtinCopy(args ...Node) Node {
 	if len(args) != 2 {
-		fatalError("copy() must pass two args")
+		fatalError("invalid as number of arguments for copy()")
 	}
 	from := args[1].asString()
 	to := args[0].asString()
@@ -316,6 +328,9 @@ func builtinCopy(args ...Node) Node {
 // srand([expr])
 // Use expr as the new seed for the random number generator.  If no expr is provided, use the current time.
 func builtinSrand(args ...Node) Node {
+	if 1 < len(args) {
+		fatalError("invalid as number of arguments for srand()")
+	}
 	n := time.Now().UnixNano()
 	if len(args) > 0 {
 		n = int64(args[0].asNumber())
@@ -327,6 +342,9 @@ func builtinSrand(args ...Node) Node {
 // rand() number
 // Return a random number N, between zero and one, such that 0 <= N <= 1.
 func builtinRand(args ...Node) Node {
+	if len(args) != 0 {
+		fatalError("invalid as number of arguments for rand()")
+	}
 	f := rand.Float64()
 	return NewNumberExpression(f)
 }
@@ -334,7 +352,7 @@ func builtinRand(args ...Node) Node {
 // floor(number) number
 func builtinFloor(args ...Node) Node {
 	if len(args) != 1 {
-		fatalError("floor() must pass one args")
+		fatalError("invalid as number of arguments for floor()")
 	}
 	f := args[0].asNumber()
 	v := math.Floor(f)
@@ -344,7 +362,7 @@ func builtinFloor(args ...Node) Node {
 // ceil(number) number
 func builtinCeil(args ...Node) Node {
 	if len(args) != 1 {
-		fatalError("ceil() must pass one args")
+		fatalError("invalid as number of arguments for ceil()")
 	}
 	f := args[0].asNumber()
 	v := math.Ceil(f)
@@ -354,7 +372,7 @@ func builtinCeil(args ...Node) Node {
 // round(number) number
 func builtinRound(args ...Node) Node {
 	if len(args) != 1 {
-		fatalError("round() must pass one args")
+		fatalError("invalid as number of arguments for round()")
 	}
 	f := args[0].asNumber()
 	v := math.Round(f)
