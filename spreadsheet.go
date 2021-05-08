@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
@@ -276,5 +277,39 @@ func (s *Spreadsheet) copySheet(from string, to string) bool {
 	if err := s.file.CopySheet(fromidx, toidx); err != nil {
 		return false
 	}
+	return true
+}
+
+func isValidSheetName(name string) bool {
+	if len(name) < 1 || 31 < len(name) {
+		return false
+	}
+
+	invalidStrs := []string{
+		"'",
+		"*",
+		"/",
+		":",
+		"?",
+		"[",
+		"\\",
+		"]",
+		"’",
+		"＇",
+		"＊",
+		"／",
+		"：",
+		"？",
+		"［",
+		"＼",
+		"］",
+		"￥",
+	}
+	for _, s := range invalidStrs {
+		if strings.Contains(name, s) {
+			return false
+		}
+	}
+
 	return true
 }

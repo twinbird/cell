@@ -269,6 +269,9 @@ func builtinRename(args ...Node) Node {
 	if execContext.spreadsheet.existSheetName(n) {
 		fatalError("rename(): sheet '%s' already exist", n)
 	}
+	if !isValidSheetName(n) {
+		fatalError("rename(): sheet '%s' is invalid sheet name", n)
+	}
 	s := execContext.spreadsheet.setSheetName(o, n)
 
 	return NewStringExpression(s)
@@ -318,6 +321,9 @@ func builtinCopy(args ...Node) Node {
 	}
 	if execContext.spreadsheet.existSheetName(to) {
 		fatalError("copy(): sheet '%s' already exist", to)
+	}
+	if !isValidSheetName(to) {
+		fatalError("copy(): sheet '%s' is invalid sheet name", to)
 	}
 
 	execContext.spreadsheet.copySheet(from, to)
