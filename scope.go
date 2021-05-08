@@ -116,10 +116,16 @@ func (s *Scope) setSpecialVar(name string, value Node) Node {
 	switch name {
 	case "@":
 		s := value.eval().asString()
-		err := execContext.spreadsheet.setActiveSheetByName(s)
-		if err != nil {
-			if err := execContext.spreadsheet.addSheet(s); err != nil {
+		if execContext.spreadsheet.existSheetName(s) {
+			if execContext.spreadsheet.setActiveSheetByName(s) != nil {
 				fatalError("active sheet change error")
+			}
+		} else {
+			if !isValidSheetName(s) {
+				fatalError("sheet add error. '%s' is invalid sheet name.", s)
+			}
+			if err := execContext.spreadsheet.addSheet(s); err != nil {
+				fatalError("sheet add error")
 			}
 		}
 		return NewStringExpression(s)
