@@ -44,6 +44,7 @@ func NewExecContext() *ExecContext {
 	con.scope.set("OFS", NewStringExpression(" "))
 	con.scope.set("RS", NewStringExpression("\n"))
 	con.scope.set("ORS", NewStringExpression("\n"))
+	con.scope.set("NR", NewNumberExpression(0))
 
 	return con
 }

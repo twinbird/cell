@@ -75,6 +75,8 @@ func (s *Scope) isSpecialVar(name string) bool {
 		return true
 	case "ORS":
 		return true
+	case "NR":
+		return true
 	}
 	if name[0] == '$' {
 		return true
@@ -205,4 +207,10 @@ func (s *Scope) setAmpersandSpecialVars(str string, reg string) bool {
 	}
 
 	return true
+}
+
+func (s *Scope) incNR() {
+	v := s.getVar("NR")
+	newv := NewNumberExpression(v.asNumber() + 1.0)
+	s.setVar("NR", newv)
 }
