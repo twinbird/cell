@@ -13,22 +13,23 @@ import (
 const CELL_VERSION = "0.0.1"
 
 type ExecContext struct {
-	code        string
-	topath      string
-	frompath    string
-	spreadsheet *Spreadsheet
-	exitCode    int
-	scope       *Scope
-	ndollars    uint16
-	functions   map[string]*Function
-	funcRet     Node
-	doExit      bool
-	doBreak     bool
-	doContinue  bool
-	doReturn    bool
-	in          *bufio.Reader
-	out         io.Writer
-	errout      io.Writer
+	code          string
+	topath        string
+	frompath      string
+	spreadsheet   *Spreadsheet
+	exitCode      int
+	scope         *Scope
+	ndollars      uint16
+	functions     map[string]*Function
+	funcRet       Node
+	doExit        bool
+	doBreak       bool
+	doContinue    bool
+	doReturn      bool
+	in            *bufio.Reader
+	out           io.Writer
+	errout        io.Writer
+	doTextRowLoop bool
 }
 
 var execContext *ExecContext
@@ -58,6 +59,7 @@ func main() {
 	flag.StringVar(&con.frompath, "from", "", "input spreadsheet filepath")
 	flag.StringVar(&pgpath, "f", "", "program filepath")
 	flag.BoolVar(&showVer, "V", false, "show version")
+	flag.BoolVar(&con.doTextRowLoop, "n", false, "wrap your script inside while(gets()){... ;} loop")
 
 	flag.Parse()
 
@@ -123,11 +125,17 @@ func fileExist(filename string) bool {
 }
 
 func beforeRun() {
+	// setup spreadsheet
 	sheet, err := NewSpreadsheet(execContext.frompath, execContext.topath)
 	if err != nil {
 		fatalError("on error occured creating new spreadsheet")
 	}
 	execContext.spreadsheet = sheet
+
+	// -n option
+	if execContext.doTextRowLoop {
+		execContext.code = "while(gets()){ " + execContext.code + "; }"
+	}
 }
 
 func afterRun() {

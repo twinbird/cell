@@ -2306,3 +2306,26 @@ func TestSpecialvarNR(t *testing.T) {
 		t.Fatalf("want stdout '0\n1\n2\n', but got '%s'", out)
 	}
 }
+
+/*
+func TestOptionTextRowLoop(t *testing.T) {
+	in := bufio.NewReader(bytes.NewBufferString("1 2 3\n4 5 6\n7 8 9\n"))
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.in = in
+	con.out = out
+	con.doTextRowLoop = true
+
+	con.code = `puts()`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "1 2 3\n4 5 6\n7 8 9\n" {
+		t.Fatalf("want stdout '1 2 3\n4 5 6\n7 8 9\n', but got '%s'", out)
+	}
+}
+*/
