@@ -30,3 +30,9 @@ if [[ $? -ne 6 ]]; then
   echo 'file args could not working'
   exit 1
 fi
+
+./cell -F ":" 'exit(FS eq ":")'
+if [[ $? -ne 1 ]]; then
+  echo 'option -F could not working'
+  exit 1
+fi

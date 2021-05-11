@@ -55,9 +55,11 @@ func main() {
 
 	var pgpath string
 	var showVer bool
+	var fs string
 	flag.StringVar(&con.topath, "to", "", "output spreadsheet filepath")
 	flag.StringVar(&con.frompath, "from", "", "input spreadsheet filepath")
 	flag.StringVar(&pgpath, "f", "", "program filepath")
+	flag.StringVar(&fs, "F", "", "specify field separator")
 	flag.BoolVar(&showVer, "V", false, "show version")
 	flag.BoolVar(&con.doTextRowLoop, "n", false, "wrap your script inside while(gets()){... ;} loop")
 
@@ -77,6 +79,10 @@ func main() {
 		con.code = readProg(pgpath)
 	} else {
 		con.code = args[0]
+	}
+
+	if fs != "" {
+		con.scope.set("FS", NewStringExpression(fs))
 	}
 
 	if 1 < len(args) {
