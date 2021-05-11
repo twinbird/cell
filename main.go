@@ -169,6 +169,9 @@ func beforeRun() {
 }
 
 func afterRun() {
+	// request full calculate to excel
+	execContext.spreadsheet.file.WorkBook.CalcPr.FullCalcOnLoad = true
+
 	if execContext.topath != "" {
 		if err := execContext.spreadsheet.writeSpreadsheet(); err != nil {
 			fatalError("on error occured writting xlsx file")
