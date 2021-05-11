@@ -42,3 +42,9 @@ if [[ $? -ne 3 ]]; then
   echo 'option -s could not working'
   exit 1
 fi
+
+./cell -S Sheet2 'exit(@ eq "Sheet2")'
+if [[ $? -ne 1 ]]; then
+  echo 'option -S could not working'
+  exit 1
+fi

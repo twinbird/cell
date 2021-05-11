@@ -31,6 +31,7 @@ type ExecContext struct {
 	errout         io.Writer
 	doTextRowLoop  bool
 	doExcelRowLoop bool
+	initSheet      string
 }
 
 var execContext *ExecContext
@@ -67,9 +68,11 @@ func main() {
 	flag.BoolVar(&con.doTextRowLoop, "n", false, "wrap your script inside while(gets()){... ;} loop")
 	flag.BoolVar(&con.doExcelRowLoop, "N", false, "wrap your script inside for(NER = SER; NER <= LR; NER++){... ;} loop")
 	flag.IntVar(&ser, "s", 1, "specify special var SER(start excel row)")
+	flag.StringVar(&con.initSheet, "S", "", "specify active sheet by name")
 
 	flag.Parse()
 
+	// -V option
 	if showVer {
 		showVersion()
 	}
@@ -80,18 +83,22 @@ func main() {
 		os.Exit(1)
 	}
 
+	// -f option
 	if pgpath != "" {
 		con.code = readProg(pgpath)
 	} else {
 		con.code = args[0]
 	}
 
+	// -F option
 	if fs != "" {
 		con.scope.set("FS", NewStringExpression(fs))
 	}
 
+	// -s option
 	con.scope.set("SER", NewNumberExpression(float64(ser)))
 
+	// text file specify
 	if 1 < len(args) {
 		switchStdin(con, args[1:])
 	}
@@ -144,6 +151,11 @@ func beforeRun() {
 		fatalError("on error occured loading xlsx file")
 	}
 	execContext.spreadsheet = sheet
+
+	// -S option
+	if execContext.initSheet != "" {
+		execContext.scope.set("@", NewStringExpression(execContext.initSheet))
+	}
 
 	// -N option
 	if execContext.doExcelRowLoop {
