@@ -13,23 +13,24 @@ import (
 const CELL_VERSION = "0.0.1"
 
 type ExecContext struct {
-	code          string
-	topath        string
-	frompath      string
-	spreadsheet   *Spreadsheet
-	exitCode      int
-	scope         *Scope
-	ndollars      uint16
-	functions     map[string]*Function
-	funcRet       Node
-	doExit        bool
-	doBreak       bool
-	doContinue    bool
-	doReturn      bool
-	in            *bufio.Reader
-	out           io.Writer
-	errout        io.Writer
-	doTextRowLoop bool
+	code           string
+	topath         string
+	frompath       string
+	spreadsheet    *Spreadsheet
+	exitCode       int
+	scope          *Scope
+	ndollars       uint16
+	functions      map[string]*Function
+	funcRet        Node
+	doExit         bool
+	doBreak        bool
+	doContinue     bool
+	doReturn       bool
+	in             *bufio.Reader
+	out            io.Writer
+	errout         io.Writer
+	doTextRowLoop  bool
+	doExcelRowLoop bool
 }
 
 var execContext *ExecContext
@@ -46,6 +47,7 @@ func NewExecContext() *ExecContext {
 	con.scope.set("RS", NewStringExpression("\n"))
 	con.scope.set("ORS", NewStringExpression("\n"))
 	con.scope.set("NR", NewNumberExpression(0))
+	con.scope.set("SER", NewNumberExpression(1))
 
 	return con
 }
@@ -56,12 +58,15 @@ func main() {
 	var pgpath string
 	var showVer bool
 	var fs string
-	flag.StringVar(&con.topath, "to", "", "output spreadsheet filepath")
-	flag.StringVar(&con.frompath, "from", "", "input spreadsheet filepath")
+	var ser int
+	flag.StringVar(&con.topath, "to", "", "output xlsx filepath")
+	flag.StringVar(&con.frompath, "from", "", "input xlsx filepath")
 	flag.StringVar(&pgpath, "f", "", "program filepath")
 	flag.StringVar(&fs, "F", "", "specify field separator")
 	flag.BoolVar(&showVer, "V", false, "show version")
 	flag.BoolVar(&con.doTextRowLoop, "n", false, "wrap your script inside while(gets()){... ;} loop")
+	flag.BoolVar(&con.doExcelRowLoop, "N", false, "wrap your script inside for(NER = SER; NER <= LR; NER++){... ;} loop")
+	flag.IntVar(&ser, "s", 1, "specify special var SER(start excel row)")
 
 	flag.Parse()
 
@@ -84,6 +89,8 @@ func main() {
 	if fs != "" {
 		con.scope.set("FS", NewStringExpression(fs))
 	}
+
+	con.scope.set("SER", NewNumberExpression(float64(ser)))
 
 	if 1 < len(args) {
 		switchStdin(con, args[1:])
@@ -134,9 +141,14 @@ func beforeRun() {
 	// setup spreadsheet
 	sheet, err := NewSpreadsheet(execContext.frompath, execContext.topath)
 	if err != nil {
-		fatalError("on error occured creating new spreadsheet")
+		fatalError("on error occured loading xlsx file")
 	}
 	execContext.spreadsheet = sheet
+
+	// -N option
+	if execContext.doExcelRowLoop {
+		execContext.code = "for(NER = SER; NER <= LR; NER++){ " + execContext.code + "; }"
+	}
 
 	// -n option
 	if execContext.doTextRowLoop {
@@ -147,7 +159,7 @@ func beforeRun() {
 func afterRun() {
 	if execContext.topath != "" {
 		if err := execContext.spreadsheet.writeSpreadsheet(); err != nil {
-			fatalError("on error occured writting spreadsheet")
+			fatalError("on error occured writting xlsx file")
 		}
 	}
 }

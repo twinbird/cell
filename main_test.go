@@ -2307,7 +2307,6 @@ func TestSpecialvarNR(t *testing.T) {
 	}
 }
 
-/*
 func TestOptionTextRowLoop(t *testing.T) {
 	in := bufio.NewReader(bytes.NewBufferString("1 2 3\n4 5 6\n7 8 9\n"))
 	out := new(bytes.Buffer)
@@ -2328,4 +2327,23 @@ func TestOptionTextRowLoop(t *testing.T) {
 		t.Fatalf("want stdout '1 2 3\n4 5 6\n7 8 9\n', but got '%s'", out)
 	}
 }
-*/
+
+func TestOptionExcelRowLoop(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+	con.frompath = "test/list.xlsx"
+	con.doExcelRowLoop = true
+
+	con.code = `puts(["A".NER])`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "A\nB\nC\nD\nE\nF\nG\n" {
+		t.Fatalf("want stdout 'A\nB\nC\nD\nE\nF\nG\n', but got '%s'", out)
+	}
+}
