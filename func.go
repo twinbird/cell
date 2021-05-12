@@ -190,7 +190,12 @@ func builtinGets(args ...Node) Node {
 		fatalError("builtin function 'gets' raised error '%v'", err)
 	}
 	execContext.scope.incNR()
-	s = strings.TrimRight(s, rs)
+
+	if rs == "\n" {
+		s = strings.TrimRight(s, "\r\n")
+	} else {
+		s = strings.TrimRight(s, rs)
+	}
 	execContext.scope.setDollarSpecialVars(s)
 	return NewStringExpression(s)
 }
