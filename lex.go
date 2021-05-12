@@ -40,6 +40,12 @@ func (l *Lexer) Lex(lval *yySymType) int {
 			return LF
 		}
 
+		if l.consumeIf('\r') {
+			if l.consumeIf('\n') {
+				return LF
+			}
+		}
+
 		if l.consumeIf('[') {
 			return '['
 		}
