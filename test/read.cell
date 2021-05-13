@@ -1,0 +1,4 @@
+while(gets()) {
+	sum += $1
+}
+exit(sum)

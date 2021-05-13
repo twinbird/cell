@@ -48,3 +48,9 @@ if [[ $? -ne 1 ]]; then
   echo 'option -S could not working'
   exit 1
 fi
+
+./cell -f test/read.cell test/data1.txt test/data2.txt
+if [[ $? -ne 6 ]]; then
+  echo 'option -f with file specify could not working'
+  exit 1
+fi

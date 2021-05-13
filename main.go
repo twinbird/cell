@@ -99,8 +99,14 @@ func main() {
 	con.scope.set("SER", NewNumberExpression(float64(ser)))
 
 	// text file specify
-	if 1 < len(args) {
-		switchStdin(con, args[1:])
+	if pgpath == "" {
+		if 1 < len(args) {
+			switchStdin(con, args[1:])
+		}
+	} else {
+		if 0 < len(args) {
+			switchStdin(con, args)
+		}
 	}
 
 	run(con)
