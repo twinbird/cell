@@ -2347,3 +2347,39 @@ func TestOptionExcelRowLoop(t *testing.T) {
 		t.Fatalf("want stdout 'A\nB\nC\nD\nE\nF\nG\n', but got '%s'", out)
 	}
 }
+
+func TestSingleQuoteString(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `puts('Hello')`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "Hello\n" {
+		t.Fatalf("want stdout 'Hello\n', but got '%s'", out)
+	}
+}
+
+func TestEscapeQuoteString(t *testing.T) {
+	out := new(bytes.Buffer)
+
+	con := NewExecContext()
+	con.out = out
+
+	con.code = `puts('"\"\'')`
+	run(con)
+
+	if con.exitCode != 0 {
+		t.Fatalf("exit code '%s'. want '%d' but got '%d'", con.code, 0, con.exitCode)
+	}
+
+	if out.String() != "\"\"'\n" {
+		t.Fatalf("want stdout '\"\"'\n', but got '%s'", out)
+	}
+}

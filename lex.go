@@ -181,7 +181,10 @@ func (l *Lexer) Lex(lval *yySymType) int {
 	}
 
 	if l.peek() == '"' {
-		return l.str(lval)
+		return l.doubleQuoteStr(lval)
+	}
+	if l.peek() == '\'' {
+		return l.singleQuoteStr(lval)
 	}
 
 	if isIdent(l.peek()) {
@@ -328,11 +331,26 @@ func (l *Lexer) number(lval *yySymType) int {
 	return NUMBER
 }
 
-func (l *Lexer) str(lval *yySymType) int {
+func (l *Lexer) doubleQuoteStr(lval *yySymType) int {
 	l.consume()
 	s := ""
 
 	for c := l.consume(); c != '"' && !l.isEof(); c = l.consume() {
+		if c == '\\' {
+			c = l.consumeEscapeChar()
+		}
+		s += string(c)
+	}
+	lval.str = s
+
+	return STRING
+}
+
+func (l *Lexer) singleQuoteStr(lval *yySymType) int {
+	l.consume()
+	s := ""
+
+	for c := l.consume(); c != '\'' && !l.isEof(); c = l.consume() {
 		if c == '\\' {
 			c = l.consumeEscapeChar()
 		}
@@ -371,6 +389,9 @@ func (l *Lexer) consumeEscapeChar() rune {
 	}
 	if c == '"' {
 		return '"'
+	}
+	if c == '\'' {
+		return '\''
 	}
 
 	panic("unknown escape")
