@@ -23,9 +23,11 @@ clean:
 	rm -f cell
 	rm -f y.go
 	rm -f y.output
+	rm -rf bin
 
 winclean:
 	del /Q *.xlsx
 	del /Q cell
 	del /Q y.go
 	del /Q y.output
+	rd /s /q bin
