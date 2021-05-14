@@ -21,170 +21,175 @@ func NewLexer(code string) *Lexer {
 }
 
 func (l *Lexer) Lex(lval *yySymType) int {
-	for !l.isEof() {
-		l.skipSpace()
+	if l.isEof() {
+		return -1
+	}
 
-		if l.consumeIf('#') {
-			l.skipComment()
-		}
+	l.skipSpace()
 
-		if isDigit(l.peek()) {
-			return l.number(lval)
-		}
+	if l.consumeIf('#') {
+		l.skipComment()
+	}
 
-		if l.consumeIf(';') {
-			return LF
-		}
+	if isDigit(l.peek()) {
+		return l.number(lval)
+	}
 
+	if l.consumeIf(';') {
+		return LF
+	}
+
+	if l.consumeIf('\n') {
+		return LF
+	}
+
+	if l.consumeIf('\r') {
 		if l.consumeIf('\n') {
 			return LF
 		}
-
-		if l.consumeIf('\r') {
-			if l.consumeIf('\n') {
-				return LF
-			}
-		}
-
-		if l.consumeIf('[') {
-			return '['
-		}
-
-		if l.consumeIf(']') {
-			return ']'
-		}
-
-		if l.consumeIf('{') {
-			return '{'
-		}
-
-		if l.consumeIf('}') {
-			return '}'
-		}
-
-		if l.consumeIf('+') {
-			if l.consumeIf('=') {
-				return ADD_ASSIGN
-			}
-			if l.consumeIf('+') {
-				return INC
-			}
-			return '+'
-		}
-
-		if l.consumeIf('-') {
-			if l.consumeIf('=') {
-				return SUB_ASSIGN
-			}
-			if l.consumeIf('-') {
-				return DEC
-			}
-			return '-'
-		}
-
-		if l.consumeIf('*') {
-			if l.consumeIf('*') {
-				if l.consumeIf('=') {
-					return POW_ASSIGN
-				}
-				return POW
-			}
-			if l.consumeIf('=') {
-				return MUL_ASSIGN
-			}
-			return '*'
-		}
-
-		if l.consumeIf('/') {
-			if l.consumeIf('=') {
-				return DIV_ASSIGN
-			}
-			return '/'
-		}
-
-		if l.consumeIf('%') {
-			if l.consumeIf('=') {
-				return MOD_ASSIGN
-			}
-			return '%'
-		}
-
-		if l.consumeIf('=') {
-			if l.consumeIf('=') {
-				return NUMEQ
-			}
-			return '='
-		}
-
-		if l.consumeIf('!') {
-			if l.consumeIf('=') {
-				return NUMNE
-			}
-			if l.consumeIf('~') {
-				return NOT_MATCH
-			}
-			return '!'
-		}
-
-		if l.consumeIf('<') {
-			if l.consumeIf('=') {
-				return NUMLE
-			}
-			return '<'
-		}
-
-		if l.consumeIf('>') {
-			if l.consumeIf('=') {
-				return NUMGE
-			}
-			return '>'
-		}
-
-		if l.consumeIf('&') {
-			if l.consumeIf('&') {
-				return AND
-			}
-			panic("invalid char &")
-		}
-
-		if l.consumeIf('|') {
-			if l.consumeIf('|') {
-				return OR
-			}
-			panic("invalid char |")
-		}
-
-		if l.consumeIf('~') {
-			return '~'
-		}
-
-		if l.consumeIf('.') {
-			if l.consumeIf('=') {
-				return CONCAT_ASSIGN
-			}
-			return '.'
-		}
-
-		if l.consumeIf('(') {
-			return '('
-		}
-
-		if l.consumeIf(')') {
-			return ')'
-		}
-
-		if l.consumeIf(',') {
-			return ','
-		}
-
-		if l.peek() == '"' {
-			return l.str(lval)
-		}
-
-		if isIdent(l.peek()) {
-			return l.word(lval)
-		}
 	}
+
+	if l.consumeIf('[') {
+		return '['
+	}
+
+	if l.consumeIf(']') {
+		return ']'
+	}
+
+	if l.consumeIf('{') {
+		return '{'
+	}
+
+	if l.consumeIf('}') {
+		return '}'
+	}
+
+	if l.consumeIf('+') {
+		if l.consumeIf('=') {
+			return ADD_ASSIGN
+		}
+		if l.consumeIf('+') {
+			return INC
+		}
+		return '+'
+	}
+
+	if l.consumeIf('-') {
+		if l.consumeIf('=') {
+			return SUB_ASSIGN
+		}
+		if l.consumeIf('-') {
+			return DEC
+		}
+		return '-'
+	}
+
+	if l.consumeIf('*') {
+		if l.consumeIf('*') {
+			if l.consumeIf('=') {
+				return POW_ASSIGN
+			}
+			return POW
+		}
+		if l.consumeIf('=') {
+			return MUL_ASSIGN
+		}
+		return '*'
+	}
+
+	if l.consumeIf('/') {
+		if l.consumeIf('=') {
+			return DIV_ASSIGN
+		}
+		return '/'
+	}
+
+	if l.consumeIf('%') {
+		if l.consumeIf('=') {
+			return MOD_ASSIGN
+		}
+		return '%'
+	}
+
+	if l.consumeIf('=') {
+		if l.consumeIf('=') {
+			return NUMEQ
+		}
+		return '='
+	}
+
+	if l.consumeIf('!') {
+		if l.consumeIf('=') {
+			return NUMNE
+		}
+		if l.consumeIf('~') {
+			return NOT_MATCH
+		}
+		return '!'
+	}
+
+	if l.consumeIf('<') {
+		if l.consumeIf('=') {
+			return NUMLE
+		}
+		return '<'
+	}
+
+	if l.consumeIf('>') {
+		if l.consumeIf('=') {
+			return NUMGE
+		}
+		return '>'
+	}
+
+	if l.consumeIf('&') {
+		if l.consumeIf('&') {
+			return AND
+		}
+		panic("invalid char &")
+	}
+
+	if l.consumeIf('|') {
+		if l.consumeIf('|') {
+			return OR
+		}
+		panic("invalid char |")
+	}
+
+	if l.consumeIf('~') {
+		return '~'
+	}
+
+	if l.consumeIf('.') {
+		if l.consumeIf('=') {
+			return CONCAT_ASSIGN
+		}
+		return '.'
+	}
+
+	if l.consumeIf('(') {
+		return '('
+	}
+
+	if l.consumeIf(')') {
+		return ')'
+	}
+
+	if l.consumeIf(',') {
+		return ','
+	}
+
+	if l.peek() == '"' {
+		return l.str(lval)
+	}
+
+	if isIdent(l.peek()) {
+		return l.word(lval)
+	}
+
+	fatalError("syntax error: %c", l.peek())
+
 	return -1
 }
 
@@ -327,7 +332,7 @@ func (l *Lexer) str(lval *yySymType) int {
 	l.consume()
 	s := ""
 
-	for c := l.consume(); c != '"'; c = l.consume() {
+	for c := l.consume(); c != '"' && !l.isEof(); c = l.consume() {
 		if c == '\\' {
 			c = l.consumeEscapeChar()
 		}
