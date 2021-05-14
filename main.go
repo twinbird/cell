@@ -54,6 +54,8 @@ func NewExecContext() *ExecContext {
 }
 
 func main() {
+	flag.Usage = usage
+
 	con := NewExecContext()
 
 	var pgpath string
@@ -130,6 +132,41 @@ func switchStdin(con *ExecContext, files []string) {
 func showVersion() {
 	fmt.Printf("Cell %s\n", CELL_VERSION)
 	os.Exit(0)
+}
+
+func usage() {
+	msg := `Cell is a Excel file(xlsx) processing language for command line.
+
+Usage: cell [options] 'program' [file...]
+Usage: cell [options] -f programfile [file...]
+
+Options:
+  -to output-xlsx-file-path
+      Specify the path of the processed Excel file will be saved
+  -from input-xlsx-file-path
+      Specify the Excel file to be processed. No overwriting will be done. The default is an empty book containing only Sheet1.
+  -f program-file
+      Read the Cell program source from the file program-file, instead of from the first command line argument.
+  -F fs
+      Use fs for the input field separator (the value of the FS predefined variable).
+  -n
+      Wrap your script inside while(gets()){... ;} loop
+  -N
+      Wrap your script inside for(NER = SER; NER <= LR; NER++){... ;} loop (NER and SER, LR are predefined variables)
+  -s row-no
+      Specify the special variable SER(Start Excel Row) (default 1)
+  -S
+      Specify default active sheet by name
+  -V
+      Print version information.
+  -h
+      Show this help
+
+Examples:
+        cell -to greeting.xlsx '["A1"] = "Hello, world"'
+        cell -F ":" -to users.xlsx -n '["A".NR] = $1' /etc/passwd`
+
+	fmt.Fprintf(os.Stderr, "%s\n", msg)
 }
 
 func readProg(filename string) string {

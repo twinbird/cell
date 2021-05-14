@@ -16,7 +16,8 @@ if [[ $? -ne 2 ]]; then
   exit 1
 fi
 if [[ -e 'thisFileIsNotCreated.xlsx' ]]; then
-  echo 'the file specified by 'to' option exists even through program aborted by abort().'
+  echo 'the file specified by "to" option exists even through program aborted by abort().'
+  exit 1
 fi
 
 ./cell -f test/prog.cell
