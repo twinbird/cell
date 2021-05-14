@@ -33,12 +33,12 @@ if %ERRORLEVEL% neq 6 (
   exit /B 1
 )
 
-rem cell.exe -F ":" "exit(FS eq ':')"
-rem if %ERRORLEVEL neq 1 (
-rem   @echo on
-rem   echo "option -F could not working"
-rem   exit /B 1
-rem )
+cell.exe -F ":" "exit(FS eq ':')"
+if %ERRORLEVEL% neq 1 (
+  @echo on
+  echo "option -F could not working"
+  exit /B 1
+)
 
 cell.exe -s 3 "exit(SER)"
 if %ERRORLEVEL% neq 3 (
@@ -47,12 +47,12 @@ if %ERRORLEVEL% neq 3 (
   exit /B 1
 )
 
-rem cell.exe -S Sheet2 "exit(@ eq 'Sheet2')"
-rem if %ERRORLEVEL% neq 1 (
-rem   @echo on
-rem   echo "option -S could not working"
-rem   exit /B 1
-rem )
+cell.exe -S Sheet2 "exit(@ eq 'Sheet2')"
+if %ERRORLEVEL% neq 1 (
+  @echo on
+  echo "option -S could not working"
+  exit /B 1
+)
 
 cell.exe -f test/read.cell test/data1.txt test/data2.txt
 if %ERRORLEVEL% neq 6 (
