@@ -135,14 +135,14 @@ func showVersion() {
 }
 
 func usage() {
-	msg := `Cell is a Excel file(xlsx) processing language for command line.
+	msg := `Cell is an Excel file(xlsx) processing language for command line.
 
 Usage: cell [options] 'program' [file...]
 Usage: cell [options] -f programfile [file...]
 
 Options:
   -to output-xlsx-file-path
-      Specify the path of the processed Excel file will be saved
+      Specify the path of the processed Excel file that will be saved
   -from input-xlsx-file-path
       Specify the Excel file to be processed. No overwriting will be done. The default is an empty book containing only Sheet1.
   -f program-file
