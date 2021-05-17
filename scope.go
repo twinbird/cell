@@ -194,7 +194,7 @@ func (s *Scope) makeFSSplitReg(fs string) *regexp.Regexp {
 	return reg
 }
 
-func (s *Scope) setAmpersandSpecialVars(str string, reg string) bool {
+func (s *Scope) setRegexpSpecialVars(str string, reg string) bool {
 	r := regexp.MustCompile(reg)
 	if !r.MatchString(str) {
 		return false
