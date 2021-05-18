@@ -534,7 +534,9 @@ func (e *Expression) eval() Node {
 		if e.ident == "@" {
 			l := execContext.scope.get(e.ident)
 			s := execContext.spreadsheet.setNextSheet()
-			execContext.scope.set(e.ident, NewStringExpression(s))
+			if s != "" {
+				execContext.scope.set(e.ident, NewStringExpression(s))
+			}
 			return l
 		} else {
 			l := execContext.scope.get(e.ident)
@@ -551,7 +553,9 @@ func (e *Expression) eval() Node {
 		if e.ident == "@" {
 			s := execContext.spreadsheet.setNextSheet()
 			v := NewStringExpression(s)
-			execContext.scope.set(e.ident, v)
+			if s != "" {
+				execContext.scope.set(e.ident, v)
+			}
 			return v
 		} else {
 			l := execContext.scope.get(e.ident)
@@ -568,7 +572,9 @@ func (e *Expression) eval() Node {
 		if e.ident == "@" {
 			l := execContext.scope.get(e.ident)
 			v := execContext.spreadsheet.setPrevSheet()
-			execContext.scope.set(e.ident, NewStringExpression(v))
+			if v != "" {
+				execContext.scope.set(e.ident, NewStringExpression(v))
+			}
 			return l
 		} else {
 			l := execContext.scope.get(e.ident)
@@ -585,7 +591,9 @@ func (e *Expression) eval() Node {
 		if e.ident == "@" {
 			s := execContext.spreadsheet.setPrevSheet()
 			v := NewStringExpression(s)
-			execContext.scope.set(e.ident, v)
+			if s != "" {
+				execContext.scope.set(e.ident, v)
+			}
 			return v
 		} else {
 			l := execContext.scope.get(e.ident)
