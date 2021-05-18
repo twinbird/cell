@@ -789,7 +789,7 @@ func (e *Expression) eval() Node {
 	case StringMatchExpression:
 		left := e.left.eval().asString()
 		right := e.right.eval().asString()
-		b := execContext.scope.setAmpersandSpecialVars(left, right)
+		b := execContext.scope.setRegexpSpecialVars(left, right)
 
 		if b {
 			return NewNumberExpression(1)
@@ -799,7 +799,7 @@ func (e *Expression) eval() Node {
 	case StringNotMatchExpression:
 		left := e.left.eval().asString()
 		right := e.right.eval().asString()
-		b := execContext.scope.setAmpersandSpecialVars(left, right)
+		b := execContext.scope.setRegexpSpecialVars(left, right)
 
 		if !b {
 			return NewNumberExpression(1)
