@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-const CELL_VERSION = "0.0.1"
+const CELL_VERSION = "0.1.0"
 
 type ExecContext struct {
 	code           string

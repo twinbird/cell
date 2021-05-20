@@ -7,6 +7,7 @@ if [ $# != 1 ]; then
 	exit 1
 fi
 
+go generate
 GOOS=linux GOARCH=amd64 go build -o ./bin/$1/linux64/$PROGNAME
 GOOS=windows GOARCH=386 go build -o ./bin/$1/windows386/$PROGNAME.exe
 GOOS=windows GOARCH=amd64 go build -o ./bin/$1/windows64/$PROGNAME.exe
