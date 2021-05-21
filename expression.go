@@ -1,3 +1,4 @@
+//go:generate go install golang.org/x/tools/cmd/stringer@v0.1.1
 //go:generate stringer -type=ExprType
 package main
 

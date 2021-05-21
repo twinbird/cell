@@ -1,3 +1,4 @@
+//go:generate go install golang.org/x/tools/cmd/goyacc@v0.1.1
 //go:generate goyacc parser.y
 package main
 
