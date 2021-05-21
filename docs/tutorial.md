@@ -89,7 +89,7 @@ puts(one . two)  # => 12(string concat)
 
 Most of the operators are all common in other languages.
 
-For details on operators, see [Operators](###Operators).
+For details on operators, see [Operators](#Operators).
 
 However, the increment operator may seem rather quirky.
 
