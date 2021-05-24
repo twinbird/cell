@@ -1,4 +1,4 @@
-module cell
+module github.com/twinbird/cell
 
 go 1.16
 
